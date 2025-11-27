@@ -1,0 +1,95 @@
+{
+    "version": 1,
+    "name": "Play",
+    "maps": [
+        {
+            "name": "Type1",
+            "id": "a1420030-6262-4706-864a-aa5d1bb862aa",
+            "actions": [
+                {
+                    "name": "1",
+                    "type": "Button",
+                    "id": "99c20761-ea9f-460b-be8b-88fb7c109e43",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "2",
+                    "type": "Button",
+                    "id": "a167d496-4825-460f-b37f-84e0413e4e32",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "3",
+                    "type": "Button",
+                    "id": "81586e8c-4a08-4be2-b4a5-4b170da5c192",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "4",
+                    "type": "Button",
+                    "id": "c0823eff-564f-401f-abbc-17bcf7d498c3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "92048242-3d4a-4f65-a781-b231eb2068f0",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd446857-51f4-4fcd-b102-a5430fe0b74d",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dcee53c4-6cc3-4fb2-856f-d8f84c8ce431",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "63a8ca40-a77b-4dd9-aeb6-a1ef7650b0f1",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -1,3 +1,6 @@
+using System;
+using ArcadeControllerTest.Inputs;
+using R3;
 using UnityEngine;
 
 namespace ArcadeControllerTest.Scripts
@@ -7,8 +10,27 @@ namespace ArcadeControllerTest.Scripts
     {
         [SerializeField]
         private Renderer buttonLightRenderer;
+        
+        private Play _playInput;
 
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+
+        private void Awake()
+        {
+            _playInput = new Play();
+            _playInput.Enable();
+        }
+
+        private void Start()
+        {
+            
+        }
+
+        private void OnDestroy()
+        {
+            _playInput.Disable();
+            _playInput.Dispose();
+        }
 
         // ボタンのライトの色を設定する
         public void SetButtonLightColor(Color color)

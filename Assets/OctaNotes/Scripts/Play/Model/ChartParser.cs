@@ -6,12 +6,37 @@ using OctaNotes.Scripts.Play.Interface;
 using UnityEngine;
 using Zenject;
 
+
+// Todo: Typedef的のを書く
+// global using GraphicalChart Dictionary<double, List<string>>;
 namespace OctaNotes.Scripts.Play.Model
 {
-    public class ChartParser
+    public class ChartParser: IChartParser, IInitializable
     {
-        [Inject] private IChartRepositoryImmutable _chartRepository;
-        private Dictionary<double, List<string>> _chartData1; // ノーツのオブジェクトを画面上に描画するための譜面データ構造
+        public void Initialize()
+        {
+            LoadChart(Application.persistentDataPath + "/Charts/test.onc");
+        }
+        
+        public void LoadChart(string path)
+        {
+            // 譜面データは各行を文字列とするリストで受け取る
+            var data = System.IO.File.ReadAllLines(path);
+            ChartData = new List<string>(data);
+            _chartData1 = new Dictionary<double, List<string>>();
+            _chartData2 = new List<List<NoteTiming>>(8);
+            for (int i = 0; i < 8; i++)
+            {
+                _chartData2.Add(new List<NoteTiming>());
+            }
+            Parse();
+        }
+        public Dictionary<double, List<string>> GraphicalChartData => _chartData1;
+        public List<List<NoteTiming>> LaneWiseChartData => _chartData2;
+        public List<(double,double)> HsChangeData => _hschangeData;
+
+
+        private Dictionary<double, List<string>> _chartData1 = new(); // ノーツのオブジェクトを画面上に描画するための譜面データ構造
         // Keyはノーツを生成するz座標、Valueには8つのレーンと32個の誘導線の系列のデータが格納されている。
         // Valueの例: ["b2","b1","r1","r2","","","",""," ]
         // ソフランは考えないでいい！(because そもそも位置が与えられており、速度変化はイベント発火で処理するため)
@@ -31,6 +56,8 @@ namespace OctaNotes.Scripts.Play.Model
         private string _version;
         
         private bool _initializing = false;
+        private bool _initialized = false;
+        private bool _isvalid = false;
         
         private MusicTimeCalculator _calculator;
 
@@ -45,17 +72,17 @@ namespace OctaNotes.Scripts.Play.Model
             "le",
             "w", "lw", "cw"
         };
+
+        private List<string> ChartData;
         
         private void Parse()
         {
-            if (_chartRepository.ChartData[0].Split().Last() != "OCTANOTES_CHART")
+            foreach (var rawline in ChartData)
             {
-                throw new InvalidPrefixException();
-            }
-            foreach (var rawline in _chartRepository.ChartData)
-            {
+                currentline++;
                 var line = ParserUtils.ParserUtils.RemoveLineCommentsSmart(rawline);
-                if(line.Length == 0) continue; // 空行(コメント行)はスキップ
+                Debug.Log(line);
+                if(line.Length <= 1) continue; // 空行(コメント行)はスキップ
 
                 if (line[0] == '#')
                 {
@@ -64,14 +91,22 @@ namespace OctaNotes.Scripts.Play.Model
                         case "VERSION":
                             _version = line.Split().Last();
                             break;
+                        case "OCTANOTES_CHART":
+                            _isvalid = true;
+                            break;
                     }
+                    continue;
                 }
 
+                // if (!_isvalid)
+                // {
+                //     throw new InvalidPrefixException();
+                // }
                 if (line.Last() == ':') // ラベルだったらこっち
                 {
                     if (line.ToLower()[..4] != "init") // 通常のタイミング指定の場合
                     {
-                        if (!_initializing)
+                        if (!_initialized)
                         {
                             ShowErrorMessage("initセクションがありませんでした。");
                         }
@@ -81,13 +116,15 @@ namespace OctaNotes.Scripts.Play.Model
                     }
                     else 
                     {
+                        Debug.Log("初期化セクション開始");
                         _initializing = true;
                     }
                 }
                 else // 通常の命令だったらこっち
                 {
-                    string opcode = line.Split(" ")[0];
-                    string[] operands = line.Split(" ")[1].Split(",");
+                    var tokens = ParserUtils.ParserUtils.Tokenize(line);
+                    string opcode = tokens[0];
+                    string[] operands = tokens.Skip(1).ToArray();
                     switch (opcode.ToLower())
                     {
                         case "bpm":
@@ -114,9 +151,10 @@ namespace OctaNotes.Scripts.Play.Model
                     if (bpm != 0f && M != 0 && N != 0)
                     {
                         _calculator = new MusicTimeCalculator(bpm, M, N);
+                        _initialized = true;
+                        _initializing = false;
                     }
                 }
-                currentline++;
             }
         }
         
@@ -124,8 +162,9 @@ namespace OctaNotes.Scripts.Play.Model
         {
             try
             {
+                Debug.Log(operands[0]);
                 bpm = double.Parse(operands[0]);
-                _calculator.ChangeBPM(l, m, n, bpm);
+                if(_initialized) _calculator.ChangeBPM(l, m, n, bpm);
             }
             catch (System.Exception)
             {
@@ -134,11 +173,12 @@ namespace OctaNotes.Scripts.Play.Model
         }
         private void SetBeats(string[] operands)
         {
+            Debug.Log(operands[0] + "," + operands[1]);
             try
             {
                 M = int.Parse(operands[0]);
                 N = int.Parse(operands[1]);
-                _calculator.ChangeBeat(l, M, N);
+                if(_initialized) _calculator.ChangeBeat(l, M, N);
             }
             catch (System.Exception)
             {
@@ -152,6 +192,7 @@ namespace OctaNotes.Scripts.Play.Model
 
                 var noteTypeStr = operands[0];
                 int laneNum = int.Parse(operands[1]);
+                Debug.Log(laneNum);
                 if (!validNoteTypeStr.Contains(noteTypeStr))
                 {
                     ShowErrorMessage("ノーツタイプが不正です");
@@ -201,7 +242,7 @@ namespace OctaNotes.Scripts.Play.Model
                     noteType = noteType
                 });
             }
-            catch (System.Exception)
+            catch (System.InvalidOperationException)
             {
                 ShowErrorMessage("オペランドが不正です。");
             }

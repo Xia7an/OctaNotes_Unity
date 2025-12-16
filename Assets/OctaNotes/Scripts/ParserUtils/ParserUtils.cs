@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OctaNotes.Scripts.ParserUtils
 {
@@ -13,6 +15,8 @@ namespace OctaNotes.Scripts.ParserUtils
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
+                var lineSb = new StringBuilder();
+
                 bool inString = false;
                 bool escaped = false;
 
@@ -22,23 +26,22 @@ namespace OctaNotes.Scripts.ParserUtils
 
                     if (escaped)
                     {
-                        // 直前が \ の場合はエスケープされた文字
                         escaped = false;
-                        sb.Append(c);
+                        lineSb.Append(c);
                         continue;
                     }
 
                     if (c == '\\')
                     {
                         escaped = true;
-                        sb.Append(c);
+                        lineSb.Append(c);
                         continue;
                     }
 
                     if (c == '"')
                     {
                         inString = !inString;
-                        sb.Append(c);
+                        lineSb.Append(c);
                         continue;
                     }
 
@@ -48,13 +51,29 @@ namespace OctaNotes.Scripts.ParserUtils
                         break;
                     }
 
-                    sb.Append(c);
+                    lineSb.Append(c);
                 }
 
-                sb.Append('\n');
+                // 行頭・行末の空白を削除し、改行は追加しない
+                sb.Append(lineSb.ToString().Trim(' ', '\t'));
             }
 
             return sb.ToString();
+        }
+        
+        private static readonly Regex TokenRegex =
+            new Regex(@"[A-Za-z][A-Za-z0-9]*|\d+", RegexOptions.Compiled);
+
+        public static List<string> Tokenize(string input)
+        {
+            var tokens = new List<string>();
+
+            foreach (Match m in TokenRegex.Matches(input))
+            {
+                tokens.Add(m.Value);
+            }
+
+            return tokens;
         }
     }
 }

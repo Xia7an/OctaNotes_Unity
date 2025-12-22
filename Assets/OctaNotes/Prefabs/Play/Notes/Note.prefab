@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8592790512513251306}
   - component: {fileID: 7318298878609383611}
   - component: {fileID: 5897514906064625401}
+  - component: {fileID: 2122443337498008899}
+  - component: {fileID: 6990403997930343611}
   m_Layer: 0
   m_Name: Note
   m_TagString: Untagged
@@ -112,3 +114,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2122443337498008899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640209973998861577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827f4e11291b46618a58f9d7ccbd644e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteMoveView
+  _noteViewModel: {fileID: 6990403997930343611}
+--- !u!114 &6990403997930343611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640209973998861577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d681e4736c2d4a73a076d34c5f3e586e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.NoteViewModel

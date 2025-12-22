@@ -47,4 +47,6 @@ MonoBehaviour:
   tapNotePrefab: {fileID: 640209973998861577, guid: 562fb4932504e4a908c17d85125d4d5d, type: 3}
   longNotePrefab: {fileID: 8094131818991120970, guid: 816eb79f54ac54a04a4285e91af5d0eb, type: 3}
   chainNotePrefab: {fileID: 0}
+  supportPlanePrefab: {fileID: 8968066720387617639, guid: af929060971b74053b4e5f910992339d, type: 3}
+  supportLinePrefab: {fileID: 2289015693136966333, guid: ad4e580ea43de4eb1b6b08a7b2dbfc69, type: 3}
   supportPlaneMaterial: {fileID: 2100000, guid: 9f520ec67e3af4e128dd573357687842, type: 2}

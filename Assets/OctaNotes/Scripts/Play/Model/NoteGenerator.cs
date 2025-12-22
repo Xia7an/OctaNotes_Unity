@@ -12,7 +12,11 @@ namespace OctaNotes.Scripts.Play.Model
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
         [SerializeField] private GameObject chainNotePrefab;
+        [SerializeField] private GameObject supportPlanePrefab;
+        [SerializeField] private GameObject supportLinePrefab;
         [SerializeField] private Material supportPlaneMaterial;
+        
+        private double zOffset = 5; // ノーツ生成のZオフセット
 
         [Inject] private IChartRepositoryImmutable _chartRepository;
 
@@ -38,15 +42,23 @@ namespace OctaNotes.Scripts.Play.Model
         private void Generate()
         {
             double[] longStartTmpPos = new double[8]{ double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN };
-            foreach (var zPos in _chartRepository.GraphicalChartData.Keys.ToList())
+            foreach (var rawZPos in _chartRepository.GraphicalChartData.Keys.ToList())
             {
-                var noteTypes = _chartRepository.GraphicalChartData[zPos];
+                var noteTypes = _chartRepository.GraphicalChartData[rawZPos];
+                double zPos = rawZPos + zOffset;
                 var tapnoteLaneIdx =
                     noteTypes.Select((value, index) => new { value, index })
                         .Where(x =>!string.IsNullOrEmpty(x.value) && (x.value.StartsWith("b") || x.value.StartsWith("r") || x.value.StartsWith("lb") || x.value.StartsWith("lr")))
                         .Select(x => x.index)
                         .ToList();
-                GenerateSupportPlane(tapnoteLaneIdx, zPos);
+                
+                List<bool> tapnoteLaneFlag = new List<bool>();
+                for (int i = 0; i < 8; i++)
+                {
+                    tapnoteLaneFlag.Add(tapnoteLaneIdx.Contains(i));
+                }
+                
+                GenerateSupportPlane(tapnoteLaneFlag, zPos); // 補助線・補助面の生成
                 // 各タイミングレーンごとに処理していく
                 for (int lane = 0; lane < 8; lane++)
                 {
@@ -85,7 +97,8 @@ namespace OctaNotes.Scripts.Play.Model
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
-            Instantiate(tapNotePrefab, new Vector3((float)x, y, (float)z * noteSpeed), rotation);
+            var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, (float)z * noteSpeed), rotation);
+            note.GetComponent<INoteViewModel>().SetPosZ((float)z * noteSpeed);
         }
         
         private void GenerateLongNote(int lane, double startZ, double endZ)
@@ -95,13 +108,27 @@ namespace OctaNotes.Scripts.Play.Model
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, (float)startZ * noteSpeed), rotation);
             longNote.transform.localScale = new Vector3(1,1, (lane < 4)?1:-1 * (float)(endZ - startZ)*noteSpeed);
+            longNote.GetComponent<INoteViewModel>().SetPosZ((float)startZ * noteSpeed);
         }
 
-        private void GenerateSupportPlane(List<int> lanes, double z)
+        private void GenerateSupportPlane(List<bool> noteLaneFlag, double z)
         {
+            // 0,1,2,3,7,6,5,4の順番に走査して、連続するノーツレーンをまとめる
+            List<int> lanes = new List<int>();
+            for (int i = 0; i < 8; i++)
+            {
+                int laneIdx = (i < 4) ? i : 11 - i;
+                if (noteLaneFlag[laneIdx])
+                {
+                    lanes.Add(laneIdx);
+                }
+            }
+            
             if (lanes.Count() == 2) // 2個の場合は補助面ではなく線を生成
             {
-                var line = new GameObject("SupportLine", typeof(LineRenderer));
+                // var line = new GameObject("SupportLine", typeof(LineRenderer));
+                var line = Instantiate(supportLinePrefab);
+                line.GetComponent<INoteViewModel>().SetPosZ((float)z * noteSpeed);
                 var lineRenderer = line.GetComponent<LineRenderer>();
                 lineRenderer.positionCount = 2;
                 lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? 0.009f : 1.991f, (float)z * noteSpeed));
@@ -121,7 +148,8 @@ namespace OctaNotes.Scripts.Play.Model
             else if (lanes.Count() >= 3)
             {
                 var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? 0.009f : 1.991f, (float)z * noteSpeed)).ToList());
-                var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
+                // var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
+                var supportPlane = Instantiate(supportPlanePrefab);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;
 
                 if (supportPlaneMaterial != null)
@@ -220,8 +248,6 @@ namespace OctaNotes.Scripts.Play.Model
                 _ => new Vector2(v.x, v.y), // drop Z
             };
         }
-
-
         
         private Vector3 ComputeNormal(IList<Vector3> vertices)
         {

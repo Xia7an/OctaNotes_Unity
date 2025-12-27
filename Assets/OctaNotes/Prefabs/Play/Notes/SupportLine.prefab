@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 731351616747451153}
   - component: {fileID: 1505540312325108756}
-  - component: {fileID: -1034038738818371159}
   - component: {fileID: 3765159326493217256}
+  - component: {fileID: 6495395484494518219}
+  - component: {fileID: 3670070986092112198}
   m_Layer: 0
   m_Name: SupportLine
   m_TagString: Untagged
@@ -153,19 +154,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &-1034038738818371159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2289015693136966333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827f4e11291b46618a58f9d7ccbd644e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteMoveView
-  _noteViewModel: {fileID: 3765159326493217256}
 --- !u!114 &3765159326493217256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,3 +166,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d681e4736c2d4a73a076d34c5f3e586e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.NoteViewModel
+--- !u!114 &6495395484494518219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2289015693136966333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717a02054ef2699498e6bd4234fd7995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zenject::Zenject.ZenAutoInjecter
+  _containerSource: 2
+--- !u!114 &3670070986092112198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2289015693136966333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4183d5697ec42f483062c7963da4031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.SupportlineMoveView
+  _noteViewModel: {fileID: 3765159326493217256}

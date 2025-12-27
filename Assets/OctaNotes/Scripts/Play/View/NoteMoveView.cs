@@ -12,7 +12,7 @@ namespace OctaNotes.Scripts.Play.View
         [SerializeField] private NoteViewModel _noteViewModel;
 
 
-        private void setPosZ(double posZ)
+        public virtual void setPosZ(double posZ)
         {
             Vector3 pos = transform.position;
             pos.z = (float)posZ;

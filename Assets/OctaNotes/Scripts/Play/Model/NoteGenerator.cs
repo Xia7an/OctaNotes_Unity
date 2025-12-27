@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Settings;
 using UnityEngine;
 using Zenject;
 
@@ -9,6 +10,8 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class NoteGenerator : MonoBehaviour
     {
+        [Inject] private readonly PlaySettingsSO playsettingsSO;
+        
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
         [SerializeField] private GameObject chainNotePrefab;
@@ -32,10 +35,11 @@ namespace OctaNotes.Scripts.Play.Model
             { 7, 1.5 }
         };
         
-        private const float noteSpeed = 1.0f; // ノーツの移動速度（例）
+        private float noteSpeed = 1.0f; // ノーツの移動速度（例）
 
         private void Start()
         {
+            noteSpeed = (float)playsettingsSO.noteSpeed;
             Generate();
         }
 

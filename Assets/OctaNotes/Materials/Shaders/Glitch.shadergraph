@@ -1665,7 +1665,7 @@
     "m_ShaderOutputName": "Steps",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 6.0,
+        "x": 10.0,
         "y": 4.0,
         "z": 4.0,
         "w": 4.0
@@ -2090,10 +2090,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1618.5,
-            "y": 83.00001525878906,
+            "x": 2541.999755859375,
+            "y": 101.49998474121094,
             "width": 208.0,
-            "height": 432.0
+            "height": 431.99993896484377
         }
     },
     "m_Slots": [
@@ -2814,7 +2814,7 @@
     "m_ShaderOutputName": "B",
     "m_StageCapability": 3,
     "m_Value": {
-        "e00": -0.09000000357627869,
+        "e00": 0.1509999930858612,
         "e01": 2.0,
         "e02": 2.0,
         "e03": 2.0,

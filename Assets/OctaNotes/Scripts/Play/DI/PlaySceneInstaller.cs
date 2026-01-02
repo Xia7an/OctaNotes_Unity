@@ -1,3 +1,4 @@
+using OctaNotes.Scripts.Play.Model;
 using UnityEngine;
 using Zenject;
 using OctaNotes.Scripts.Settings;
@@ -13,7 +14,9 @@ public class PlaySceneInstaller : MonoInstaller
             Container.BindInstance(playSettingsSO).AsSingle();
         }
 
-        Container.BindInterfacesAndSelfTo<OctaNotes.Scripts.Play.Model.ChartRepository>().AsSingle();
-        Container.BindInterfacesAndSelfTo<OctaNotes.Scripts.Play.Model.ChartParser>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<ChartRepository>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<JudgeManager>().AsSingle().NonLazy();
     }
 }

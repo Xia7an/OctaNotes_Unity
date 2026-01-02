@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Interface;
+using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -23,7 +24,21 @@ namespace OctaNotes.Scripts.Play.Model
         {
             for (int i = 0; i < 7; i++)
             {
-                
+                var laneNotes = _chartRepositoryImmutable.LaneWiseChartData[i];
+                if (currentNoteIndices[i] >= laneNotes.Count) continue;
+
+                var currentNote = laneNotes[currentNoteIndices[i]];
+                if (_playInputLayer.IsButtonPressing[i].Value)
+                {
+                    double currentTime = Time.time;
+                    double judgeWindow = 0.1; // 100msのジャッジウィンドウ
+
+                    if (System.Math.Abs(currentTime - currentNote.timing) <= judgeWindow)
+                    {
+                        // ノーツヒット処理
+                        Debug.Log($"a");
+                    }
+                }
             }
         }
     }

@@ -81,7 +81,6 @@ namespace OctaNotes.Scripts.Play.Model
             {
                 currentline++;
                 var line = ParserUtils.ParserUtils.RemoveLineCommentsSmart(rawline);
-                Debug.Log(line);
                 if(line.Length <= 1) continue; // 空行(コメント行)はスキップ
 
                 if (line[0] == '#')
@@ -116,7 +115,6 @@ namespace OctaNotes.Scripts.Play.Model
                     }
                     else 
                     {
-                        Debug.Log("初期化セクション開始");
                         _initializing = true;
                     }
                 }
@@ -162,7 +160,6 @@ namespace OctaNotes.Scripts.Play.Model
         {
             try
             {
-                Debug.Log(operands[0]);
                 bpm = double.Parse(operands[0]);
                 if(_initialized) _calculator.ChangeBPM(l, m, n, bpm);
             }
@@ -173,7 +170,6 @@ namespace OctaNotes.Scripts.Play.Model
         }
         private void SetBeats(string[] operands)
         {
-            Debug.Log(operands[0] + "," + operands[1]);
             try
             {
                 M = int.Parse(operands[0]);
@@ -192,7 +188,6 @@ namespace OctaNotes.Scripts.Play.Model
 
                 var noteTypeStr = operands[0];
                 int laneNum = int.Parse(operands[1]);
-                Debug.Log(laneNum);
                 if (!validNoteTypeStr.Contains(noteTypeStr))
                 {
                     ShowErrorMessage("ノーツタイプが不正です");

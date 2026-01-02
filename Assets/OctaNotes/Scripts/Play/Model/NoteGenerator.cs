@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.ViewModel;
 using OctaNotes.Scripts.Settings;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -46,13 +48,14 @@ namespace OctaNotes.Scripts.Play.Model
         private void Generate()
         {
             double[] longStartTmpPos = new double[8]{ double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN };
+            char[] longNoteColor = new char[8]{ 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b' };
             foreach (var rawZPos in _chartRepository.GraphicalChartData.Keys.ToList())
             {
                 var noteTypes = _chartRepository.GraphicalChartData[rawZPos];
                 double zPos = rawZPos + zOffset;
                 var tapnoteLaneIdx =
                     noteTypes.Select((value, index) => new { value, index })
-                        .Where(x =>!string.IsNullOrEmpty(x.value) && (x.value.StartsWith("b") || x.value.StartsWith("r") || x.value.StartsWith("lb") || x.value.StartsWith("lr")))
+                        .Where(x =>!string.IsNullOrEmpty(x.value) && (x.value.StartsWith("b") || x.value.StartsWith("r") || x.value.StartsWith("lb") || x.value.StartsWith("lr") || x.value.StartsWith("lw")))
                         .Select(x => x.index)
                         .ToList();
                 
@@ -73,46 +76,51 @@ namespace OctaNotes.Scripts.Play.Model
                     if (noteType.StartsWith("b") || noteType.StartsWith("r"))
                     {
                         // タップノーツ
-                        GenerateTapNote(lane, zPos);
-                    }
-                    else if (noteType.StartsWith("lb") || noteType.StartsWith("lr"))
-                    {
-                        // ロングノーツ開始
-                        longStartTmpPos[lane] = zPos;
-                        GenerateTapNote(lane, zPos);
+                        GenerateTapNote(lane, zPos, noteType[0]);
                     }
                     else if (noteType == "le")
                     {
-                        // ロングノーツ終了
+                         // ロングノーツ終了
                         if (!double.IsNaN(longStartTmpPos[lane]))
-                        {
-                            GenerateLongNote(lane, longStartTmpPos[lane], zPos);
+                        { 
+                            GenerateLongNote(lane, longStartTmpPos[lane], zPos, longNoteColor[lane]);
                             longStartTmpPos[lane] = double.NaN;
                         }
                     }
+                    else if (noteType.StartsWith("l"))
+                    {
+                        // ロングノーツ開始
+                        longStartTmpPos[lane] = zPos;
+                        GenerateTapNote(lane, zPos, noteType[1]);
+                        longNoteColor[lane] = noteType[1];
+                    }
+                    
                 }
             }
         }
         
         
 
-        private void GenerateTapNote(int lane, double z)
+        private void GenerateTapNote(int lane, double z, char noteColor='b')
         {
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, (float)z * noteSpeed), rotation);
             note.GetComponent<INoteViewModel>().SetPosZ((float)z * noteSpeed);
+            SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
         }
         
-        private void GenerateLongNote(int lane, double startZ, double endZ)
+        private void GenerateLongNote(int lane, double startZ, double endZ, char noteColor='b')
         {
+            Debug.Log((lane < 4)?1:-1 * (float)(endZ - startZ)*noteSpeed);
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, (float)startZ * noteSpeed), rotation);
-            longNote.transform.localScale = new Vector3(1,1, (lane < 4)?1:-1 * (float)(endZ - startZ)*noteSpeed);
+            longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
             longNote.GetComponent<INoteViewModel>().SetPosZ((float)startZ * noteSpeed);
+            SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
 
         private void GenerateSupportPlane(List<bool> noteLaneFlag, double z)
@@ -139,15 +147,6 @@ namespace OctaNotes.Scripts.Play.Model
                 lineRenderer.SetPosition(1, new Vector3((float)laneXPositions[lanes[1]], (lanes[1] < 4) ? 0.009f : 1.991f, (float)z * noteSpeed));
                 lineRenderer.startWidth = 0.02f;
                 lineRenderer.endWidth = 0.02f;
-
-                if (supportPlaneMaterial != null)
-                {
-                    lineRenderer.material = supportPlaneMaterial;
-                }
-                else
-                {
-                    lineRenderer.material = GetDefaultSupportMaterial();
-                }
             }
             else if (lanes.Count() >= 3)
             {
@@ -155,36 +154,7 @@ namespace OctaNotes.Scripts.Play.Model
                 // var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
                 var supportPlane = Instantiate(supportPlanePrefab);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;
-
-                if (supportPlaneMaterial != null)
-                {
-                    supportPlane.GetComponent<MeshRenderer>().material = supportPlaneMaterial;
-                }
-                else
-                {
-                    supportPlane.GetComponent<MeshRenderer>().material = GetDefaultSupportMaterial();
-                }
             }
-        }
-
-        private Material GetDefaultSupportMaterial()
-        {
-            var shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null) shader = Shader.Find("Sprites/Default");
-
-            var mat = new Material(shader);
-            mat.SetFloat("_Surface", 1); // Transparent
-            mat.SetFloat("_Blend", 0); // Alpha
-            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            mat.SetInt("_ZWrite", 0);
-            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-            var color = new Color(1f, 1f, 1f, 0.3f);
-            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-            else if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
-
-            return mat;
         }
         
         private Mesh GenerateMesh(IList<Vector3> inputVertices)
@@ -268,6 +238,29 @@ namespace OctaNotes.Scripts.Play.Model
             }
 
             return normal.normalized;
+        }
+
+        private void SetNoteColor(MeshRenderer meshRenderer, char color)
+        {
+            var mat = meshRenderer.material;
+            switch (color)
+            {
+                case 'b':
+                    mat.EnableKeyword("_COLOR_BLUE");
+                    mat.DisableKeyword("_COLOR_RED");
+                    mat.DisableKeyword("_COLOR_EX");
+                    break;
+                case 'r':
+                    mat.EnableKeyword("_COLOR_RED");
+                    mat.DisableKeyword("_COLOR_BLUE");
+                    mat.DisableKeyword("_COLOR_EX");
+                    break;
+                default:
+                    mat.EnableKeyword("_COLOR_EX");
+                    mat.DisableKeyword("_COLOR_BLUE");
+                    mat.DisableKeyword("_COLOR_RED");
+                    break;
+            }
         }
     }
 }

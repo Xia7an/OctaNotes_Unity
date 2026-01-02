@@ -42,7 +42,7 @@ namespace OctaNotes.Scripts.Play.Model
         private void Start()
         {
             noteSpeed = (float)playsettingsSO.noteSpeed;
-            zOffset = playsettingsSO.songStartDelay;
+            zOffset = playsettingsSO.songStartDelay * noteSpeed;
             Debug.Log(zOffset);
             Generate();
         }
@@ -54,7 +54,7 @@ namespace OctaNotes.Scripts.Play.Model
             foreach (var rawZPos in _chartRepository.GraphicalChartData.Keys.ToList())
             {
                 var noteTypes = _chartRepository.GraphicalChartData[rawZPos];
-                double zPos = rawZPos + zOffset;
+                double zPos = rawZPos;
                 var tapnoteLaneIdx =
                     noteTypes.Select((value, index) => new { value, index })
                         .Where(x =>!string.IsNullOrEmpty(x.value) && (x.value.StartsWith("b") || x.value.StartsWith("r") || x.value.StartsWith("lb") || x.value.StartsWith("lr") || x.value.StartsWith("lw")))
@@ -108,8 +108,9 @@ namespace OctaNotes.Scripts.Play.Model
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
-            var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, (float)z * noteSpeed), rotation);
-            note.GetComponent<INoteViewModel>().SetInitialPosZ((float)z * noteSpeed);
+            float posZ = (float)(z * noteSpeed + zOffset);
+            var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, posZ), rotation);
+            note.GetComponent<INoteViewModel>().SetInitialPosZ(posZ);
             SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
         }
         
@@ -118,9 +119,10 @@ namespace OctaNotes.Scripts.Play.Model
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
-            var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, (float)startZ * noteSpeed), rotation);
+            float startPosZ = (float)(startZ * noteSpeed + zOffset);
+            var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, startPosZ), rotation);
             longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
-            longNote.GetComponent<INoteViewModel>().SetInitialPosZ((float)startZ * noteSpeed);
+            longNote.GetComponent<INoteViewModel>().SetInitialPosZ(startPosZ);
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
 
@@ -137,21 +139,23 @@ namespace OctaNotes.Scripts.Play.Model
                 }
             }
             
+            float posZ = (float)(z * noteSpeed + zOffset);
+            
             if (lanes.Count() == 2) // 2個の場合は補助面ではなく線を生成
             {
                 // var line = new GameObject("SupportLine", typeof(LineRenderer));
                 var line = Instantiate(supportLinePrefab);
-                line.GetComponent<INoteViewModel>().SetInitialPosZ((float)z * noteSpeed);
+                line.GetComponent<INoteViewModel>().SetInitialPosZ(posZ);
                 var lineRenderer = line.GetComponent<LineRenderer>();
                 lineRenderer.positionCount = 2;
-                lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? 0.009f : 1.991f, (float)z * noteSpeed));
-                lineRenderer.SetPosition(1, new Vector3((float)laneXPositions[lanes[1]], (lanes[1] < 4) ? 0.009f : 1.991f, (float)z * noteSpeed));
+                lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? 0.009f : 1.991f, posZ));
+                lineRenderer.SetPosition(1, new Vector3((float)laneXPositions[lanes[1]], (lanes[1] < 4) ? 0.009f : 1.991f, posZ));
                 lineRenderer.startWidth = 0.02f;
                 lineRenderer.endWidth = 0.02f;
             }
             else if (lanes.Count() >= 3)
             {
-                var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? 0.009f : 1.991f, (float)z * noteSpeed)).ToList());
+                var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? 0.009f : 1.991f, posZ)).ToList());
                 // var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
                 var supportPlane = Instantiate(supportPlanePrefab);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;

@@ -700,6 +700,7 @@ GameObject:
   - component: {fileID: 7492163745704369730}
   - component: {fileID: 4628005677066976958}
   - component: {fileID: 854225826064840747}
+  - component: {fileID: 29134320881694626}
   m_Layer: 0
   m_Name: 6
   m_TagString: Untagged
@@ -800,6 +801,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &29134320881694626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2443846969029631576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 6
 --- !u!1 &2520824293606311876
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,6 +1546,7 @@ GameObject:
   - component: {fileID: 811933706002499850}
   - component: {fileID: 672075942622795703}
   - component: {fileID: 7025185209784666054}
+  - component: {fileID: 3342796310334353743}
   m_Layer: 0
   m_Name: 0
   m_TagString: Untagged
@@ -1632,6 +1647,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &3342796310334353743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3772949738592738158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 0
 --- !u!1 &4018031428570886674
 GameObject:
   m_ObjectHideFlags: 0
@@ -1644,6 +1672,7 @@ GameObject:
   - component: {fileID: 1083391061388368831}
   - component: {fileID: 2041653366587651548}
   - component: {fileID: 4430603621691584630}
+  - component: {fileID: 2892731942487693830}
   m_Layer: 0
   m_Name: 1
   m_TagString: Untagged
@@ -1744,6 +1773,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2892731942487693830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4018031428570886674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 1
 --- !u!1 &4140007316724950571
 GameObject:
   m_ObjectHideFlags: 0
@@ -2468,6 +2510,7 @@ GameObject:
   - component: {fileID: 4608433271239928425}
   - component: {fileID: 8716113842071849237}
   - component: {fileID: 2192093796628454327}
+  - component: {fileID: 8476830680532337068}
   m_Layer: 0
   m_Name: 2
   m_TagString: Untagged
@@ -2568,6 +2611,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &8476830680532337068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4983023437855527163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 2
 --- !u!1 &5067867901861506311
 GameObject:
   m_ObjectHideFlags: 0
@@ -3172,6 +3228,7 @@ GameObject:
   - component: {fileID: 2860743256946535625}
   - component: {fileID: 8848941064297863471}
   - component: {fileID: 1976524770159145806}
+  - component: {fileID: 4563486831814814591}
   m_Layer: 0
   m_Name: 4
   m_TagString: Untagged
@@ -3272,6 +3329,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &4563486831814814591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6756111715163283923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 4
 --- !u!1 &6780322188609186062
 GameObject:
   m_ObjectHideFlags: 0
@@ -3732,6 +3802,7 @@ GameObject:
   - component: {fileID: 412111221140791271}
   - component: {fileID: 8568011586533875277}
   - component: {fileID: 4851165907770511770}
+  - component: {fileID: 9080668657487976036}
   m_Layer: 0
   m_Name: 3
   m_TagString: Untagged
@@ -3832,6 +3903,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &9080668657487976036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7307497888840548986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 3
 --- !u!1 &7452352669603292569
 GameObject:
   m_ObjectHideFlags: 0
@@ -3844,6 +3928,7 @@ GameObject:
   - component: {fileID: 505776342262665779}
   - component: {fileID: 1294966042644724405}
   - component: {fileID: 1777767963388048103}
+  - component: {fileID: 5586930853891024825}
   m_Layer: 0
   m_Name: 7
   m_TagString: Untagged
@@ -3944,6 +4029,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &5586930853891024825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7452352669603292569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 7
 --- !u!1 &7468618595042530780
 GameObject:
   m_ObjectHideFlags: 0
@@ -4366,6 +4464,7 @@ GameObject:
   - component: {fileID: 1278218294076501601}
   - component: {fileID: 7165131086762348308}
   - component: {fileID: 3744612964458418015}
+  - component: {fileID: 940620500650089903}
   m_Layer: 0
   m_Name: 5
   m_TagString: Untagged
@@ -4466,6 +4565,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &940620500650089903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8919839170693337600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb199e9ac5a4437a95daa16376fac85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LaneEffectView
+  laneIndex: 5
 --- !u!1 &8942401830988443880
 GameObject:
   m_ObjectHideFlags: 0

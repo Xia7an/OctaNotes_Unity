@@ -6,5 +6,9 @@ namespace OctaNotes.Scripts.Settings
     public class PlaySettingsSO : ScriptableObject
     {
         public double noteSpeed = 5.0;
+        public int perfectRangeMs = 50; // ms
+        public int goodRangeMs = 100;  // ms
+        public int badRangeMs = 150;
+        public double songStartDelay = 3;
     }
 }

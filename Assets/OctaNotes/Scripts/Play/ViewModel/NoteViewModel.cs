@@ -11,14 +11,16 @@ namespace OctaNotes.Scripts.Play.ViewModel
     {
         [Inject] private readonly PlaySettingsSO _playSettingsSO;
         public double PosZ { get; private set; } = new ();
+        
+        private double _initialPosZ = 0;
         public ReactiveProperty<Color> Color { get; } = new ReactiveProperty<Color>();
-        public void SetPosZ(double posZ)
+        public void SetInitialPosZ(double posZ)
         {
-            PosZ = posZ;
+            _initialPosZ = posZ;
         }
         private void Update()
         {
-            PosZ -= Time.deltaTime * _playSettingsSO.noteSpeed;
+            PosZ = -Time.time * _playSettingsSO.noteSpeed + _initialPosZ;
         }
     }
 }

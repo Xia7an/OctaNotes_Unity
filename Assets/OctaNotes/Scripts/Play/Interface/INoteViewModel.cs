@@ -8,7 +8,7 @@ namespace OctaNotes.Scripts.Play.Interface
         double PosZ { get; }
         ReactiveProperty<Color> Color { get; }
         
-        void SetPosZ(double posZ);
+        void SetInitialPosZ(double posZ);
         
     }
 }

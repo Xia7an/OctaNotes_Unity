@@ -13,6 +13,7 @@ namespace OctaNotes.Scripts.Play.Model
     public class NoteGenerator : MonoBehaviour
     {
         [Inject] private readonly PlaySettingsSO playsettingsSO;
+        [Inject] private IChartRepositoryImmutable _chartRepository;
         
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
@@ -21,9 +22,8 @@ namespace OctaNotes.Scripts.Play.Model
         [SerializeField] private GameObject supportLinePrefab;
         [SerializeField] private Material supportPlaneMaterial;
         
-        private double zOffset = 5; // ノーツ生成のZオフセット
+        private double zOffset = 0; // ノーツ生成のZオフセット
 
-        [Inject] private IChartRepositoryImmutable _chartRepository;
 
         private Dictionary<int, double> laneXPositions = new Dictionary<int, double>()
         {
@@ -42,6 +42,8 @@ namespace OctaNotes.Scripts.Play.Model
         private void Start()
         {
             noteSpeed = (float)playsettingsSO.noteSpeed;
+            zOffset = playsettingsSO.songStartDelay;
+            Debug.Log(zOffset);
             Generate();
         }
 
@@ -107,19 +109,18 @@ namespace OctaNotes.Scripts.Play.Model
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, (float)z * noteSpeed), rotation);
-            note.GetComponent<INoteViewModel>().SetPosZ((float)z * noteSpeed);
+            note.GetComponent<INoteViewModel>().SetInitialPosZ((float)z * noteSpeed);
             SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
         }
         
         private void GenerateLongNote(int lane, double startZ, double endZ, char noteColor='b')
         {
-            Debug.Log((lane < 4)?1:-1 * (float)(endZ - startZ)*noteSpeed);
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, (float)startZ * noteSpeed), rotation);
             longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
-            longNote.GetComponent<INoteViewModel>().SetPosZ((float)startZ * noteSpeed);
+            longNote.GetComponent<INoteViewModel>().SetInitialPosZ((float)startZ * noteSpeed);
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
 
@@ -140,7 +141,7 @@ namespace OctaNotes.Scripts.Play.Model
             {
                 // var line = new GameObject("SupportLine", typeof(LineRenderer));
                 var line = Instantiate(supportLinePrefab);
-                line.GetComponent<INoteViewModel>().SetPosZ((float)z * noteSpeed);
+                line.GetComponent<INoteViewModel>().SetInitialPosZ((float)z * noteSpeed);
                 var lineRenderer = line.GetComponent<LineRenderer>();
                 lineRenderer.positionCount = 2;
                 lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? 0.009f : 1.991f, (float)z * noteSpeed));

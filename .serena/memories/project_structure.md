@@ -1,0 +1,13 @@
+# Project Structure
+- `Assets/OctaNotes/`
+    - `Scripts/`
+        - `Core/`: Shared data models (`MusicInfo`, `NoteType`, `Difficulty`).
+        - `ParserUtils/`: Chart parsing utilities.
+        - `Play/`: Gameplay feature (MVVM).
+            - `Model/`: Business logic (`JudgeManager`, `NoteGenerator`).
+            - `View/`: UI/Visuals (`NoteView`).
+            - `ViewModel/`: State management (`NoteViewModel`).
+            - `Interface/`: Abstractions (`INoteViewModel`).
+    - `Scenes/`: `Play.unity`.
+- `Assets/ArcadeControllerTest/`: Prototype/Testing scripts.
+- `Packages/`: Dependencies definition (`manifest.json`).

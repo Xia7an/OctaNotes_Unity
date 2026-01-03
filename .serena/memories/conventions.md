@@ -1,0 +1,14 @@
+# Conventions
+- **Language:** All responses must be in **Japanese**.
+- **Dependency Injection:** Must use **Zenject**.
+- **Events/Reactive:** Must use **R3**.
+- **Architecture:** MVVM (Model-View-ViewModel) pattern is observed in `Assets/OctaNotes/Scripts/Play`.
+- **Formatting:** 
+    - Indent style: Space.
+    - Indent size: 4.
+    - End of line: LF.
+    - Encoding: UTF-8.
+- **File Organization:**
+    - Core logic in `Assets/OctaNotes/Scripts`.
+    - Separated into `Core` (Models) and feature-specific folders (e.g., `Play`).
+    - Feature folders follow MVVM (`Model`, `View`, `ViewModel`, `Interface`).

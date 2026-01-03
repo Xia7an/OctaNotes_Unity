@@ -29,3 +29,6 @@ resharper_substitution_for_cleanup_profile = * => default
 resharper_substitution_for_cleanup_profile = * => default
 
 # @formatter:on
+
+is_global = true
+dotnet_diagnostic.USG0001.severity = none

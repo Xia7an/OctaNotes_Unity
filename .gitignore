@@ -186,3 +186,6 @@ sysinfo.txt
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # End of https://www.toptal.com/developers/gitignore/api/unity,rider,macos
+
+Assets/OctaNotes/Misc/Electrolize-Regular SDF.asset
+Assets/OctaNotes/Misc/Electrolize-Regular SDF.asset.meta

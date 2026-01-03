@@ -9,6 +9,7 @@ namespace OctaNotes.Scripts.Settings
         public int perfectRangeMs = 50; // ms
         public int goodRangeMs = 100;  // ms
         public int badRangeMs = 150;
+        public int maxMissDelayMs = 200;
         public double songStartDelay = 3;
     }
 }

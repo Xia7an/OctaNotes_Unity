@@ -17,18 +17,27 @@ namespace OctaNotes.Scripts.Play.Model
         [Inject] private readonly JudgmentManager _judgmentManager;
         [Inject] private readonly IInputController _inputController;
         [Inject] private readonly TimeManager _timeManager;
-        [Inject(Optional = true)] private readonly List<IEffectPresenter> _effectPresenters;
-        
+
+        private readonly List<IEffectPresenter> _effectPresenters;
         private CompositeDisposable _disposables = new CompositeDisposable();
+
+        [Inject]
+        public GameController([InjectOptional] List<IEffectPresenter> effectPresenters)
+        {
+            _effectPresenters = effectPresenters ?? new List<IEffectPresenter>();
+            Debug.Log($"[GameController] Constructor called, {_effectPresenters.Count} presenters injected");
+        }
 
         public void Initialize()
         {
+            Debug.Log($"[GameController] Initialize called, subscribing to JudgmentManager events");
+
             // 判定イベントを購読
             _judgmentManager.OnJudgmentEvent
                 .Subscribe(HandleJudgmentEvent)
                 .AddTo(_disposables);
-                
-            Debug.Log("GameController initialized");
+
+            Debug.Log($"[GameController] Initialized with {_effectPresenters.Count} effect presenters");
         }
 
         public void Tick()
@@ -39,17 +48,15 @@ namespace OctaNotes.Scripts.Play.Model
 
         private void HandleJudgmentEvent(JudgmentEvent judgmentEvent)
         {
-            Debug.Log($"[GameController] Judgment: {judgmentEvent.Result} " +
+            Debug.Log($"[GameController] HandleJudgmentEvent: {judgmentEvent.Result} " +
                       $"Type: {judgmentEvent.JudgmentType} " +
                       $"Lane: {judgmentEvent.NotePosition}");
-            
+
             // 全てのEffectPresenterに通知
-            if (_effectPresenters != null)
+            foreach (var presenter in _effectPresenters)
             {
-                foreach (var presenter in _effectPresenters)
-                {
-                    presenter.PresentJudgment(judgmentEvent);
-                }
+                Debug.Log($"[GameController] Calling presenter: {presenter.GetType().Name}");
+                presenter.PresentJudgment(judgmentEvent);
             }
         }
 

@@ -81,7 +81,13 @@ namespace OctaNotes.Scripts.Play.Model
 
                         if (isPressed)
                         {
-                            ProcessButtonPress(laneIndex, currentTime);
+                            bool judged = ProcessButtonPress(laneIndex, currentTime);
+
+                            // 判定が発生しなかった場合、Noneイベントを発行（フィードバック用）
+                            if (!judged)
+                            {
+                                EmitJudgment(laneIndex, JudgmentResult.None, JudgmentType.Tap, currentTime, currentTime);
+                            }
                         }
                     })
                     .AddTo(_disposables);
@@ -126,12 +132,12 @@ namespace OctaNotes.Scripts.Play.Model
             }
         }
 
-        private void ProcessButtonPress(int laneIndex, float currentTime)
+        private bool ProcessButtonPress(int laneIndex, float currentTime)
         {
             var noteList = _chartRepository.LaneWiseChartData[laneIndex];
             var noteIndex = _currentNoteIndices[laneIndex];
 
-            if (noteIndex >= noteList.Count) return;
+            if (noteIndex >= noteList.Count) return false;
 
             var noteTiming = noteList[noteIndex];
             var noteTime = (float)(noteTiming.timing + _playSettingsSO.songStartDelay);
@@ -139,31 +145,31 @@ namespace OctaNotes.Scripts.Play.Model
             switch (noteTiming.noteType)
             {
                 case NoteType.Tap:
-                    ProcessTapNotePress(laneIndex, currentTime, noteTime);
-                    break;
+                    return ProcessTapNotePress(laneIndex, currentTime, noteTime);
                 case NoteType.LongStart:
-                    ProcessLongStartNotePress(laneIndex, currentTime, noteTime);
-                    break;
+                    return ProcessLongStartNotePress(laneIndex, currentTime, noteTime);
                 case NoteType.Chain:
-                    ProcessChainNotePress(laneIndex, currentTime, noteTime);
-                    break;
-                    // LongEndはボタン押下では判定しない（ホールド状態で判定）
+                    return ProcessChainNotePress(laneIndex, currentTime, noteTime);
+                // LongEndはボタン押下では判定しない（ホールド状態で判定）
+                default:
+                    return false;
             }
         }
 
         #region Tap Note
-        private void ProcessTapNotePress(int laneIndex, float currentTime, float noteTime)
+        private bool ProcessTapNotePress(int laneIndex, float currentTime, float noteTime)
         {
             float timeDiff = currentTime - noteTime;
 
             // 早すぎる場合は判定しない
-            if (timeDiff < -TIMING_WINDOW) return;
+            if (timeDiff < -TIMING_WINDOW) return false;
 
             JudgmentResult result = EvaluateTiming(timeDiff);
-            if (result == JudgmentResult.None) return;
+            if (result == JudgmentResult.None) return false;
 
             EmitJudgment(laneIndex, result, JudgmentType.Tap, currentTime, currentTime);
             _currentNoteIndices[laneIndex]++;
+            return true;
         }
 
         private void ProcessTapNoteTick(int laneIndex, float currentTime, float noteTime)
@@ -180,15 +186,15 @@ namespace OctaNotes.Scripts.Play.Model
         #endregion
 
         #region Long Start Note
-        private void ProcessLongStartNotePress(int laneIndex, float currentTime, float noteTime)
+        private bool ProcessLongStartNotePress(int laneIndex, float currentTime, float noteTime)
         {
             float timeDiff = currentTime - noteTime;
 
             // 早すぎる場合は判定しない
-            if (timeDiff < -TIMING_WINDOW) return;
+            if (timeDiff < -TIMING_WINDOW) return false;
 
             JudgmentResult result = EvaluateTiming(timeDiff);
-            if (result == JudgmentResult.None) return;
+            if (result == JudgmentResult.None) return false;
 
             // ロングノーツ開始
             _isInLongNote[laneIndex] = true;
@@ -199,6 +205,7 @@ namespace OctaNotes.Scripts.Play.Model
             _currentNoteIndices[laneIndex]++;
 
             Debug.Log($"[JudgmentManager] Lane {laneIndex}: Long note started at {currentTime:F3}");
+            return true;
         }
 
         private void ProcessLongStartNoteTick(int laneIndex, float currentTime, float noteTime)
@@ -255,9 +262,9 @@ namespace OctaNotes.Scripts.Play.Model
         #endregion
 
         #region Chain Note
-        private void ProcessChainNotePress(int laneIndex, float currentTime, float noteTime)
+        private bool ProcessChainNotePress(int laneIndex, float currentTime, float noteTime)
         {
-            if (_chainNoteJudged[laneIndex]) return;
+            if (_chainNoteJudged[laneIndex]) return false;
 
             float timeDiff = currentTime - noteTime;
 
@@ -265,7 +272,7 @@ namespace OctaNotes.Scripts.Play.Model
             if (timeDiff < -TIMING_WINDOW)
             {
                 // None判定 - フィードバック表示
-                return;
+                return false;
             }
 
             // ウィンドウ内でボタンが押された
@@ -292,7 +299,10 @@ namespace OctaNotes.Scripts.Play.Model
                 _chainNoteJudged[laneIndex] = false;
                 _chainNoteFirstPressTime[laneIndex] = -1f;
                 _currentNoteIndices[laneIndex]++;
+                return true;
             }
+
+            return false;
         }
 
         private void ProcessChainNoteTick(int laneIndex, float currentTime, float noteTime)

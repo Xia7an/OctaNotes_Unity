@@ -1,22 +1,18 @@
 using OctaNotes.Scripts.Play.Model;
 using UnityEngine;
 using Zenject;
-using OctaNotes.Scripts.Settings;
 
 public class PlaySceneInstaller : MonoInstaller
 {
-    [SerializeField] private PlaySettingsSO playSettingsSO;
-
     public override void InstallBindings()
     {
-        if (playSettingsSO != null)
-        {
-            Container.BindInstance(playSettingsSO).AsSingle();
-        }
+        Debug.Log("[PlaySceneInstaller] InstallBindings called");
 
         Container.BindInterfacesAndSelfTo<ChartRepository>().AsSingle();
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<JudgeManager>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<InputController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<TimeManager>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<JudgmentManager>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
     }
 }

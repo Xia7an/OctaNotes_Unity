@@ -224,6 +224,20 @@ namespace OctaNotes.Scripts.Play.Model
         #region Long End Note
         private void ProcessLongEndNoteTick(int laneIndex, float currentTime, float noteTime)
         {
+            // ロングノーツ中でない場合（始点をミスした場合など）は終点もMiss
+            if (!_isInLongNote[laneIndex])
+            {
+                float timeDiff = currentTime - noteTime;
+                // ウィンドウを過ぎたらMiss判定して次へ
+                if (timeDiff > TIMING_WINDOW)
+                {
+                    Debug.Log($"[JudgmentManager] Lane {laneIndex}: Long end Miss - not in long note");
+                    EmitJudgment(laneIndex, JudgmentResult.Miss, JudgmentType.LongEnd, currentTime, currentTime);
+                    _currentNoteIndices[laneIndex]++;
+                }
+                return;
+            }
+
             // 判定タイミング: (正しい時刻) - 150ms
             float judgmentTime = noteTime - TIMING_WINDOW;
 

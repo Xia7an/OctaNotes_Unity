@@ -144,3 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.JudgmentEffectPresenter
   perfectSound: {fileID: 8300000, guid: 335a581c5ba184d4f8f3004234bc9a29, type: 3}
   goodSound: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
+  perfectTextPrefab: {fileID: 593219954312155523, guid: ff64bf464eda04cd0998bd6c55a63e60, type: 3}
+  goodTextPrefab: {fileID: 593219954312155523, guid: de5411b2a9d6c4e31999268821c4e62e, type: 3}
+  badTextPrefab: {fileID: 593219954312155523, guid: 6e6ae37c804b94b4b9834f19ce94a470, type: 3}
+  missTextPrefab: {fileID: 593219954312155523, guid: bcdb0009b9c534594b410e0f73cc1980, type: 3}

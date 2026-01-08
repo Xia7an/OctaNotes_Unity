@@ -41,7 +41,7 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly Subject<JudgmentEvent> _judgmentEventSubject = new Subject<JudgmentEvent>();
         public Observable<JudgmentEvent> OnJudgmentEvent => _judgmentEventSubject;
 
-        private const float TIMING_WINDOW = 0.15f; // 150ms
+        private readonly float TIMING_WINDOW;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -57,6 +57,8 @@ namespace OctaNotes.Scripts.Play.Model
                 _chainNoteJudged[i] = false;
                 _chainNoteFirstPressTime[i] = -1f;
             }
+
+            TIMING_WINDOW = _playSettingsSO.goodRangeMs/1000f;
         }
 
         public void Initialize()
@@ -100,6 +102,7 @@ namespace OctaNotes.Scripts.Play.Model
             }
         }
 
+        //  各フレームで先頭ノーツが判定されるかチェック
         public void Tick()
         {
             float currentTime = Time.time;

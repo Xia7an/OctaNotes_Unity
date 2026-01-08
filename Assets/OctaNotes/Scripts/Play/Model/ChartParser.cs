@@ -15,7 +15,7 @@ namespace OctaNotes.Scripts.Play.Model
     {
         public void Initialize()
         {
-            LoadChart(Application.persistentDataPath + "/Charts/test.onc");
+            LoadChart(Application.persistentDataPath + "/Charts/dopperganger.onc");
         }
         
         public void LoadChart(string path)

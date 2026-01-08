@@ -69,6 +69,7 @@ namespace OctaNotes.Scripts.Play.View
             await material.DOFloat(0f, "_Brighten", 0.2f)
                 .SetEase(Ease.OutQuad)
                 .WithCancellation(cts.Token);
+            material.SetFloat("_Brighten", 0f);
         }
     }
 }

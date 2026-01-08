@@ -75,7 +75,7 @@ namespace OctaNotes.Scripts.Play.Model
                     if (string.IsNullOrEmpty(noteType)) continue;
                     
                     
-                    if (noteType.StartsWith("b") || noteType.StartsWith("r"))
+                    if (noteType.StartsWith("b") || noteType.StartsWith("r") || noteType.StartsWith("w"))
                     {
                         // タップノーツ
                         GenerateTapNote(lane, zPos, noteType[0]);

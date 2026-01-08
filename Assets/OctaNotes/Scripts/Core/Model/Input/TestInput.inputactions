@@ -102,8 +102,30 @@
                 },
                 {
                     "name": "",
+                    "id": "b3f6d9e9-ab3a-4803-a4bb-f4ca0c33526f",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "0",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d39858c8-5f6a-405c-912f-1cb1ffa1115e",
                     "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e521cdff-0f53-40ff-8035-6bf09551a6f7",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button2",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -124,8 +146,30 @@
                 },
                 {
                     "name": "",
+                    "id": "90c50c5f-9de9-4b38-9abb-5aff0ecfb374",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "20750f0d-c328-472a-a233-9466bfc7a0a8",
                     "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9991445c-d6d6-4135-80da-41054a732fce",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button5",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -146,8 +190,30 @@
                 },
                 {
                     "name": "",
+                    "id": "903e71ef-127e-4c19-b8c1-787f9f70dfbc",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "17a81f44-84c6-42d6-a583-718c77567cb1",
                     "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5701248c-d3e4-4101-a002-c4c5f3360944",
+                    "path": "<Joystick>/trigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -168,8 +234,30 @@
                 },
                 {
                     "name": "",
+                    "id": "6fee6098-363f-40fd-83fe-bf3db903c457",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "87e655dc-922e-43f7-9b6d-c9e9e034d884",
                     "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a845aacf-20a7-4f91-a751-567ce7bbd2f0",
+                    "path": "<HID::WiseGroup.,Ltd JC-AS01 series>/button7",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

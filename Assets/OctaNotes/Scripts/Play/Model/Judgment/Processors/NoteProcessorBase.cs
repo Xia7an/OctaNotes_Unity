@@ -30,9 +30,10 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
             float evaluatedTime,
             float effectTime,
             bool shouldAdvanceNote = true,
-            StateUpdate? stateUpdate = null)
+            StateUpdate? stateUpdate = null,
+            bool isDelayed = false)
         {
-            return new JudgmentOutput(result, type, evaluatedTime, effectTime, shouldAdvanceNote, stateUpdate);
+            return new JudgmentOutput(result, type, evaluatedTime, effectTime, shouldAdvanceNote, stateUpdate, isDelayed);
         }
 
         /// <summary>

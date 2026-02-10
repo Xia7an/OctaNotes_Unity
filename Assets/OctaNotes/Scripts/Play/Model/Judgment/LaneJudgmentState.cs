@@ -12,6 +12,11 @@ namespace OctaNotes.Scripts.Play.Model.Judgment
         public bool ChainNoteJudged { get; private set; }
         public float ChainNoteFirstPressTime { get; private set; }
 
+        /// <summary>
+        /// 保留中の判定（EffectTimeまで発火を遅延）
+        /// </summary>
+        public PendingJudgment? PendingJudgment { get; private set; }
+
         public LaneJudgmentState()
         {
             Reset();
@@ -25,6 +30,7 @@ namespace OctaNotes.Scripts.Play.Model.Judgment
             LongNoteReleased = false;
             ChainNoteJudged = false;
             ChainNoteFirstPressTime = -1f;
+            PendingJudgment = null;
         }
 
         public void AdvanceNote()
@@ -64,5 +70,26 @@ namespace OctaNotes.Scripts.Play.Model.Judgment
             ChainNoteJudged = false;
             ChainNoteFirstPressTime = -1f;
         }
+
+        /// <summary>
+        /// 保留判定を設定
+        /// </summary>
+        public void SetPendingJudgment(PendingJudgment pending)
+        {
+            PendingJudgment = pending;
+        }
+
+        /// <summary>
+        /// 保留判定をクリア
+        /// </summary>
+        public void ClearPendingJudgment()
+        {
+            PendingJudgment = null;
+        }
+
+        /// <summary>
+        /// 保留判定があるかどうか
+        /// </summary>
+        public bool HasPendingJudgment => PendingJudgment.HasValue;
     }
 }

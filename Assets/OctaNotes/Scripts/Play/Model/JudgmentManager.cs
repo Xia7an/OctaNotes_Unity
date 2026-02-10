@@ -123,8 +123,20 @@ namespace OctaNotes.Scripts.Play.Model
 
             for (int laneIndex = 0; laneIndex < 8; laneIndex++)
             {
-                var noteList = _chartRepository.LaneWiseChartData[laneIndex];
                 var state = _laneStates[laneIndex];
+
+                // 保留判定の発火チェック
+                if (state.HasPendingJudgment)
+                {
+                    var pending = state.PendingJudgment.Value;
+                    if (pending.IsReadyToFire(currentTime))
+                    {
+                        EmitJudgment(laneIndex, pending.Result, pending.Type, pending.EvaluatedTime, pending.EffectTime);
+                        state.ClearPendingJudgment();
+                    }
+                }
+
+                var noteList = _chartRepository.LaneWiseChartData[laneIndex];
 
                 if (state.CurrentNoteIndex >= noteList.Count) continue;
 
@@ -196,8 +208,17 @@ namespace OctaNotes.Scripts.Play.Model
                 state.AdvanceNote();
             }
 
-            // 判定イベントを発行
-            EmitJudgment(laneIndex, output.Result, output.Type, output.EvaluatedTime, output.EffectTime);
+            // 遅延発火の場合は保留判定として保存
+            if (output.IsDelayed)
+            {
+                state.SetPendingJudgment(output.ToPendingJudgment(laneIndex));
+                Debug.Log($"[JudgmentManager] Lane {laneIndex}: Pending judgment set, will fire at {output.EffectTime:F3}");
+            }
+            else
+            {
+                // 即時発火
+                EmitJudgment(laneIndex, output.Result, output.Type, output.EvaluatedTime, output.EffectTime);
+            }
         }
 
         private void EmitJudgment(int laneIndex, JudgmentResult result, JudgmentType type, float evaluatedTime, float effectTime)

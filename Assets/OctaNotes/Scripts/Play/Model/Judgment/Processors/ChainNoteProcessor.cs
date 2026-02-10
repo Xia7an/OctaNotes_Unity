@@ -33,6 +33,7 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
             if (IsWithinWindow(timeDiff))
             {
                 float effectTime = CalculateEffectTime(context.CurrentTime, context.NoteTime, timeDiff);
+                bool isEarly = timeDiff <= 0;  // 早入りかどうか
 
                 Debug.Log($"[ChainNoteProcessor] Lane {context.LaneIndex}: Chain Perfect at {context.CurrentTime:F3}, effect at {effectTime:F3}");
 
@@ -48,7 +49,8 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
                     context.CurrentTime,
                     effectTime,
                     shouldAdvanceNote: true,
-                    stateUpdate: stateUpdate
+                    stateUpdate: stateUpdate,
+                    isDelayed: isEarly  // 早入りの場合は遅延発火
                 );
             }
 
@@ -68,6 +70,7 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
             if (IsWithinWindow(timeDiff) && context.IsButtonPressed)
             {
                 float effectTime = CalculateEffectTime(context.CurrentTime, context.NoteTime, timeDiff);
+                bool isEarly = timeDiff <= 0;  // 早入りかどうか
 
                 Debug.Log($"[ChainNoteProcessor] Lane {context.LaneIndex}: Chain Perfect (held) at {context.CurrentTime:F3}");
 
@@ -83,7 +86,8 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
                     context.CurrentTime,
                     effectTime,
                     shouldAdvanceNote: true,
-                    stateUpdate: stateUpdate
+                    stateUpdate: stateUpdate,
+                    isDelayed: isEarly  // 早入りの場合は遅延発火
                 );
             }
 
@@ -112,3 +116,4 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
         }
     }
 }
+

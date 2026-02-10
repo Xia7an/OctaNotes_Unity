@@ -130,18 +130,23 @@ namespace OctaNotes.Scripts.Play.Model.Judgment.Processors
             }
 
             // 判定タイミングに達した
-            // ボタンが離されていなければPerfect（演出は正しい時刻に発生）
+            // ボタンが離されていなければPerfect
             if (!context.State.LongNoteReleased)
             {
                 Debug.Log($"[LongNoteProcessor] Lane {context.LaneIndex}: Long end Perfect at {context.NoteTime:F3}");
                 var stateUpdate = new StateUpdate(setInLongNote: false);
+
+                // 現在時刻がnoteTimeより前なら遅延発火が必要
+                bool isEarly = context.CurrentTime < context.NoteTime;
+
                 return CreateOutput(
                     JudgmentResult.Perfect,
                     JudgmentType.LongEnd,
                     context.CurrentTime,
-                    context.NoteTime,
+                    context.NoteTime,  // 演出は常に正しい時刻
                     shouldAdvanceNote: true,
-                    stateUpdate: stateUpdate
+                    stateUpdate: stateUpdate,
+                    isDelayed: isEarly  // 早い場合は遅延発火
                 );
             }
             else

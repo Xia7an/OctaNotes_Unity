@@ -11,22 +11,29 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class NoteWindow: INoteWindow, IDisposable, IInitializable
     {
-        [Inject] private readonly IGameTimer _gameTimer;
-        [Inject] private readonly IChartRepositoryImmutable _chartRepository;
+        private readonly IGameTimer _gameTimer;
+        private readonly IChartRepositoryImmutable _chartRepository;
+        private readonly ILaneContext _laneContext;
 
         private readonly CompositeDisposable _disposables = new();
-        private readonly int _laneIndex;
+        private int _laneIndex;
         private int _lastClosestIndex = -1;
 
         public ReactiveProperty<Note> CurrentNote { get; private set; }
         
-        private NoteWindow(int laneIndex)
+        public NoteWindow(
+            IGameTimer gameTimer,
+            IChartRepositoryImmutable chartRepository,
+            ILaneContext laneContext)
         {
-            this._laneIndex = laneIndex;
+            _gameTimer = gameTimer;
+            _chartRepository = chartRepository;
+            _laneContext = laneContext;
         }
-        
+
         public void Initialize()
         {
+            this._laneIndex = _laneContext.LaneIndex;
             _gameTimer.Time.Subscribe(v => GetCurrentNote(v, _chartRepository.LaneWiseChartData)).AddTo(_disposables);
         }
         
@@ -133,7 +140,7 @@ namespace OctaNotes.Scripts.Play.Model
                 justTiming = (float)closestTiming.timing,
                 laneNumber = _laneIndex,
                 noteType = closestTiming.noteType,
-                timingDiff = (float)(timer - closestTiming.timing)
+                timingDelta = (float)(timer - closestTiming.timing)
             };
             
             CurrentNote.Value = note;

@@ -8,7 +8,7 @@ namespace OctaNotes.Scripts.Play.Model.Struct
         public NoteType noteType;
         public Guid guid;
         public float justTiming;
-        public float timingDiff;
+        public float timingDelta;
         public int laneNumber;
     }
 }

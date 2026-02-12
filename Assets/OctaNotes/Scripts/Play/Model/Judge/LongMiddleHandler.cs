@@ -12,20 +12,34 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class LongMiddleHandler : ILongMiddleHandler, IInitializable, IDisposable
     {
-        [Inject] private readonly IPlayInputLayer _playInputLayer;
-        [Inject] private INoteWindow _noteWindow;
+        private readonly IPlayInputLayer _playInputLayer;
+        private readonly INoteWindow _noteWindow;
+        private readonly ILaneContext _laneContext;
+        
+        public LongMiddleHandler(
+            IPlayInputLayer playInputLayer,
+            INoteWindow noteWindow,
+            ILaneContext laneContext)
+        {
+            _playInputLayer = playInputLayer;
+            _noteWindow = noteWindow;
+            _laneContext = laneContext;
+        }
         
         public ReactiveProperty<float> LongPushedRate { get; } = new ReactiveProperty<float>(0);
         
         private CompositeDisposable _disposable = new CompositeDisposable();
-        private CancellationTokenSource _longNoteCts;
+        private CancellationTokenSource _longNoteCts = new CancellationTokenSource();
         
         private ReactiveProperty<bool> isHandlingLongNote = new ReactiveProperty<bool>(false);
-        private int laneNumber = -1;
+
+        private int laneNumber;
         
 
         public void Initialize()
         {
+            this.laneNumber = _laneContext.LaneIndex;
+            
             _noteWindow.CurrentNote.Subscribe(note => HandleNoteChange(note)).AddTo(_disposable);
             isHandlingLongNote
                 .DistinctUntilChanged()

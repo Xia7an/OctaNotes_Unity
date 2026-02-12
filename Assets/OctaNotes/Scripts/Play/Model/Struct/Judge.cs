@@ -6,6 +6,7 @@ namespace OctaNotes.Scripts.Play.Model.Enum
         Good,
         Bad,
         Miss,
-        None
+        None, // 押したけど判定されなかった
+        NotJudged, // 押されなかったため、判定がなされなかった
     }
 }

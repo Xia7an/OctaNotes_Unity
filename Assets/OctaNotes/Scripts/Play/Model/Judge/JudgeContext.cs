@@ -10,10 +10,22 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class JudgeContext : IJudgeContext, IInitializable, IDisposable
     {
-        [Inject] private readonly IPlayInputLayer _inputLayer;
-        [Inject] private readonly INoteWindow _noteWindow;
-        [Inject] private readonly ILongMiddleHandler _longMiddleHandler;
-        [Inject] private readonly IJudgeStrategyFactory _judgeStrategyFactory;
+        private readonly IPlayInputLayer _inputLayer;
+        private readonly INoteWindow _noteWindow;
+        private readonly ILongMiddleHandler _longMiddleHandler;
+        private readonly IJudgeStrategyFactory _judgeStrategyFactory;
+        
+        public JudgeContext(
+            IPlayInputLayer inputLayer,
+            INoteWindow noteWindow,
+            ILongMiddleHandler longMiddleHandler,
+            IJudgeStrategyFactory judgeStrategyFactory)
+        {
+            _inputLayer = inputLayer;
+            _noteWindow = noteWindow;
+            _longMiddleHandler = longMiddleHandler;
+            _judgeStrategyFactory = judgeStrategyFactory;
+        }
         
         public ReactiveProperty<JudgeResult> JudgeResult { get; private set; }
         

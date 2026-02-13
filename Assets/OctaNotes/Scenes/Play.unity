@@ -247,6 +247,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1665383419 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3538814756418256166, guid: 54c28c7390005441b9641f9a2f14ef53, type: 3}
+  m_PrefabInstance: {fileID: 5227507802777767380}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edd374f9b0bb4497598f8fdbe2bad753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.DI.Lane.LaneLayout
 --- !u!1 &1746284976
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,17 +395,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &2002366206 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4273174520336289374, guid: 54c28c7390005441b9641f9a2f14ef53, type: 3}
-  m_PrefabInstance: {fileID: 5227507802777767380}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edd374f9b0bb4497598f8fdbe2bad753, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.DI.Lane.LaneLayout
 --- !u!1001 &1299625374678166438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -657,7 +657,7 @@ PrefabInstance:
     - target: {fileID: 6670172610681504027, guid: 2444972d669e64f7eafcc12f889c372b, type: 3}
       propertyPath: laneLayout
       value: 
-      objectReference: {fileID: 2002366206}
+      objectReference: {fileID: 1665383419}
     - target: {fileID: 6763537159130195018, guid: 2444972d669e64f7eafcc12f889c372b, type: 3}
       propertyPath: m_Name
       value: SceneContext

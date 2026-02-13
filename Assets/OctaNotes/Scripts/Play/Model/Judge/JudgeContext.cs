@@ -15,6 +15,8 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly INoteWindow _noteWindow;
         private readonly ILongMiddleHandler _longMiddleHandler;
         private readonly IJudgeStrategyFactory _judgeStrategyFactory;
+
+        private Guid judgedNoteGuid = Guid.Empty; // 直前に判定が確定したノーツのGuid
         
         public JudgeContext(
             IPlayInputLayer inputLayer,
@@ -46,17 +48,23 @@ namespace OctaNotes.Scripts.Play.Model
 
         private void Judge(Note note)
         {
+            if(note.guid == judgedNoteGuid) return; // 直前に判定済みのノーツは再判定しない
+            
             IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType);
-
             JudgeResult.Value = strategy.JudgeNote(note,
                 _inputLayer.IsButtonPressing.Select(state => state.Value).ToList(), 
                 _longMiddleHandler.LongPushedRate.Value);
+            
+            // ノーツの判定が確定した(NotJudged でも Noneでもない)場合は、判定確定済みノーツとして記録
+            if (JudgeResult.Value.judge == Enum.Judge.NotJudged
+                || JudgeResult.Value.judge == Enum.Judge.None) return;
+            judgedNoteGuid = note.guid;
             _printJudgeResult(JudgeResult.Value);
         }
 
         private void _printJudgeResult(JudgeResult result)
         {
-            if(result.laneNumber != 0) return;
+            // if(result.judge == Enum.Judge.NotJudged) return;
             Debug.Log($"[Judge Result] Judge: {result.judge},\n TimingDiff: {result.timingDiff},\n Lane: {result.laneNumber},\n GUID: {result.guid},\n EffectTiming: {result.effectInvokeTiming}");
         }
 

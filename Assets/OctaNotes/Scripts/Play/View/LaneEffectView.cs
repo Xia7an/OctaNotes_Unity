@@ -1,5 +1,5 @@
 using System;
-using OctaNotes.Scripts.Play.DI.Lane;
+using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine;
@@ -10,12 +10,15 @@ namespace OctaNotes.Scripts.Play.View
 [RequireComponent(typeof(AudioSource), typeof(MeshRenderer))]
     public class LaneEffectView : MonoBehaviour, ILaneView
     {
-        private LaneViewModel _laneViewModel;
+        private ILaneViewModel _laneViewModel;
 
         [Inject]
-        public void Construct(LaneViewModel laneViewModel)
+        public void Construct([InjectOptional] ILaneViewModel laneViewModel = null)
         {
-            this._laneViewModel = laneViewModel;
+            if (_laneViewModel == null && laneViewModel != null)
+            {
+                _laneViewModel = laneViewModel;
+            }
         }
 
         private Material material;
@@ -24,6 +27,13 @@ namespace OctaNotes.Scripts.Play.View
         {
             material = GetComponent<MeshRenderer>().material;
             source = GetComponent<AudioSource>();
+
+            if (_laneViewModel == null)
+            {
+                Debug.LogWarning($"[{nameof(LaneEffectView)}] ILaneViewModel is not injected on {gameObject.name}.", this);
+                return;
+            }
+
             _laneViewModel.ButtonState.Subscribe(buttonState =>
             {
                 if (buttonState == ButtonState.BeginPush)

@@ -15,7 +15,7 @@ namespace OctaNotes.Scripts.Play.Model
     {
         public void Initialize()
         {
-            LoadChart(Application.persistentDataPath + "/Charts/dopperganger.onc");
+            LoadChart(Application.persistentDataPath + "/Charts/easy.onc");
         }
         
         public void LoadChart(string path)
@@ -234,7 +234,8 @@ namespace OctaNotes.Scripts.Play.Model
                 _chartData2[laneNum].Add(new NoteTiming()
                 {
                     timing = timing,
-                    noteType = noteType
+                    noteType = noteType,
+                    guid = Guid.NewGuid()
                 });
             }
             catch (System.InvalidOperationException)

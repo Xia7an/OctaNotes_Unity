@@ -1,12 +1,14 @@
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
 public class PlaySceneInstaller : MonoInstaller
 {
-    private const int LaneCount = 8;
+    [SerializeField] private LaneLayout laneLayout;
 
     public override void InstallBindings()
     {
@@ -16,14 +18,50 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<GameTimer>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<LaneSubContainerFactory>().AsSingle();
-
-        ILaneSubContainerFactory laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
-        for (int lane = 0; lane < LaneCount; lane++)
+        if (laneLayout == null)
         {
-            laneSubContainerFactory.BindLane(Container, lane);
+            throw new ZenjectException("PlaySceneInstaller.laneLayout is not assigned.");
         }
 
+        var laneDefinitions = laneLayout.LaneDefinitions
+            .OrderBy(definition => definition.LaneId)
+            .ToList();
+        var laneContainers = new List<DiContainer>(laneDefinitions.Count);
+        var laneInputPorts = new List<ILaneInputPort>(laneDefinitions.Count);
+
+        for (int expectedLaneId = 0; expectedLaneId < laneDefinitions.Count; expectedLaneId++)
+        {
+            var laneDefinition = laneDefinitions[expectedLaneId];
+            if (laneDefinition.LaneId != expectedLaneId)
+            {
+                throw new ZenjectException($"LaneDefinition ids must be contiguous from 0. Missing lane {expectedLaneId}.");
+            }
+
+            if (laneDefinition.ViewBundle == null)
+            {
+                throw new ZenjectException($"ViewBundle for lane {laneDefinition.LaneId} is not assigned.");
+            }
+
+            var subContainer = CreateLaneSubContainer(laneDefinition.LaneId);
+            laneContainers.Add(subContainer);
+            subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
+            laneInputPorts.Add(subContainer.Resolve<ILaneInputPort>());
+        }
+
+        Container.Bind<List<ILaneInputPort>>().FromInstance(laneInputPorts).AsSingle();
+        Container.Bind<List<ILaneOutputPort>>()
+            .FromMethod(_ => laneContainers.Select(subContainer => subContainer.Resolve<ILaneOutputPort>()).ToList())
+            .AsSingle();
         Container.BindInterfacesAndSelfTo<LaneInputManager>().AsSingle().NonLazy();
+    }
+
+    private DiContainer CreateLaneSubContainer(int laneId)
+    {
+        var subContainer = Container.CreateSubContainer();
+        Container.BindInterfacesTo<Kernel>().FromSubContainerResolve().ByInstance(subContainer).AsCached();
+        subContainer.Bind<Kernel>().AsCached();
+        LaneSubContainerInstaller.Install(subContainer, laneId);
+        subContainer.ResolveRoots();
+        return subContainer;
     }
 }

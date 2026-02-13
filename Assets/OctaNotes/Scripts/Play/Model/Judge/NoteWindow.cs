@@ -5,6 +5,7 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
+using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -19,7 +20,7 @@ namespace OctaNotes.Scripts.Play.Model
         private int _laneIndex;
         private int _lastClosestIndex = -1;
 
-        public ReactiveProperty<Note> CurrentNote { get; private set; }
+        public ReactiveProperty<Note> CurrentNote { get; private set; } = new();
         
         public NoteWindow(
             IGameTimer gameTimer,
@@ -35,6 +36,12 @@ namespace OctaNotes.Scripts.Play.Model
         {
             this._laneIndex = _laneContext.LaneIndex;
             _gameTimer.Time.Subscribe(v => GetCurrentNote(v, _chartRepository.LaneWiseChartData)).AddTo(_disposables);
+        }
+        
+        public void Dispose()
+        {
+            CurrentNote?.Dispose();
+            _disposables.Dispose();
         }
         
 
@@ -144,12 +151,13 @@ namespace OctaNotes.Scripts.Play.Model
             };
             
             CurrentNote.Value = note;
+            // _printCurrentNote(CurrentNote.Value);
         }
 
-        public void Dispose()
+        private void _printCurrentNote(Note note)
         {
-            CurrentNote?.Dispose();
-            _disposables.Dispose();
+            if(note.laneNumber != 0) return;
+            Debug.Log($"[Current Note] Type: {note.noteType},\n GUID: {note.guid},\n Lane: {note.laneNumber}");
         }
 
     }

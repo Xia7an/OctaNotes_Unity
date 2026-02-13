@@ -4,6 +4,7 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
+using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -26,10 +27,10 @@ namespace OctaNotes.Scripts.Play.Model
             _longMiddleHandler = longMiddleHandler;
             _judgeStrategyFactory = judgeStrategyFactory;
         }
-        
-        public ReactiveProperty<JudgeResult> JudgeResult { get; private set; }
-        
-        private CompositeDisposable _disposables;
+
+        public ReactiveProperty<JudgeResult> JudgeResult { get; private set; } = new();
+
+        private CompositeDisposable _disposables = new();
 
 
         public void Initialize()
@@ -50,6 +51,13 @@ namespace OctaNotes.Scripts.Play.Model
             JudgeResult.Value = strategy.JudgeNote(note,
                 _inputLayer.IsButtonPressing.Select(state => state.Value).ToList(), 
                 _longMiddleHandler.LongPushedRate.Value);
+            _printJudgeResult(JudgeResult.Value);
+        }
+
+        private void _printJudgeResult(JudgeResult result)
+        {
+            if(result.laneNumber != 0) return;
+            Debug.Log($"[Judge Result] Judge: {result.judge},\n TimingDiff: {result.timingDiff},\n Lane: {result.laneNumber},\n GUID: {result.guid},\n EffectTiming: {result.effectInvokeTiming}");
         }
 
     }

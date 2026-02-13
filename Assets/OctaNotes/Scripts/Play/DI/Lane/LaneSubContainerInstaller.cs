@@ -28,7 +28,7 @@ namespace OctaNotes.Scripts.Play.DI.Lane
 
             Container.Bind<ILaneInputPort>().To<LaneInputPort>().AsSingle();
             Container.Bind<ILaneOutputPort>().To<LaneOutputPort>().AsSingle();
-            Container.Bind<ILaneViewModel>().To<LaneViewModel>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LaneViewModel>().AsSingle();
         }
     }
 }

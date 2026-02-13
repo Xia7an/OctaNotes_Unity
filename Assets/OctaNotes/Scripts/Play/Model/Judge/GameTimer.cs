@@ -1,4 +1,5 @@
 using OctaNotes.Scripts.Play.Model.Interface;
+using OctaNotes.Scripts.Settings;
 using R3;
 using UnityEngine;
 using Zenject;
@@ -12,10 +13,13 @@ namespace OctaNotes.Scripts.Play.Model
     {
         public ReactiveProperty<float> Time { get; private set; }
         private readonly int TARGET_FRAMERATE = 60;
+        
+        private readonly PlaySettingsSO _playSettings;
 
-        public GameTimer()
+        public GameTimer(PlaySettingsSO playSettings)
         {
-            this.Time = new ReactiveProperty<float>(0);
+            _playSettings = playSettings;
+            this.Time = new ReactiveProperty<float>(-1*(float)_playSettings.songStartDelay);
             Application.targetFrameRate = TARGET_FRAMERATE;
         }
         public void Tick()

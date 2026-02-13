@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine;
@@ -9,10 +8,15 @@ using Zenject;
 namespace OctaNotes.Scripts.Play.View
 {
 [RequireComponent(typeof(AudioSource), typeof(MeshRenderer))]
-    public class LaneEffectView : MonoBehaviour
+    public class LaneEffectView : MonoBehaviour, ILaneView
     {
-        [Inject] private readonly List<ILaneViewModel> _laneViewModels;
-        [SerializeField] private int laneIndex = 0;
+        private LaneViewModel _laneViewModel;
+
+        [Inject]
+        public void Construct(LaneViewModel laneViewModel)
+        {
+            this._laneViewModel = laneViewModel;
+        }
 
         private Material material;
         private AudioSource source;
@@ -20,13 +24,13 @@ namespace OctaNotes.Scripts.Play.View
         {
             material = GetComponent<MeshRenderer>().material;
             source = GetComponent<AudioSource>();
-            _laneViewModels[laneIndex].ButtonState.Subscribe(buttonState =>
+            _laneViewModel.ButtonState.Subscribe(buttonState =>
             {
-                if (buttonState == ButtonState.BeginPush || buttonState == ButtonState.Pushed)
+                if (buttonState == ButtonState.BeginPush)
                 {
                     ToggleOnEffect();
                 }
-                else
+                else  if (buttonState == ButtonState.EndPush)
                 {
                     ToggleOffEffect();
                 }

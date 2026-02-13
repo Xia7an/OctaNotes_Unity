@@ -1,26 +1,29 @@
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model;
-using OctaNotes.Scripts.Play.View;
 using UnityEngine;
 using Zenject;
 
 public class PlaySceneInstaller : MonoInstaller
 {
+    private const int LaneCount = 8;
+
     public override void InstallBindings()
     {
         Debug.Log("[PlaySceneInstaller] InstallBindings called");
 
         Container.BindInterfacesAndSelfTo<ChartRepository>().AsSingle();
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<InputController>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<TimeManager>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<JudgmentManager>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<GameTimer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<LaneSubContainerFactory>().AsSingle();
 
-        // Effect Presenters - シーン上のGameObjectから参照
-        // JudgmentEffectPresenter: 判定テキスト・パーティクル表示用
-        // FeedbackEffectPresenter: レーンハイライト表示用（各レーンのGameObjectにアタッチ）
-        Container.Bind<IEffectPresenter>().To<JudgmentEffectPresenter>().FromComponentsInHierarchy().AsSingle();
-        Container.Bind<IEffectPresenter>().To<FeedbackEffectPresenter>().FromComponentsInHierarchy().AsCached();
+        ILaneSubContainerFactory laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
+        for (int lane = 0; lane < LaneCount; lane++)
+        {
+            laneSubContainerFactory.BindLane(Container, lane);
+        }
+
+        Container.BindInterfacesAndSelfTo<LaneInputManager>().AsSingle().NonLazy();
     }
 }

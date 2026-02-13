@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine;
 using Zenject;
@@ -9,7 +11,7 @@ namespace OctaNotes.Scripts.Play.View
 [RequireComponent(typeof(AudioSource), typeof(MeshRenderer))]
     public class LaneEffectView : MonoBehaviour
     {
-        [Inject] private readonly IPlayInputLayer _playInputLayer;
+        [Inject] private readonly List<ILaneViewModel> _laneViewModels;
         [SerializeField] private int laneIndex = 0;
 
         private Material material;
@@ -18,9 +20,9 @@ namespace OctaNotes.Scripts.Play.View
         {
             material = GetComponent<MeshRenderer>().material;
             source = GetComponent<AudioSource>();
-            _playInputLayer.IsButtonPressing[laneIndex].Subscribe(isPressing =>
+            _laneViewModels[laneIndex].ButtonState.Subscribe(buttonState =>
             {
-                if (isPressing)
+                if (buttonState == ButtonState.BeginPush || buttonState == ButtonState.Pushed)
                 {
                     ToggleOnEffect();
                 }

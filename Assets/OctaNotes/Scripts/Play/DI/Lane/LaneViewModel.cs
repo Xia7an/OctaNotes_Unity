@@ -32,7 +32,7 @@ namespace OctaNotes.Scripts.Play.DI.Lane
                 .AddTo(_disposables);
 
             _judgeContext.JudgeResult
-                .Subscribe(result => CurrentJudge.Value = result.judge)
+                .Subscribe(result => CurrentJudge.OnNext(result.judge))
                 .AddTo(_disposables);
         }
 

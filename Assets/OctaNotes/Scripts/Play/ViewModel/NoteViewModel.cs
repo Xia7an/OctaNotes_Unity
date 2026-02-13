@@ -1,5 +1,6 @@
 using System;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Settings;
 using R3;
 using UnityEngine;
@@ -7,9 +8,10 @@ using Zenject;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
-    public class NoteViewModel:MonoBehaviour, INoteViewModel
+    public class NoteViewModel : MonoBehaviour, INoteViewModel
     {
-        [Inject] private readonly PlaySettingsSO _playSettingsSO;
+        private PlaySettingsSO _playSettingsSO;
+        private IInGameTimer _inGameTimer;
         public double PosZ { get; private set; } = new ();
         
         private double _initialPosZ = 0;
@@ -18,9 +20,21 @@ namespace OctaNotes.Scripts.Play.ViewModel
         {
             _initialPosZ = posZ;
         }
-        private void Update()
+
+        [Inject]
+        public void Construct(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer)
         {
-            PosZ = -Time.time * _playSettingsSO.noteSpeed + _initialPosZ;
+            this._playSettingsSO = playSettingsSO;
+            _inGameTimer = inGameTimer;
         }
+
+        private void Start()
+        {
+            _inGameTimer.Time.Subscribe(time =>
+            {
+                PosZ = -time * _playSettingsSO.noteSpeed + _initialPosZ;
+            }).AddTo(this);
+        }
+        
     }
 }

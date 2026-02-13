@@ -12,7 +12,7 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class NoteWindow: INoteWindow, IDisposable, IInitializable
     {
-        private readonly IGameTimer _gameTimer;
+        private readonly IInGameTimer inGameTimer;
         private readonly IChartRepositoryImmutable _chartRepository;
         private readonly ILaneContext _laneContext;
 
@@ -23,11 +23,11 @@ namespace OctaNotes.Scripts.Play.Model
         public ReactiveProperty<Note> CurrentNote { get; private set; } = new();
         
         public NoteWindow(
-            IGameTimer gameTimer,
+            IInGameTimer inGameTimer,
             IChartRepositoryImmutable chartRepository,
             ILaneContext laneContext)
         {
-            _gameTimer = gameTimer;
+            this.inGameTimer = inGameTimer;
             _chartRepository = chartRepository;
             _laneContext = laneContext;
         }
@@ -35,7 +35,7 @@ namespace OctaNotes.Scripts.Play.Model
         public void Initialize()
         {
             this._laneIndex = _laneContext.LaneIndex;
-            _gameTimer.Time.Subscribe(v => GetCurrentNote(v, _chartRepository.LaneWiseChartData)).AddTo(_disposables);
+            inGameTimer.Time.Subscribe(v => GetCurrentNote(v, _chartRepository.LaneWiseChartData)).AddTo(_disposables);
         }
         
         public void Dispose()

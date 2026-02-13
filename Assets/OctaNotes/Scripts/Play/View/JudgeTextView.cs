@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using OctaNotes.Scripts.Play.Interface;
@@ -30,10 +31,13 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
-            _laneViewModel.CurrentJudge.SubscribeAwait(async (v,_) => await ShowJudgeResult(v)).AddTo(this);
+            _laneViewModel.CurrentJudge.SubscribeAwait(async (v,ct) =>
+            {
+                await ShowJudgeResult(v,ct);
+            }, AwaitOperation.Switch).AddTo(this);
         }
 
-        private async UniTask ShowJudgeResult(Judge judge)
+        private async UniTask ShowJudgeResult(Judge judge, CancellationToken token)
         {
             var sprite = judge switch
             {
@@ -46,7 +50,12 @@ namespace OctaNotes.Scripts.Play.View
             judgeText.color = new Color(1, 1, 1, 1);
             if (sprite == null) return;
             judgeText.sprite = sprite;
-            await judgeText.DOFade(0, 0.2f).AsyncWaitForCompletion().AddTo(this);
+            var rect = judgeText.rectTransform;
+            rect.sizeDelta = new Vector2(
+                sprite.rect.width / 2,
+                sprite.rect.height / 2
+            );
+            await judgeText.DOFade(0, 0.2f).ToUniTask(cancellationToken: token);
         }
     }
 }

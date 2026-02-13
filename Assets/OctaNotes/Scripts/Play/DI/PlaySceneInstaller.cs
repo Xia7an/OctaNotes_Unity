@@ -17,7 +17,7 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ChartRepository>().AsSingle();
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<GameTimer>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
         if (laneLayout == null)
         {
             throw new ZenjectException("PlaySceneInstaller.laneLayout is not assigned.");
@@ -45,6 +45,17 @@ public class PlaySceneInstaller : MonoInstaller
             var subContainer = CreateLaneSubContainer(laneDefinition.LaneId);
             laneContainers.Add(subContainer);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
+
+            foreach (var view in laneDefinition.ViewBundle.Views)
+            {
+                if (view == null)
+                {
+                    continue;
+                }
+
+                subContainer.Inject(view);
+            }
+
             laneInputPorts.Add(subContainer.Resolve<ILaneInputPort>());
         }
 

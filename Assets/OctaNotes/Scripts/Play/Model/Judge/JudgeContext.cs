@@ -51,13 +51,13 @@ namespace OctaNotes.Scripts.Play.Model
             if(note.guid == judgedNoteGuid) return; // 直前に判定済みのノーツは再判定しない
             
             IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType);
-            JudgeResult.Value = strategy.JudgeNote(note,
+            var result = strategy.JudgeNote(note,
                 _inputLayer.IsButtonPressing.Select(state => state.Value).ToList(), 
                 _longMiddleHandler.LongPushedRate.Value);
             
             // ノーツの判定が確定した(NotJudged でも Noneでもない)場合は、判定確定済みノーツとして記録
-            if (JudgeResult.Value.judge == Enum.Judge.NotJudged
-                || JudgeResult.Value.judge == Enum.Judge.None) return;
+            if (result.judge is Enum.Judge.NotJudged or Enum.Judge.None) return;
+            JudgeResult.Value = result;
             judgedNoteGuid = note.guid;
             _printJudgeResult(JudgeResult.Value);
         }

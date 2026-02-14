@@ -32,13 +32,10 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
         
         public JudgeResult JudgeNote(Note note, List<ButtonState> buttonStates, float longPushedRate)
         {
-
             bool isPressed = buttonStates[note.laneNumber] == ButtonState.BeginPush;
 
             float delta = note.timingDelta;
             
-            
-
             JudgeResult result = new JudgeResult
             {
                 judge = Judge.NotJudged,

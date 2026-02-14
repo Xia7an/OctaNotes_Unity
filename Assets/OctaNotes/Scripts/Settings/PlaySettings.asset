@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca21415aff3645b4bd211bef7d253a2, type: 3}
   m_Name: PlaySettings
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Settings.PlaySettings
-  noteSpeed: 11.5
+  noteSpeed: 3
   perfectRangeMs: 100
   goodRangeMs: 150
   badRangeMs: 200

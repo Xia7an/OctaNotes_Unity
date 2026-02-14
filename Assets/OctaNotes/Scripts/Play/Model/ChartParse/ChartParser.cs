@@ -198,13 +198,51 @@ namespace OctaNotes.Scripts.Play.Model
                 var timing = _calculator.CalcTime(l, m, n);
                 var noteZPos = _calculator.CalcPosition(timing);
                 
+                NoteType noteType;
+                char colorChar = '\0';
+                if ((noteTypeStr[0] == 'b' || noteTypeStr[0] == 'r' || noteTypeStr[0] == 'w') && noteTypeStr.Length <= 2)
+                {
+                    noteType = NoteType.Tap;
+                    colorChar = noteTypeStr[0];
+                }
+                else if (noteTypeStr[1] == 'c')
+                {
+                    noteType = NoteType.Chain;
+                    colorChar = noteTypeStr[0];
+                }
+                else if (noteTypeStr == "le")
+                {
+                    noteType = NoteType.LongEnd;
+                }
+                else if (noteTypeStr[0] == 'l')
+                {
+                    noteType = NoteType.LongStart;
+                    colorChar = noteTypeStr[1];
+                }
+                else
+                {
+                    ShowErrorMessage("ノーツタイプが不正です");
+                    return;
+                }
+
+                NoteColor noteColor = colorChar switch
+                {
+                    'r' => NoteColor.Red,
+                    'w' => NoteColor.Yellow,
+                    _  => NoteColor.Blue
+                };
+
+                if(!int.TryParse(noteTypeStr.Last().ToString(), out int noteColorLevel)) noteColorLevel = 0;
+                
                 // そのタイミングに他のノーツがあれば、行の要素を書き換え
                 if (_chartData1.TryGetValue(noteZPos, out var value))
                 {
                     value[laneNum] = new GraphicalNoteEntry()
                     {
                         guid = noteGuid,
-                        noteTypeStr = noteTypeStr
+                        noteType = noteType,
+                        noteColor = noteColor,
+                        noteColorLevel = noteColorLevel,
                     };
                 }
                 // そのタイミングに他のノーツがない場合は、そのタイミングをKeyとして辞書に要素を追加
@@ -215,33 +253,13 @@ namespace OctaNotes.Scripts.Play.Model
                         [laneNum] = new  GraphicalNoteEntry()
                         {
                             guid = noteGuid,
-                            noteTypeStr =  noteTypeStr
+                            noteType =  noteType,
+                            noteColor = noteColor,
+                            noteColorLevel = noteColorLevel,
                         }
                     };
                 }
 
-                NoteType noteType;
-                if (noteTypeStr[0] == 'b' || noteTypeStr[0] == 'r' || noteTypeStr[0] == 'w')
-                {
-                    noteType = NoteType.Tap;
-                }
-                else if (noteTypeStr[1] == 'c')
-                {
-                    noteType = NoteType.Chain;
-                }
-                else if (noteTypeStr == "le")
-                {
-                    noteType = NoteType.LongEnd;
-                }
-                else if (noteTypeStr[0] == 'l')
-                {
-                    noteType = NoteType.LongStart;
-                }
-                else
-                {
-                    ShowErrorMessage("ノーツタイプが不正です");
-                    return;
-                }
 
                 _chartData2[laneNum].Add(new NoteTiming()
                 {
@@ -259,6 +277,7 @@ namespace OctaNotes.Scripts.Play.Model
         {
             try
             {
+                if (operands[0][1] != 'x') throw new ArgumentException(); // オペランドの記法違反
                 var lineSeries = int.Parse(operands[0][1..]);
                 var pointTypeStr = operands[1];
                 var timing = _calculator.CalcTime(l, m, n);
@@ -269,7 +288,19 @@ namespace OctaNotes.Scripts.Play.Model
                     value[lineSeries + 8] = new GraphicalNoteEntry()
                     {
                         guid = Guid.Empty,
-                        noteTypeStr = pointTypeStr,
+                        noteType = pointTypeStr[0] switch
+                        {
+                            's' => NoteType.LineStart,
+                            'j' => NoteType.LineMid,
+                            'e' => NoteType.LineEnd
+                        },
+                        noteColor = pointTypeStr[1] switch
+                        {
+                            'b' => NoteColor.Blue,
+                            'r' => NoteColor.Red,
+                            'w' => NoteColor.Yellow
+                        },
+                        noteColorLevel = pointTypeStr.Length >= 3 ? int.Parse(pointTypeStr[2].ToString()) : 0,
                     };
                 }
                 else
@@ -279,7 +310,19 @@ namespace OctaNotes.Scripts.Play.Model
                         [lineSeries + 8] = new GraphicalNoteEntry()
                         {
                             guid = Guid.Empty,
-                            noteTypeStr = pointTypeStr,
+                            noteType = pointTypeStr[0] switch
+                            {
+                                's' => NoteType.LineStart,
+                                'j' => NoteType.LineMid,
+                                'e' => NoteType.LineEnd
+                            },
+                            noteColor = pointTypeStr[1] switch
+                            {
+                                'b' => NoteColor.Blue,
+                                'r' => NoteColor.Red,
+                                'w' => NoteColor.Yellow
+                            },
+                            noteColorLevel = pointTypeStr.Length >= 3 ? int.Parse(pointTypeStr[2].ToString()) : 0,
                         }
                     };
                 }

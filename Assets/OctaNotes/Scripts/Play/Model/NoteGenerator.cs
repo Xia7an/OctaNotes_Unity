@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.ViewModel;
@@ -61,53 +62,77 @@ namespace OctaNotes.Scripts.Play.Model
         private void Generate()
         {
             double[] longStartTmpPos = new double[8]{ double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN };
-            char[] longNoteColor = new char[8]{ 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b' };
+            NoteColor[] longNoteColor = new NoteColor[8] { NoteColor.Blue , NoteColor.Blue, NoteColor.Blue, NoteColor.Blue, NoteColor.Blue, NoteColor.Blue, NoteColor.Blue, NoteColor.Blue};
             foreach (var rawZPos in _chartRepository.GraphicalChartData.Keys.ToList())
             {
-                var noteTypes = _chartRepository.GraphicalChartData[rawZPos];
+                var noteEntries = _chartRepository.GraphicalChartData[rawZPos];
                 double zPos = rawZPos;
-                var tapnoteLaneIdx =
-                    noteTypes.Select((value, index) => new { value, index })
-                        .Where(x =>!string.IsNullOrEmpty(x.value.noteTypeStr) && (x.value.noteTypeStr.StartsWith("b") || x.value.noteTypeStr.StartsWith("r") || x.value.noteTypeStr.StartsWith("lb") || x.value.noteTypeStr.StartsWith("lr") || x.value.noteTypeStr.StartsWith("lw")))
-                        .Select(x => x.index)
-                        .ToList();
                 
-                List<bool> tapnoteLaneFlag = new List<bool>();
+                var tapnoteLaneIdx =
+                    noteEntries.Select((value, index) => new { value, index })
+                        .Where(x => x.value.noteType is NoteType.Tap or NoteType.LongStart or NoteType.Chain)
+                        .Select(x => x.index)
+                        .ToList(); // 補助面生成用 : 叩くべきノーツが存在するレーン番号のリスト
+                
+                List<bool> tapnoteLaneFlag = new List<bool>(); // 補助面生成用 : 各レーンに叩くべきノーツが存在するかどうかを記録するリスト
                 for (int i = 0; i < 8; i++)
                 {
                     tapnoteLaneFlag.Add(tapnoteLaneIdx.Contains(i));
                 }
                 
                 GenerateSupportPlane(tapnoteLaneFlag, zPos); // 補助線・補助面の生成
-                // 各タイミングレーンごとに処理していく
+                
+                // タイミングごとに各レーンに存在するノーツを処理していく
                 for (int lane = 0; lane < 8; lane++)
                 {
-                    var noteType = noteTypes[lane].noteTypeStr;
-                    var noteGuid = noteTypes[lane].guid;
-                    if (string.IsNullOrEmpty(noteType)) continue;
+                    var noteEntry = noteEntries[lane];
+                    var noteGuid = noteEntries[lane].guid;
+
+                    switch (noteEntry.noteType)
+                    {
+                        case NoteType.Tap:
+                            GenerateTapNote(lane, zPos,noteGuid, noteEntry.noteColor);
+                            break;
+                        case NoteType.Chain:
+                            GenerateChainNote(lane, zPos, noteGuid, noteEntry.noteColor);
+                            break;
+                        case NoteType.LongStart:
+                            longStartTmpPos[lane] = zPos;
+                            GenerateTapNote(lane, zPos,noteGuid, noteEntry.noteColor);
+                            longNoteColor[lane] = noteEntry.noteColor;
+                            break;
+                        case NoteType.LongEnd:
+                            if (!double.IsNaN(longStartTmpPos[lane]))
+                            { 
+                                GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
+                                longStartTmpPos[lane] = double.NaN;
+                            }
+                            break;
+                        case NoteType.None:
+                            break;
+                    }
                     
-                    
-                    if (noteType.StartsWith("b") || noteType.StartsWith("r") || noteType.StartsWith("w"))
-                    {
-                        // タップノーツ
-                        GenerateTapNote(lane, zPos,noteGuid, noteType[0]);
-                    }
-                    else if (noteType == "le")
-                    {
-                         // ロングノーツ終了
-                        if (!double.IsNaN(longStartTmpPos[lane]))
-                        { 
-                            GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
-                            longStartTmpPos[lane] = double.NaN;
-                        }
-                    }
-                    else if (noteType.StartsWith("l"))
-                    {
-                        // ロングノーツ開始
-                        longStartTmpPos[lane] = zPos;
-                        GenerateTapNote(lane, zPos, noteGuid, noteType[1]);
-                        longNoteColor[lane] = noteType[1];
-                    }
+                    // if (noteType.StartsWith("b") || noteType.StartsWith("r") || noteType.StartsWith("w"))
+                    // {
+                    //     if(noteType[1] == 'c') GenerateChainNote(lane, zPos, noteGuid, noteType[0]);
+                    //     else GenerateTapNote(lane, zPos,noteGuid, noteType[0]);
+                    // }
+                    // else if (noteType == "le")
+                    // {
+                    //      // ロングノーツ終了
+                    //     if (!double.IsNaN(longStartTmpPos[lane]))
+                    //     { 
+                    //         GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
+                    //         longStartTmpPos[lane] = double.NaN;
+                    //     }
+                    // }
+                    // else if (noteType.StartsWith("l"))
+                    // {
+                    //     // ロングノーツ開始
+                    //     longStartTmpPos[lane] = zPos;
+                    //     GenerateTapNote(lane, zPos, noteGuid, noteType[1]);
+                    //     longNoteColor[lane] = noteType[1];
+                    // }
                     
                 }
             }
@@ -115,7 +140,7 @@ namespace OctaNotes.Scripts.Play.Model
         
         
 
-        private void GenerateTapNote(int lane, double z, Guid noteGuid, char noteColor='b')
+        private void GenerateTapNote(int lane, double z, Guid noteGuid, NoteColor noteColor)
         {
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
@@ -132,8 +157,27 @@ namespace OctaNotes.Scripts.Play.Model
             
             SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
         }
+
+        private void GenerateChainNote(int lane, double z, Guid noteGuid, NoteColor noteColor)
+        {
+            var x = laneXPositions[lane];
+            float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
+            var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
+            float posZ = (float)(z * noteSpeed + zOffset);
+            
+            var note = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(chainNotePrefab);
+            note.transform.position =  new Vector3((float)x, y, posZ);
+            note.transform.rotation = rotation;
+            
+            var vm =  note.GetComponent<INoteViewModel>();
+            vm.SetInitialPosZ(posZ);
+            vm.SetGuid(noteGuid);
+            
+            SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
+        }
         
-        private void GenerateLongNote(int lane, double startZ, double endZ, Guid noteGuid, char noteColor='b')
+        
+        private void GenerateLongNote(int lane, double startZ, double endZ, Guid noteGuid, NoteColor noteColor)
         {
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
@@ -271,17 +315,17 @@ namespace OctaNotes.Scripts.Play.Model
             return normal.normalized;
         }
 
-        private void SetNoteColor(MeshRenderer meshRenderer, char color)
+        private void SetNoteColor(MeshRenderer meshRenderer, NoteColor color)
         {
             var mat = meshRenderer.material;
             switch (color)
             {
-                case 'b':
+                case NoteColor.Blue:
                     mat.EnableKeyword("_COLOR_BLUE");
                     mat.DisableKeyword("_COLOR_RED");
                     mat.DisableKeyword("_COLOR_EX");
                     break;
-                case 'r':
+                case NoteColor.Red:
                     mat.EnableKeyword("_COLOR_RED");
                     mat.DisableKeyword("_COLOR_BLUE");
                     mat.DisableKeyword("_COLOR_EX");

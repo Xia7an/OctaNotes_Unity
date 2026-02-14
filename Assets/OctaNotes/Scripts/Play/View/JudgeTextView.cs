@@ -31,6 +31,8 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
+            // 透明にする
+            judgeText.color = new Color(1, 1, 1, 0);
             _laneViewModel.CurrentJudge.SubscribeAwait(async (v,ct) =>
             {
                 await ShowJudgeResult(v,ct);
@@ -47,8 +49,8 @@ namespace OctaNotes.Scripts.Play.View
                 Judge.Miss => missText,
                 _ => null
             };
-            judgeText.color = new Color(1, 1, 1, 1);
             if (sprite == null) return;
+            judgeText.color = new Color(1, 1, 1, 1);
             judgeText.sprite = sprite;
             var rect = judgeText.rectTransform;
             rect.sizeDelta = new Vector2(

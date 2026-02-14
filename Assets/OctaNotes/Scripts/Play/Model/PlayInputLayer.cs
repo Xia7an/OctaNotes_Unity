@@ -1,43 +1,60 @@
 using System;
 using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
 {
     public class PlayInputLayer: ITickable, IDisposable, IPlayInputLayer
     {
-        private TestInput _input;
+        private const int LaneCount = 8;
 
+        private TestInput _input;
+        private readonly InputAction[] _laneActions = new InputAction[LaneCount];
+        private readonly bool[] _wasPressed = new bool[LaneCount];
+
+        public List<ReactiveProperty<ButtonState>> IsButtonPressing { get; } = new();
         public PlayInputLayer()
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < LaneCount; i++)
             {
-                IsButtonPressing.Add(new ReactiveProperty<bool>(false));
+                IsButtonPressing.Add(new ReactiveProperty<ButtonState>(ButtonState.Released));
             }
             _input = new TestInput();
             _input.Play.Enable();
+
+            _laneActions[0] = _input.Play._0;
+            _laneActions[1] = _input.Play._1;
+            _laneActions[2] = _input.Play._2;
+            _laneActions[3] = _input.Play._3;
+            _laneActions[4] = _input.Play._4;
+            _laneActions[5] = _input.Play._5;
+            _laneActions[6] = _input.Play._6;
+            _laneActions[7] = _input.Play._7;
         }
         
         public void Tick()
         {
-            _input.Play._0.started += ctx => {IsButtonPressing[0].Value = true;};
-            _input.Play._0.canceled += ctx => {IsButtonPressing[0].Value = false;};
-            _input.Play._1.started += ctx => {IsButtonPressing[1].Value = true;};
-            _input.Play._1.canceled += ctx => {IsButtonPressing[1].Value = false;};
-            _input.Play._2.started += ctx => {IsButtonPressing[2].Value = true;};
-            _input.Play._2.canceled += ctx => {IsButtonPressing[2].Value = false;};
-            _input.Play._3.started += ctx => {IsButtonPressing[3].Value = true;};
-            _input.Play._3.canceled += ctx => {IsButtonPressing[3].Value = false;};
-            _input.Play._4.started += ctx => {IsButtonPressing[4].Value = true;};
-            _input.Play._4.canceled += ctx => {IsButtonPressing[4].Value = false;};
-            _input.Play._5.started += ctx => {IsButtonPressing[5].Value = true;};
-            _input.Play._5.canceled += ctx => {IsButtonPressing[5].Value = false;};
-            _input.Play._6.started += ctx => {IsButtonPressing[6].Value = true;};
-            _input.Play._6.canceled += ctx => {IsButtonPressing[6].Value = false;};
-            _input.Play._7.started += ctx => {IsButtonPressing[7].Value = true;};
-            _input.Play._7.canceled += ctx => {IsButtonPressing[7].Value = false;};
+            // Update to single-frame states based on current press and previous frame state.
+            for (int i = 0; i < LaneCount; i++)
+            {
+                bool isPressed = _laneActions[i].IsPressed();
+                bool wasPressed = _wasPressed[i];
+
+                if (isPressed)
+                {
+                    IsButtonPressing[i].Value = wasPressed ? ButtonState.Pushed : ButtonState.BeginPush;
+                }
+                else
+                {
+                    IsButtonPressing[i].Value = wasPressed ? ButtonState.EndPush : ButtonState.Released;
+                }
+
+                _wasPressed[i] = isPressed;
+            }
         }
 
         public void Dispose()
@@ -45,6 +62,5 @@ namespace OctaNotes.Scripts.Play.Model
             _input?.Dispose();
         }
 
-        public List<ReactiveProperty<bool>> IsButtonPressing { get; } = new List<ReactiveProperty<bool>>();
     }
 }

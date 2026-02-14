@@ -1,3 +1,4 @@
+using System;
 using R3;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace OctaNotes.Scripts.Play.Interface
         ReactiveProperty<Color> Color { get; }
         
         void SetInitialPosZ(double posZ);
+        
+        void SetGuid(Guid guid);
         
     }
 }

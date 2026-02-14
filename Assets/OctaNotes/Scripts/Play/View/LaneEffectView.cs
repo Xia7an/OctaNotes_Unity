@@ -1,39 +1,53 @@
 using System;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Enum;
+using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
 {
-[RequireComponent(typeof(AudioSource), typeof(MeshRenderer))]
-    public class LaneEffectView : MonoBehaviour
+[RequireComponent(typeof(MeshRenderer))]
+    public class LaneEffectView : MonoBehaviour, ILaneView
     {
-        [Inject] private readonly IPlayInputLayer _playInputLayer;
-        [SerializeField] private int laneIndex = 0;
+        private ILaneViewModel _laneViewModel;
+
+        [Inject]
+        public void Construct([InjectOptional] ILaneViewModel laneViewModel = null)
+        {
+            if (_laneViewModel == null && laneViewModel != null)
+            {
+                _laneViewModel = laneViewModel;
+            }
+        }
 
         private Material material;
-        private AudioSource source;
         private void Start()
         {
             material = GetComponent<MeshRenderer>().material;
-            source = GetComponent<AudioSource>();
-            _playInputLayer.IsButtonPressing[laneIndex].Subscribe(isPressing =>
+
+            if (_laneViewModel == null)
             {
-                if (isPressing)
+                Debug.LogWarning($"[{nameof(LaneEffectView)}] ILaneViewModel is not injected on {gameObject.name}.", this);
+                return;
+            }
+
+            _laneViewModel.ButtonState.Subscribe(buttonState =>
+            {
+                if (buttonState == ButtonState.BeginPush)
                 {
-                    ToggleOnEffect();
+                    ToggleOnEffect(_laneViewModel.CurrentJudge.Value);
                 }
-                else
+                else  if (buttonState == ButtonState.EndPush)
                 {
                     ToggleOffEffect();
                 }
             });
         }
-        private void ToggleOnEffect()
+        private void ToggleOnEffect(Judge judge)
         {
             material.SetFloat("_Brighten", 1f);
-            source.PlayOneShot(source.clip);
         }
         private void ToggleOffEffect()
         {

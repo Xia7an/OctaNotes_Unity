@@ -1,4 +1,9 @@
 {
-	"inputs": [],
-	"servers": {}
+	"servers": {
+		"unitymcp": {
+			"url": "http://localhost:8080/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
 }

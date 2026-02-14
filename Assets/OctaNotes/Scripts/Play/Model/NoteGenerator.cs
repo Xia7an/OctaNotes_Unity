@@ -17,6 +17,8 @@ namespace OctaNotes.Scripts.Play.Model
         private  PlaySettingsSO _playsettingsSO;
         private IChartRepositoryImmutable _chartRepository;
         private ILaneSubContainerFactory  _laneSubContainerFactory;
+        
+        
 
         [Inject]
         public void Construct(PlaySettingsSO playsettingsSO, IChartRepositoryImmutable chartRepository,  ILaneSubContainerFactory laneSubContainerFactory)
@@ -48,6 +50,8 @@ namespace OctaNotes.Scripts.Play.Model
             { 6, 0.5 },
             { 7, 1.5 }
         };
+        private readonly float bottonYPosition = -0.1f;
+        private readonly float topYPosition = 2.1f;
         
         private float noteSpeed = 1.0f; // ノーツの移動速度（例）
 
@@ -143,7 +147,7 @@ namespace OctaNotes.Scripts.Play.Model
         private void GenerateTapNote(int lane, double z, Guid noteGuid, NoteColor noteColor)
         {
             var x = laneXPositions[lane];
-            float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
+            float y = (lane < 4) ? bottonYPosition : topYPosition; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             float posZ = (float)(z * noteSpeed + zOffset);
             
@@ -161,7 +165,7 @@ namespace OctaNotes.Scripts.Play.Model
         private void GenerateChainNote(int lane, double z, Guid noteGuid, NoteColor noteColor)
         {
             var x = laneXPositions[lane];
-            float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
+            float y = (lane < 4) ? bottonYPosition : topYPosition; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             float posZ = (float)(z * noteSpeed + zOffset);
             
@@ -180,7 +184,7 @@ namespace OctaNotes.Scripts.Play.Model
         private void GenerateLongNote(int lane, double startZ, double endZ, Guid noteGuid, NoteColor noteColor)
         {
             var x = laneXPositions[lane];
-            float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
+            float y = (lane < 4) ? bottonYPosition - 0.001f : topYPosition + 0.001f ; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             float startPosZ = (float)(startZ * noteSpeed + zOffset);
             
@@ -218,14 +222,14 @@ namespace OctaNotes.Scripts.Play.Model
                 line.GetComponent<INoteViewModel>().SetInitialPosZ(posZ);
                 var lineRenderer = line.GetComponent<LineRenderer>();
                 lineRenderer.positionCount = 2;
-                lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? 0.009f : 1.991f, posZ));
-                lineRenderer.SetPosition(1, new Vector3((float)laneXPositions[lanes[1]], (lanes[1] < 4) ? 0.009f : 1.991f, posZ));
+                lineRenderer.SetPosition(0, new Vector3((float)laneXPositions[lanes[0]], (lanes[0] < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, posZ));
+                lineRenderer.SetPosition(1, new Vector3((float)laneXPositions[lanes[1]], (lanes[1] < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, posZ));
                 lineRenderer.startWidth = 0.02f;
                 lineRenderer.endWidth = 0.02f;
             }
             else if (lanes.Count() >= 3)
             {
-                var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? 0.009f : 1.991f, posZ)).ToList());
+                var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, posZ)).ToList());
                 // var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
                 var supportPlane = Instantiate(supportPlanePrefab);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;

@@ -1,5 +1,6 @@
 using System;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine;
@@ -7,7 +8,7 @@ using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
 {
-[RequireComponent(typeof(AudioSource), typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshRenderer))]
     public class LaneEffectView : MonoBehaviour, ILaneView
     {
         private ILaneViewModel _laneViewModel;
@@ -22,11 +23,9 @@ namespace OctaNotes.Scripts.Play.View
         }
 
         private Material material;
-        private AudioSource source;
         private void Start()
         {
             material = GetComponent<MeshRenderer>().material;
-            source = GetComponent<AudioSource>();
 
             if (_laneViewModel == null)
             {
@@ -38,7 +37,7 @@ namespace OctaNotes.Scripts.Play.View
             {
                 if (buttonState == ButtonState.BeginPush)
                 {
-                    ToggleOnEffect();
+                    ToggleOnEffect(_laneViewModel.CurrentJudge.Value);
                 }
                 else  if (buttonState == ButtonState.EndPush)
                 {
@@ -46,10 +45,9 @@ namespace OctaNotes.Scripts.Play.View
                 }
             });
         }
-        private void ToggleOnEffect()
+        private void ToggleOnEffect(Judge judge)
         {
             material.SetFloat("_Brighten", 1f);
-            source.PlayOneShot(source.clip);
         }
         private void ToggleOffEffect()
         {

@@ -13,30 +13,12 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class ChartParser: IChartParser, IInitializable
     {
-        public void Initialize()
-        {
-            LoadChart(Application.persistentDataPath + "/Charts/easy.onc");
-        }
-        
-        public void LoadChart(string path)
-        {
-            // 譜面データは各行を文字列とするリストで受け取る
-            var data = System.IO.File.ReadAllLines(path);
-            ChartData = new List<string>(data);
-            _chartData1 = new Dictionary<double, List<string>>();
-            _chartData2 = new List<List<NoteTiming>>(8);
-            for (int i = 0; i < 8; i++)
-            {
-                _chartData2.Add(new List<NoteTiming>());
-            }
-            Parse();
-        }
-        public Dictionary<double, List<string>> GraphicalChartData => _chartData1;
+        public Dictionary<double, List<GraphicalNoteEntry>> GraphicalChartData => _chartData1;
         public List<List<NoteTiming>> LaneWiseChartData => _chartData2;
         public List<(double,double)> HsChangeData => _hschangeData;
 
 
-        private Dictionary<double, List<string>> _chartData1 = new(); // ノーツのオブジェクトを画面上に描画するための譜面データ構造
+        private Dictionary<double, List<GraphicalNoteEntry>> _chartData1 = new(); // ノーツのオブジェクトを画面上に描画するための譜面データ構造
         // Keyはノーツを生成するz座標、Valueには8つのレーンと32個の誘導線の系列のデータが格納されている。
         // Valueの例: ["b2","b1","r1","r2","","","",""," ]
         // ソフランは考えないでいい！(because そもそも位置が与えられており、速度変化はイベント発火で処理するため)
@@ -74,6 +56,25 @@ namespace OctaNotes.Scripts.Play.Model
         };
 
         private List<string> ChartData;
+        
+        public void Initialize()
+        {
+            LoadChart(Application.persistentDataPath + "/Charts/easy.onc");
+        }
+        
+        public void LoadChart(string path)
+        {
+            // 譜面データは各行を文字列とするリストで受け取る
+            var data = System.IO.File.ReadAllLines(path);
+            ChartData = new List<string>(data); //.oncファイルの各行をプレーンテキストで要素に持つリスト
+            _chartData1 = new Dictionary<double, List<GraphicalNoteEntry>>();
+            _chartData2 = new List<List<NoteTiming>>(8);
+            for (int i = 0; i < 8; i++)
+            {
+                _chartData2.Add(new List<NoteTiming>());
+            }
+            Parse();
+        }
         
         private void Parse()
         {
@@ -185,7 +186,7 @@ namespace OctaNotes.Scripts.Play.Model
         {
             try
             {
-
+                Guid noteGuid = Guid.NewGuid();
                 var noteTypeStr = operands[0];
                 int laneNum = int.Parse(operands[1]);
                 if (!validNoteTypeStr.Contains(noteTypeStr))
@@ -196,15 +197,26 @@ namespace OctaNotes.Scripts.Play.Model
 
                 var timing = _calculator.CalcTime(l, m, n);
                 var noteZPos = _calculator.CalcPosition(timing);
+                
+                // そのタイミングに他のノーツがあれば、行の要素を書き換え
                 if (_chartData1.TryGetValue(noteZPos, out var value))
                 {
-                    value[laneNum] = noteTypeStr;
+                    value[laneNum] = new GraphicalNoteEntry()
+                    {
+                        guid = noteGuid,
+                        noteTypeStr = noteTypeStr
+                    };
                 }
+                // そのタイミングに他のノーツがない場合は、そのタイミングをKeyとして辞書に要素を追加
                 else
                 {
-                    _chartData1[noteZPos] = new List<string>(new string[40])
+                    _chartData1[noteZPos] = new List<GraphicalNoteEntry>(new GraphicalNoteEntry[40])
                     {
-                        [laneNum] = noteTypeStr
+                        [laneNum] = new  GraphicalNoteEntry()
+                        {
+                            guid = noteGuid,
+                            noteTypeStr =  noteTypeStr
+                        }
                     };
                 }
 
@@ -235,7 +247,7 @@ namespace OctaNotes.Scripts.Play.Model
                 {
                     timing = timing,
                     noteType = noteType,
-                    guid = Guid.NewGuid()
+                    guid = noteGuid
                 });
             }
             catch (System.InvalidOperationException)
@@ -253,13 +265,22 @@ namespace OctaNotes.Scripts.Play.Model
                 var noteZPos = _calculator.CalcPosition(timing);
                 if (_chartData1.TryGetValue(noteZPos, out var value))
                 {
-                    value[lineSeries + 8] = pointTypeStr;
+                    // 誘導線系列はリストの8番目から始まる
+                    value[lineSeries + 8] = new GraphicalNoteEntry()
+                    {
+                        guid = Guid.Empty,
+                        noteTypeStr = pointTypeStr,
+                    };
                 }
                 else
                 {
-                    _chartData1[noteZPos] = new List<string>(new string[40])
+                    _chartData1[noteZPos] = new List<GraphicalNoteEntry>(new GraphicalNoteEntry[40])
                     {
-                        [lineSeries + 8] = pointTypeStr
+                        [lineSeries + 8] = new GraphicalNoteEntry()
+                        {
+                            guid = Guid.Empty,
+                            noteTypeStr = pointTypeStr,
+                        }
                     };
                 }
             }

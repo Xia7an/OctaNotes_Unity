@@ -8,19 +8,36 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
 {
     public class TapJudgeStrategy : IJudgeStrategy
     {
+        private readonly Judge[] pushedJudges = new Judge[]
+        {
+            Judge.None,   // 早入りBad範囲より前
+            Judge.Bad,    // 早入りBad範囲
+            Judge.Good,   // 早入りGood範囲
+            Judge.Perfect,// Perfect範囲
+            Judge.Good,   // 遅入りGood範囲
+            Judge.Bad,    // 遅入りBad範囲
+            Judge.Miss    // 遅入りBad範囲より後
+        };
+
+        private readonly Judge[] notPushedJudges = new Judge[]
+        {
+            Judge.NotJudged,// 早入りBad範囲より前
+            Judge.NotJudged,// 早入りBad範囲
+            Judge.NotJudged,// 早入りGood範囲
+            Judge.NotJudged,// Perfect範囲
+            Judge.NotJudged,// 遅入りGood範囲
+            Judge.NotJudged,// 遅入りBad範囲
+            Judge.Miss      // 遅入りBad範囲より後
+        };
+        
         public JudgeResult JudgeNote(Note note, List<ButtonState> buttonStates, float longPushedRate)
         {
-            const float BadThreshold = 0.15f;
-            const float GoodThreshold = 0.10f;
-            const float PerfectThreshold = 0.05f;
 
-            bool isPressed = buttonStates != null
-                             && note.laneNumber >= 0
-                             && note.laneNumber < buttonStates.Count
-                             && buttonStates[note.laneNumber] == ButtonState.BeginPush;
+            bool isPressed = buttonStates[note.laneNumber] == ButtonState.BeginPush;
 
             float delta = note.timingDelta;
-            float absDelta = Math.Abs(delta);
+            
+            
 
             JudgeResult result = new JudgeResult
             {
@@ -30,53 +47,41 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
                 guid = note.guid,
                 effectInvokeTiming = note.justTiming + note.timingDelta // 現在時刻にエフェクトを表示
             };
-
-            if (delta > BadThreshold)
+            int range = RangeSelect(note.timingDelta);
+            if (isPressed)
             {
-                result.judge = Judge.Miss;
-                return result;
-            }
-
-            if (!isPressed)
-            {
-                if (delta < -BadThreshold)
+                result.judge = pushedJudges[range];
+                result.timingDiff = range switch
                 {
-                    result.judge = Judge.NotJudged;
-                    return result;
-                }
-
-                result.judge = Judge.NotJudged;
-                return result;
+                    >= 0 and <= 2 => TimingDiff.Fast,
+                    3 => TimingDiff.Just,
+                    _ => TimingDiff.Late
+                };
             }
-
-            if (delta < -BadThreshold)
+            else
             {
-                result.judge = Judge.None;
-                return result;
-            }
-
-            if (absDelta > GoodThreshold && absDelta <= BadThreshold)
-            {
-                result.judge = Judge.Bad;
-                result.timingDiff = delta < 0 ? TimingDiff.Fast : TimingDiff.Late;
-                return result;
-            }
-
-            if (absDelta > PerfectThreshold && absDelta <= GoodThreshold)
-            {
-                result.judge = Judge.Good;
-                result.timingDiff = delta < 0 ? TimingDiff.Fast : TimingDiff.Late;
-                return result;
-            }
-
-            if (absDelta <= PerfectThreshold)
-            {
-                result.judge = Judge.Perfect;
+                result.judge = notPushedJudges[range];
                 result.timingDiff = TimingDiff.Just;
-                return result;
             }
-
             return result;
+        }
+
+        private int RangeSelect(float timeDelta)
+        {
+            const float BadThreshold = 0.15f;
+            const float GoodThreshold = 0.10f;
+            const float PerfectThreshold = 0.05f;
+            var range = timeDelta switch
+            {
+                < -BadThreshold => 0,
+                >= -BadThreshold and < -GoodThreshold => 1,
+                >= -GoodThreshold and < -PerfectThreshold => 2,
+                >= -PerfectThreshold and <= PerfectThreshold => 3,
+                > PerfectThreshold and <= GoodThreshold => 4,
+                > GoodThreshold and <= BadThreshold => 5,
+                _ => 6
+            };
+            return range;
         }
     }
 }

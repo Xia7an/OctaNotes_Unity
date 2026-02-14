@@ -5,6 +5,6 @@ namespace OctaNotes.Scripts.Play.Interface
 {
     public interface ILaneOutputPort
     {
-        Observable<JudgeResult> OnJudgeResult { get; }
+        ReactiveProperty<JudgeResult>  JudgeResult { get; }
     }
 }

@@ -26,8 +26,8 @@ namespace OctaNotes.Scripts.Play.DI.Lane
             Container.BindInterfacesAndSelfTo<JudgeStrategyFactory>().AsSingle();
             Container.BindInterfacesAndSelfTo<JudgeContext>().AsSingle();
 
-            Container.Bind<ILaneInputPort>().To<LaneInputPort>().AsSingle();
-            Container.Bind<ILaneOutputPort>().To<LaneOutputPort>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LaneInputPort>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LaneOutputPort>().AsSingle();
             Container.BindInterfacesAndSelfTo<LaneViewModel>().AsSingle();
         }
     }

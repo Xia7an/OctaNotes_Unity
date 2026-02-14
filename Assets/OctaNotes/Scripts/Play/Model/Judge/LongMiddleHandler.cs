@@ -6,6 +6,7 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
+using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -34,7 +35,9 @@ namespace OctaNotes.Scripts.Play.Model
         private ReactiveProperty<bool> isHandlingLongNote = new ReactiveProperty<bool>(false);
 
         private int laneNumber;
-        
+
+        private int pushedFrame = 0;
+        private int notPushedFrame = 0;
 
         public void Initialize()
         {
@@ -45,6 +48,7 @@ namespace OctaNotes.Scripts.Play.Model
                 .DistinctUntilChanged()
                 .Subscribe(isHandling =>
                 {
+                    // ロング始点になった→フレームカウント開始
                     if (isHandling)
                     {
                         _longNoteCts?.Cancel();
@@ -53,12 +57,16 @@ namespace OctaNotes.Scripts.Play.Model
 
                         UniTask.Void(async () =>
                         {
-                            var rate = await CountPushedFrame(this.laneNumber, _longNoteCts.Token);
-                            LongPushedRate.Value = rate;
+                            pushedFrame = 0;
+                            notPushedFrame = 0;
+                            await CountPushedFrame(this.laneNumber, _longNoteCts.Token);
                         });
                     }
+                    // ロング終点になった→押されたレートをReactivePropertyに書き込んでカウント終了
                     else
                     {
+                        LongPushedRate.Value = (float)pushedFrame / (pushedFrame + notPushedFrame);
+                        Debug.Log(LongPushedRate.Value);
                         _longNoteCts?.Cancel();
                     }
                 })
@@ -75,17 +83,19 @@ namespace OctaNotes.Scripts.Play.Model
         private void HandleNoteChange(Note note)
         {
             this.laneNumber = note.laneNumber;
-            if(note.noteType == NoteType.LongStart) isHandlingLongNote.Value = true;
-            else if (note.noteType == NoteType.LongEnd) isHandlingLongNote.Value = false;
+            isHandlingLongNote.Value = note switch
+            {
+                { noteType: NoteType.LongStart, timingDelta: >= 0 } => true,
+                { noteType: NoteType.LongEnd, timingDelta: >= 0 } => false,
+                _ => isHandlingLongNote.Value
+            };
         }
 
-        private async UniTask<float> CountPushedFrame(
+        private async UniTask CountPushedFrame(
             int laneNumber,
             CancellationToken token
             )
         {
-            int pushedFrame = 0;
-            int notPushedFrame = 0;
             while (isHandlingLongNote.Value)
             {
                 if(_playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
@@ -95,7 +105,6 @@ namespace OctaNotes.Scripts.Play.Model
                 await UniTask.Yield(token);
             }
 
-            return (float)pushedFrame / (float)(notPushedFrame + pushedFrame);
         }
         
     }

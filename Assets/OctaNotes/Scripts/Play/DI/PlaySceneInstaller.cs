@@ -18,6 +18,8 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
+        Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
+        var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
         if (laneLayout == null)
         {
             throw new ZenjectException("PlaySceneInstaller.laneLayout is not assigned.");
@@ -42,7 +44,7 @@ public class PlaySceneInstaller : MonoInstaller
                 throw new ZenjectException($"ViewBundle for lane {laneDefinition.LaneId} is not assigned.");
             }
 
-            var subContainer = CreateLaneSubContainer(laneDefinition.LaneId);
+            var subContainer = laneSubContainerFactory.CreateLaneSubContainer(laneDefinition.LaneId);
             laneContainers.Add(subContainer);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
 
@@ -64,15 +66,5 @@ public class PlaySceneInstaller : MonoInstaller
             .FromMethod(_ => laneContainers.Select(subContainer => subContainer.Resolve<ILaneOutputPort>()).ToList())
             .AsSingle();
         Container.BindInterfacesAndSelfTo<LaneInputManager>().AsSingle().NonLazy();
-    }
-
-    private DiContainer CreateLaneSubContainer(int laneId)
-    {
-        var subContainer = Container.CreateSubContainer();
-        Container.BindInterfacesTo<Kernel>().FromSubContainerResolve().ByInstance(subContainer).AsCached();
-        subContainer.Bind<Kernel>().AsCached();
-        LaneSubContainerInstaller.Install(subContainer, laneId);
-        subContainer.ResolveRoots();
-        return subContainer;
     }
 }

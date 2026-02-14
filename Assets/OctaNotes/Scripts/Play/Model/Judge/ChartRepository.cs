@@ -14,7 +14,7 @@ namespace OctaNotes.Scripts.Play.Model
         }
         
         // 時刻をキーとして、その時刻にはどのレーンにノーツがあるかがわかる辞書
-        public Dictionary<double, List<string>> GraphicalChartData => _chartParser.GraphicalChartData;
+        public Dictionary<double, List<GraphicalNoteEntry>> GraphicalChartData => _chartParser.GraphicalChartData;
         
         // レーン毎のノーツ一覧がリストになって記録される
         // 時刻の昇順に並んでいることを保証する

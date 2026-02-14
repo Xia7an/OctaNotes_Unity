@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.ViewModel;
 using OctaNotes.Scripts.Settings;
@@ -12,8 +13,18 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class NoteGenerator : MonoBehaviour
     {
-        [Inject] private readonly PlaySettingsSO playsettingsSO;
-        [Inject] private IChartRepositoryImmutable _chartRepository;
+        private  PlaySettingsSO _playsettingsSO;
+        private IChartRepositoryImmutable _chartRepository;
+        private ILaneSubContainerFactory  _laneSubContainerFactory;
+
+        [Inject]
+        public void Construct(PlaySettingsSO playsettingsSO, IChartRepositoryImmutable chartRepository,  ILaneSubContainerFactory laneSubContainerFactory)
+        {
+            this._playsettingsSO = playsettingsSO;
+            _chartRepository = chartRepository;
+            _laneSubContainerFactory = laneSubContainerFactory;
+        }
+        
         
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
@@ -41,8 +52,8 @@ namespace OctaNotes.Scripts.Play.Model
 
         private void Start()
         {
-            noteSpeed = (float)playsettingsSO.noteSpeed;
-            zOffset = playsettingsSO.songStartDelay * noteSpeed;
+            noteSpeed = (float)_playsettingsSO.noteSpeed;
+            // zOffset = _playsettingsSO.songStartDelay * noteSpeed;
             Debug.Log(zOffset);
             Generate();
         }
@@ -57,7 +68,7 @@ namespace OctaNotes.Scripts.Play.Model
                 double zPos = rawZPos;
                 var tapnoteLaneIdx =
                     noteTypes.Select((value, index) => new { value, index })
-                        .Where(x =>!string.IsNullOrEmpty(x.value) && (x.value.StartsWith("b") || x.value.StartsWith("r") || x.value.StartsWith("lb") || x.value.StartsWith("lr") || x.value.StartsWith("lw")))
+                        .Where(x =>!string.IsNullOrEmpty(x.value.noteTypeStr) && (x.value.noteTypeStr.StartsWith("b") || x.value.noteTypeStr.StartsWith("r") || x.value.noteTypeStr.StartsWith("lb") || x.value.noteTypeStr.StartsWith("lr") || x.value.noteTypeStr.StartsWith("lw")))
                         .Select(x => x.index)
                         .ToList();
                 
@@ -71,21 +82,22 @@ namespace OctaNotes.Scripts.Play.Model
                 // 各タイミングレーンごとに処理していく
                 for (int lane = 0; lane < 8; lane++)
                 {
-                    var noteType = noteTypes[lane];
+                    var noteType = noteTypes[lane].noteTypeStr;
+                    var noteGuid = noteTypes[lane].guid;
                     if (string.IsNullOrEmpty(noteType)) continue;
                     
                     
                     if (noteType.StartsWith("b") || noteType.StartsWith("r") || noteType.StartsWith("w"))
                     {
                         // タップノーツ
-                        GenerateTapNote(lane, zPos, noteType[0]);
+                        GenerateTapNote(lane, zPos,noteGuid, noteType[0]);
                     }
                     else if (noteType == "le")
                     {
                          // ロングノーツ終了
                         if (!double.IsNaN(longStartTmpPos[lane]))
                         { 
-                            GenerateLongNote(lane, longStartTmpPos[lane], zPos, longNoteColor[lane]);
+                            GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
                             longStartTmpPos[lane] = double.NaN;
                         }
                     }
@@ -93,7 +105,7 @@ namespace OctaNotes.Scripts.Play.Model
                     {
                         // ロングノーツ開始
                         longStartTmpPos[lane] = zPos;
-                        GenerateTapNote(lane, zPos, noteType[1]);
+                        GenerateTapNote(lane, zPos, noteGuid, noteType[1]);
                         longNoteColor[lane] = noteType[1];
                     }
                     
@@ -103,26 +115,40 @@ namespace OctaNotes.Scripts.Play.Model
         
         
 
-        private void GenerateTapNote(int lane, double z, char noteColor='b')
+        private void GenerateTapNote(int lane, double z, Guid noteGuid, char noteColor='b')
         {
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.01f : 1.99f; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             float posZ = (float)(z * noteSpeed + zOffset);
-            var note =Instantiate(tapNotePrefab, new Vector3((float)x, y, posZ), rotation);
-            note.GetComponent<INoteViewModel>().SetInitialPosZ(posZ);
+            
+            var note = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(tapNotePrefab);
+            note.transform.position =  new Vector3((float)x, y, posZ);
+            note.transform.rotation = rotation;
+            
+            var vm =  note.GetComponent<INoteViewModel>();
+            vm.SetInitialPosZ(posZ);
+            vm.SetGuid(noteGuid);
+            
             SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
         }
         
-        private void GenerateLongNote(int lane, double startZ, double endZ, char noteColor='b')
+        private void GenerateLongNote(int lane, double startZ, double endZ, Guid noteGuid, char noteColor='b')
         {
             var x = laneXPositions[lane];
             float y = (lane < 4) ? 0.009f : 1.991f ; // 上段と下段でy座標を分ける例
             var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
             float startPosZ = (float)(startZ * noteSpeed + zOffset);
-            var longNote = Instantiate(longNotePrefab, new Vector3((float)x, y, startPosZ), rotation);
+            
+            var longNote = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(longNotePrefab);
+            longNote.transform.position =  new Vector3((float)x, y, startPosZ);
+            longNote.transform.rotation = rotation;
             longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
-            longNote.GetComponent<INoteViewModel>().SetInitialPosZ(startPosZ);
+            
+            var vm = longNote.GetComponent<INoteViewModel>();
+            vm.SetInitialPosZ(startPosZ);
+            vm.SetGuid(noteGuid);
+            
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
 

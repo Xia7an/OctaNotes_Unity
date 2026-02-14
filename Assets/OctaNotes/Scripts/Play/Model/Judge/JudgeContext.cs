@@ -56,8 +56,8 @@ namespace OctaNotes.Scripts.Play.Model
                 _longMiddleHandler.LongPushedRate.Value);
             
             // ノーツの判定が確定した(NotJudged でも Noneでもない)場合は、判定確定済みノーツとして記録
-            if (result.judge is Enum.Judge.NotJudged or Enum.Judge.None) return;
             JudgeResult.Value = result;
+            if (result.judge is Enum.Judge.NotJudged or Enum.Judge.None) return;
             judgedNoteGuid = note.guid;
             _printJudgeResult(JudgeResult.Value);
         }
@@ -65,7 +65,12 @@ namespace OctaNotes.Scripts.Play.Model
         private void _printJudgeResult(JudgeResult result)
         {
             // if(result.judge == Enum.Judge.NotJudged) return;
-            Debug.Log($"[Judge Result] Judge: {result.judge},\n TimingDiff: {result.timingDiff},\n Lane: {result.laneNumber},\n GUID: {result.guid},\n EffectTiming: {result.effectInvokeTiming}");
+            // Debug.Log($"[Judge Result] Judge: {result.judge},\n" +
+            //           $"TimingDiff: {result.timingDiff},\n " +
+            //           $"Lane: {result.laneNumber},\n " +
+            //           $"GUID: {result.guid},\n " +
+            //           $"EffectTiming: {result.effectInvokeTiming}, \n " +
+            //           $"LongPushedRate: {_longMiddleHandler.LongPushedRate.Value}");
         }
 
     }

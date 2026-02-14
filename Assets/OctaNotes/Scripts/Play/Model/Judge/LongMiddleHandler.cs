@@ -1,12 +1,9 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
-using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -30,7 +27,6 @@ namespace OctaNotes.Scripts.Play.Model
         public ReactiveProperty<float> LongPushedRate { get; } = new ReactiveProperty<float>(0);
         
         private CompositeDisposable _disposable = new CompositeDisposable();
-        private CancellationTokenSource _longNoteCts = new CancellationTokenSource();
         
         private ReactiveProperty<bool> isHandlingLongNote = new ReactiveProperty<bool>(false);
 
@@ -44,6 +40,13 @@ namespace OctaNotes.Scripts.Play.Model
             this.laneNumber = _laneContext.LaneIndex;
             
             _noteWindow.CurrentNote.Subscribe(note => HandleNoteChange(note)).AddTo(_disposable);
+
+            // 毎フレーム1回だけ入力状態を読む。ロング処理中のみカウントする。
+            Observable.EveryUpdate()
+                .Where(_ => isHandlingLongNote.Value)
+                .Subscribe(_ => CountPushedFrameOnce())
+                .AddTo(_disposable);
+
             isHandlingLongNote
                 .DistinctUntilChanged()
                 .Subscribe(isHandling =>
@@ -51,23 +54,16 @@ namespace OctaNotes.Scripts.Play.Model
                     // ロング始点になった→フレームカウント開始
                     if (isHandling)
                     {
-                        _longNoteCts?.Cancel();
-                        _longNoteCts?.Dispose();
-                        _longNoteCts = new CancellationTokenSource();
-
-                        UniTask.Void(async () =>
-                        {
-                            pushedFrame = 0;
-                            notPushedFrame = 0;
-                            await CountPushedFrame(this.laneNumber, _longNoteCts.Token);
-                        });
+                        pushedFrame = 0;
+                        notPushedFrame = 0;
                     }
                     // ロング終点になった→押されたレートをReactivePropertyに書き込んでカウント終了
                     else
                     {
-                        LongPushedRate.Value = (float)pushedFrame / (pushedFrame + notPushedFrame);
-                        Debug.Log(LongPushedRate.Value);
-                        _longNoteCts?.Cancel();
+                        int totalFrame = pushedFrame + notPushedFrame;
+                        LongPushedRate.Value = totalFrame > 0
+                            ? (float)pushedFrame / totalFrame
+                            : 0f;
                     }
                 })
                 .AddTo(_disposable);
@@ -75,9 +71,8 @@ namespace OctaNotes.Scripts.Play.Model
         
         public void Dispose()
         {
-            _longNoteCts?.Cancel();
-            _longNoteCts?.Dispose();
             _disposable?.Dispose();
+            isHandlingLongNote?.Dispose();
             LongPushedRate?.Dispose();
         }
         private void HandleNoteChange(Note note)
@@ -91,20 +86,18 @@ namespace OctaNotes.Scripts.Play.Model
             };
         }
 
-        private async UniTask CountPushedFrame(
-            int laneNumber,
-            CancellationToken token
-            )
+        private void CountPushedFrameOnce()
         {
-            while (isHandlingLongNote.Value)
+            if(_playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
+               || _playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.BeginPush
+               )
             {
-                if(_playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
-                   || _playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.BeginPush
-                   ) pushedFrame++;
-                else notPushedFrame++;
-                await UniTask.Yield(token);
+                pushedFrame++;
             }
-
+            else
+            {
+                notPushedFrame++;
+            }
         }
         
     }

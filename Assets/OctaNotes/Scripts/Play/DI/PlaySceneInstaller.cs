@@ -19,18 +19,22 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
+        
+        // レーン毎にSubContainerを用意する
         var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
         if (laneLayout == null)
         {
             throw new ZenjectException("PlaySceneInstaller.laneLayout is not assigned.");
         }
 
+        // レーン毎に束ねたViewたちのリストを作り、LaneIdでソート
         var laneDefinitions = laneLayout.LaneDefinitions
             .OrderBy(definition => definition.LaneId)
             .ToList();
-        var laneContainers = new List<DiContainer>(laneDefinitions.Count);
-        var laneInputPorts = new List<ILaneInputPort>(laneDefinitions.Count);
+        var laneContainers = new List<DiContainer>(laneDefinitions.Count); // レーン毎に作るSubContainerを束ねるリスト
+        var laneInputPorts = new List<ILaneInputPort>(laneDefinitions.Count); 
 
+        // レーンごとにSubContainerを作り、対応するレーンのViewにDI
         for (int expectedLaneId = 0; expectedLaneId < laneDefinitions.Count; expectedLaneId++)
         {
             var laneDefinition = laneDefinitions[expectedLaneId];
@@ -47,8 +51,9 @@ public class PlaySceneInstaller : MonoInstaller
             var subContainer = laneSubContainerFactory.CreateLaneSubContainer(laneDefinition.LaneId);
             laneContainers.Add(subContainer);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
-
-            foreach (var view in laneDefinition.ViewBundle.Views)
+            
+            // レーン内のViewに1つずつDI
+            foreach (var view in laneDefinition.ViewBundle.Views) 
             {
                 if (view == null)
                 {

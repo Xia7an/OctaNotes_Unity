@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Play.Interface;
@@ -8,31 +10,30 @@ using OctaNotes.Scripts.Settings;
 using R3;
 using UnityEngine;
 using Zenject;
+using Color = System.Drawing.Color;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
-    public class NoteViewModel : MonoBehaviour, INoteViewModel
+    public class SupportLineViewModel : MonoBehaviour, ISupportLineViewModel
     {
         private PlaySettingsSO _playSettingsSO;
         private IInGameTimer _inGameTimer;
         private ILaneOutputPort _laneOutputPort;
-
-        public double PosZ { get; private set; }
         
         private double _initialPosZ = 0;
-        private Guid guid = Guid.Empty;
+        public double PosZ { get; private set; }
+        private Guid[]  _guids;
         
-        public ReactiveProperty<Color> Color { get; } = new ReactiveProperty<Color>();
         public void SetInitialPosZ(double posZ)
         {
             _initialPosZ = posZ;
         }
 
-        public void SetGuid(Guid guid)
+        public void SetGuids(Guid[] guids)
         {
-            this.guid = guid;
+            _guids = guids;
         }
-
+        
         [Inject]
         public void Construct(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
         {
@@ -49,7 +50,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
             }).AddTo(this);
             _laneOutputPort.JudgeResult.Where(v => 
                 (
-                    v.guid == guid
+                    _guids.Contains(v.guid)
                     && v.judge is not (Judge.NotJudged or Judge.None)
                 )
             ).SubscribeAwait(async (result, ct) =>
@@ -62,6 +63,5 @@ namespace OctaNotes.Scripts.Play.ViewModel
             await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value, cancellationToken: token);
             Destroy(gameObject);
         }
-        
     }
 }

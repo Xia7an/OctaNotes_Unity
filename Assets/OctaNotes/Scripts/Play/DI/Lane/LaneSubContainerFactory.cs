@@ -26,23 +26,6 @@ namespace OctaNotes.Scripts.Play.DI.Lane
             return subContainer;
         }
 
-        public void BindLane(DiContainer container, int laneIndex, ILaneView[] laneViews)
-        {
-            container.Bind(typeof(ILaneInputPort), typeof(ILaneOutputPort), typeof(ILaneViewModel))
-                .FromSubContainerResolve()
-                .ByMethod(subContainer =>
-                {
-                    _laneContainers[laneIndex] = subContainer;
-                    LaneSubContainerInstaller.Install(subContainer, laneIndex);
-                    for (int laneViewIndex = 0; laneViewIndex < laneViews.Length; laneViewIndex++)
-                    {
-                        subContainer.Bind<ILaneView>().WithId(laneViewIndex).FromInstance(laneViews[laneViewIndex]).AsCached();
-                    }
-                })
-                .WithKernel()
-                .AsCached();
-        }
-
         public DiContainer GetLaneSubContainer(int laneIndex)
         {
             if (!_laneContainers.TryGetValue(laneIndex, out var laneContainer))
@@ -51,16 +34,6 @@ namespace OctaNotes.Scripts.Play.DI.Lane
             }
 
             return laneContainer;
-        }
-
-        public T ResolveFromLane<T>(int laneIndex)
-        {
-            return GetLaneSubContainer(laneIndex).Resolve<T>();
-        }
-
-        public T ResolveFromLaneId<T>(int laneIndex, object identifier)
-        {
-            return GetLaneSubContainer(laneIndex).ResolveId<T>(identifier);
         }
     }
 }

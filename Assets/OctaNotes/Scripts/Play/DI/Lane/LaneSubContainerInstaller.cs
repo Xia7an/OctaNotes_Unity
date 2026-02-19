@@ -19,14 +19,11 @@ namespace OctaNotes.Scripts.Play.DI.Lane
         {
             Container.Bind<ILaneContext>().To<LaneContextAdapter>().AsSingle().WithArguments(_laneIndex);
 
-            Container.BindInterfacesAndSelfTo<LaneScopedInputLayer>().AsSingle();
-
             Container.BindInterfacesAndSelfTo<NoteWindow>().AsSingle();
             Container.BindInterfacesAndSelfTo<LongMiddleHandler>().AsSingle();
             Container.BindInterfacesAndSelfTo<JudgeStrategyFactory>().AsSingle();
             Container.BindInterfacesAndSelfTo<JudgeContext>().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<LaneInputPort>().AsSingle();
             Container.BindInterfacesAndSelfTo<LaneOutputPort>().AsSingle();
             Container.BindInterfacesAndSelfTo<LaneViewModel>().AsSingle();
         }

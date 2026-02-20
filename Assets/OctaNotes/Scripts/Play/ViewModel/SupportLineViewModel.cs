@@ -5,13 +5,14 @@ using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using OctaNotes.Scripts.Settings;
 using R3;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
-    public class SupportLineViewModel : ISupportLineViewModel, IInitializable
+    public class SupportLineViewModel : ISupportLineViewModel, IInitializable, IDisposable
     {
         private PlaySettingsSO _playSettingsSO;
         private IInGameTimer _inGameTimer;
@@ -34,8 +35,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
             _guids = guids;
         }
         
-        [Inject]
-        public void Construct(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
+        public SupportLineViewModel(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
         {
             this._playSettingsSO = playSettingsSO;
             _inGameTimer = inGameTimer;
@@ -59,6 +59,12 @@ namespace OctaNotes.Scripts.Play.ViewModel
             ).SubscribeAwait(async (result, ct) =>
                 await ScheduleDeleteNote(result.effectInvokeTiming, ct)).AddTo(_disposables);
         }
+        
+        public void Dispose()
+        {
+            _disposables?.Dispose();
+            PosZ?.Dispose();
+        }
 
         private async UniTask ScheduleDeleteNote(float time, CancellationToken token)
         {
@@ -66,5 +72,6 @@ namespace OctaNotes.Scripts.Play.ViewModel
             await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value, cancellationToken: token);
             OnJudged?.Invoke();
         }
+
     }
 }

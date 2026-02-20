@@ -59,6 +59,7 @@ namespace OctaNotes.Scripts.Play.Model
 
         public void Dispose()
         {
+            _input.Play.Disable();
             _input?.Dispose();
         }
 

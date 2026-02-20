@@ -5,6 +5,7 @@ using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.ViewModel;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using OctaNotes.Scripts.Settings;
 using UnityEngine;
 using Zenject;
@@ -169,9 +170,9 @@ namespace OctaNotes.Scripts.Play.Model
             longNote.transform.rotation = rotation;
             longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
             
-            var vm = longNote.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
+            var vm = longNote.GetComponent<GameObjectContext>().Container.Resolve<ILongNoteViewModel>();
+            _laneSubContainerFactory.GetLaneSubContainer(lane).Inject(vm); // ノーツごとのViewModelにレーンのSubContainerからDI
             vm.SetInitialPosZ(startPosZ);
-            vm.SetGuid(noteGuid);
             
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }

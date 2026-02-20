@@ -1,4 +1,5 @@
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using R3;
 using UnityEngine;
 using Zenject;

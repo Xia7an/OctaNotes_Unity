@@ -6,9 +6,11 @@ namespace OctaNotes.Scripts.Play.Interface
 {
     public interface INoteViewModel
     {
-        double PosZ { get; }
+        ReactiveProperty<double> PosZ { get; }
         
         ReactiveProperty<Color> Color { get; }
+
+        event Action OnJudged;
         
         void SetInitialPosZ(double posZ);
         

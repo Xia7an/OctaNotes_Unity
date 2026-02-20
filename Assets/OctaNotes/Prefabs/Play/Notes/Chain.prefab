@@ -156,7 +156,8 @@ GameObject:
   - component: {fileID: 7959236772064661828}
   - component: {fileID: 4449450305209579933}
   - component: {fileID: 4496243113908065779}
-  - component: {fileID: 9064718348572139194}
+  - component: {fileID: -8311036112097857247}
+  - component: {fileID: -4945188428346005135}
   m_Layer: 0
   m_Name: Chain
   m_TagString: Untagged
@@ -270,8 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827f4e11291b46618a58f9d7ccbd644e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteMoveView
-  _noteViewModel: {fileID: 9064718348572139194}
---- !u!114 &9064718348572139194
+--- !u!114 &-8311036112097857247
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -280,6 +280,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 7157331803031142125}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d681e4736c2d4a73a076d34c5f3e586e, type: 3}
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.NoteViewModel
+  m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: -4945188428346005135}
+  _installerPrefabs: []
+  _findSiblingMonoInstallers: 0
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &-4945188428346005135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7157331803031142125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5961a192dc492d815219850de8343e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.DI.NoteInstaller

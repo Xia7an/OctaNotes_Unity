@@ -6,7 +6,10 @@ namespace OctaNotes.Scripts.Play.Interface
 {
     public interface ISupportLineViewModel
     {
-        double PosZ { get; }
+        ReactiveProperty<double> PosZ { get; }
+
+        event Action OnJudged;
+        
         void SetInitialPosZ(double posZ);
         void SetGuids(Guid[] guids);
     }

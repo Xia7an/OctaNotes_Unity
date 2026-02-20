@@ -1,18 +1,16 @@
-using System;
 using OctaNotes.Scripts.Play.Interface;
-using OctaNotes.Scripts.Play.ViewModel;
 using R3;
 using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
 {
-    public class NoteMoveView: MonoBehaviour
+    public class SupportPlaneMoveView : MonoBehaviour
     {
-        private INoteViewModel _noteViewModel;
+        private ISupportLineViewModel _noteViewModel;
 
         [Inject]
-        private void Construct(INoteViewModel noteViewModel)
+        private void Construct(ISupportLineViewModel noteViewModel)
         {
             _noteViewModel = noteViewModel;
         }
@@ -21,7 +19,7 @@ namespace OctaNotes.Scripts.Play.View
         {
             _noteViewModel.PosZ.Subscribe(SetPosZ).AddTo(this);
             Observable.FromEvent(h => _noteViewModel.OnJudged += h, 
-                h => _noteViewModel.OnJudged -= h)
+                    h => _noteViewModel.OnJudged -= h)
                 .Subscribe(_ => InvokeJudgedEffect());
         }
 

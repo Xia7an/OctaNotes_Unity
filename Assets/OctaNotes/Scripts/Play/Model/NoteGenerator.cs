@@ -14,7 +14,7 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class NoteGenerator : MonoBehaviour
     {
-        private  PlaySettingsSO _playsettingsSO;
+        private PlaySettingsSO _playsettingsSO;
         private IChartRepositoryImmutable _chartRepository;
         private ILaneSubContainerFactory  _laneSubContainerFactory;
         
@@ -23,7 +23,7 @@ namespace OctaNotes.Scripts.Play.Model
         [Inject]
         public void Construct(PlaySettingsSO playsettingsSO, IChartRepositoryImmutable chartRepository,  ILaneSubContainerFactory laneSubContainerFactory)
         {
-            this._playsettingsSO = playsettingsSO;
+            _playsettingsSO = playsettingsSO;
             _chartRepository = chartRepository;
             _laneSubContainerFactory = laneSubContainerFactory;
         }

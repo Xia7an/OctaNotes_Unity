@@ -19,13 +19,18 @@ namespace OctaNotes.Scripts.Play.View
         [SerializeField] private AudioClip exPerfectClip;
 
         private IJudgeSoundViewModel _judgeSoundViewModel;
+        
         private AudioSource _audioSource;
 
         [Inject]
-        public void Construct(IJudgeSoundViewModel judgeSoundViewModel)
+        private void Construct([InjectOptional] IJudgeSoundViewModel judgeSoundViewModel)
         {
-            _judgeSoundViewModel = judgeSoundViewModel;
+            if (_judgeSoundViewModel == null && judgeSoundViewModel != null)
+            {
+                _judgeSoundViewModel = judgeSoundViewModel;
+            }
         }
+        
 
         private void Awake()
         {
@@ -34,6 +39,12 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
+            if (_judgeSoundViewModel == null)
+            {
+                Debug.LogWarning($"[{nameof(JudgeSoundView)}] IJudgeSoundViewModel is not injected on {gameObject.name}.", this);
+                return;
+            }
+
             _judgeSoundViewModel.JudgeForSound.Subscribe(PlayJudgeSound).AddTo(this);
         }
 

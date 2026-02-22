@@ -23,9 +23,12 @@ namespace OctaNotes.Scripts.Play.View
         }
 
         [Inject]
-        private void Construct(ILaneViewModel laneViewModel)
+        private void Construct([InjectOptional] ILaneViewModel laneViewModel)
         {
-            _laneViewModel = laneViewModel;
+            if (_laneViewModel == null && laneViewModel != null)
+            {
+                _laneViewModel = laneViewModel;
+            }
         }
 
         private void Awake()

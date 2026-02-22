@@ -1,5 +1,7 @@
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Enum;
+using OctaNotes.Scripts.Play.Model.Struct;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using UnityEngine;
 using Zenject;
 using R3;
@@ -14,14 +16,15 @@ namespace OctaNotes.Scripts.Play.View
         [SerializeField] private AudioClip goodClip;
         [SerializeField] private AudioClip badClip;
         [SerializeField] private AudioClip noneClip;
+        [SerializeField] private AudioClip exPerfectClip;
 
-        private ILaneOutputPort _laneOutputPort;
+        private IJudgeSoundViewModel _judgeSoundViewModel;
         private AudioSource _audioSource;
 
         [Inject]
-        public void Construct(ILaneOutputPort laneOutputPort)
+        public void Construct(IJudgeSoundViewModel judgeSoundViewModel)
         {
-            this._laneOutputPort = laneOutputPort;
+            _judgeSoundViewModel = judgeSoundViewModel;
         }
 
         private void Awake()
@@ -31,18 +34,16 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
-            _laneOutputPort.JudgeResult.Subscribe(v =>
-            {
-                PlayJudgeSound(v.judge);
-            });
+            _judgeSoundViewModel.JudgeForSound.Subscribe(PlayJudgeSound).AddTo(this);
         }
 
-        private void PlayJudgeSound(Judge judge)
+        private void PlayJudgeSound(JudgeSound judgesound)
         {
-            if(judge == Judge.NotJudged) return;
-            var clip = judge switch
+            if(judgesound.judge == Judge.NotJudged) return;
+            var clip = judgesound.judge switch
             {
-                Judge.Perfect => perfectClip,
+                Judge.Perfect when !judgesound.isEx => perfectClip,
+                Judge.Perfect when judgesound.isEx => exPerfectClip,
                 Judge.Good => goodClip,
                 Judge.Bad => badClip,
                 Judge.None => noneClip,

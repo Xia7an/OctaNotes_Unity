@@ -4,6 +4,6 @@ namespace OctaNotes.Scripts.Play.Model.Interface
 {
     public interface IJudgeStrategyFactory
     {
-        public IJudgeStrategy Create(NoteType noteType);
+        public IJudgeStrategy Create(NoteType noteType, bool isEx);
     }
 }

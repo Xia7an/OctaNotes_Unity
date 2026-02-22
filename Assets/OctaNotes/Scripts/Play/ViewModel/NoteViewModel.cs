@@ -11,18 +11,27 @@ using Zenject;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
-    public class NoteViewModel : MonoBehaviour, INoteViewModel
+    public class NoteViewModel : INoteViewModel, IInitializable
     {
         private PlaySettingsSO _playSettingsSO;
         private IInGameTimer _inGameTimer;
         private ILaneOutputPort _laneOutputPort;
-
-        public double PosZ { get; private set; }
+        
+        public ReactiveProperty<Color> Color { get; } = new();
+        public event Action OnJudged;
+        public ReactiveProperty<double> PosZ { get; } = new();
         
         private double _initialPosZ = 0;
         private Guid guid = Guid.Empty;
+        private CompositeDisposable _disposables = new();
         
-        public ReactiveProperty<Color> Color { get; } = new ReactiveProperty<Color>();
+        public NoteViewModel(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
+        {
+            this._playSettingsSO = playSettingsSO;
+            this._inGameTimer = inGameTimer;
+            this._laneOutputPort = laneOutputPort;
+        }
+        
         public void SetInitialPosZ(double posZ)
         {
             _initialPosZ = posZ;
@@ -32,36 +41,32 @@ namespace OctaNotes.Scripts.Play.ViewModel
         {
             this.guid = guid;
         }
+        
 
-        [Inject]
-        public void Construct(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
-        {
-            this._playSettingsSO = playSettingsSO;
-            _inGameTimer = inGameTimer;
-            _laneOutputPort = laneOutputPort;
-        }
-
-        private void Start()
+        public void Initialize()
         {
             _inGameTimer.Time.Subscribe(time =>
             {
-                PosZ = -time * _playSettingsSO.noteSpeed + _initialPosZ;
-            }).AddTo(this);
+                PosZ.Value = -time * _playSettingsSO.noteSpeed + _initialPosZ;
+            }).AddTo(_disposables);
+            
+            // 判定が確定したノーツのGuidが自身のGuidと一致したら、エフェクト発動をスケジュール
             _laneOutputPort.JudgeResult.Where(v => 
                 (
+                    guid != Guid.Empty &&
                     v.guid == guid
                     && v.judge is not (Judge.NotJudged or Judge.None)
                 )
             ).SubscribeAwait(async (result, ct) =>
-                await ScheduleDeleteNote(result.effectInvokeTiming, ct)).AddTo(this);
+                await ScheduleDeleteNote(result.effectInvokeTiming, ct)).AddTo(_disposables);
         }
 
         private async UniTask ScheduleDeleteNote(float time, CancellationToken token)
         {
             // エフェクト発動時刻まで待つ
             await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value, cancellationToken: token);
-            Destroy(gameObject);
+            Debug.Log($"Delete note. Guid: {guid}");
+            OnJudged?.Invoke();
         }
-        
     }
 }

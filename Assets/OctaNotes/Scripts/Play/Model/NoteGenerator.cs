@@ -5,8 +5,8 @@ using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.ViewModel;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using OctaNotes.Scripts.Settings;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -32,6 +32,7 @@ namespace OctaNotes.Scripts.Play.Model
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
         [SerializeField] private GameObject chainNotePrefab;
+        [SerializeField] private GameObject longEndPrefab;
         [SerializeField] private GameObject supportPlanePrefab;
         [SerializeField] private GameObject supportLinePrefab;
         [SerializeField] private Material supportPlaneMaterial;
@@ -108,6 +109,7 @@ namespace OctaNotes.Scripts.Play.Model
                             if (!double.IsNaN(longStartTmpPos[lane]))
                             { 
                                 GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
+                                GenerateLongEnd(lane, zPos,  noteGuid, longNoteColor[lane]);
                                 longStartTmpPos[lane] = double.NaN;
                             }
                             break;
@@ -132,7 +134,7 @@ namespace OctaNotes.Scripts.Play.Model
             note.transform.position =  new Vector3((float)x, y, posZ);
             note.transform.rotation = rotation;
             
-            var vm =  note.GetComponent<INoteViewModel>();
+            var vm = note.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
             vm.SetInitialPosZ(posZ);
             vm.SetGuid(noteGuid);
             
@@ -149,8 +151,26 @@ namespace OctaNotes.Scripts.Play.Model
             var note = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(chainNotePrefab);
             note.transform.position =  new Vector3((float)x, y, posZ);
             note.transform.rotation = rotation;
+
+            var vm = note.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
+            vm.SetInitialPosZ(posZ);
+            vm.SetGuid(noteGuid);
             
-            var vm =  note.GetComponent<INoteViewModel>();
+            SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
+        }
+
+        private void GenerateLongEnd(int lane, double z, Guid noteGuid, NoteColor noteColor)
+        {
+            var x = laneXPositions[lane];
+            float y = (lane < 4) ? bottonYPosition : topYPosition;
+            var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
+            float posZ = (float)(z * noteSpeed + zOffset);
+            
+            var note = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(longEndPrefab);
+            note.transform.position =  new Vector3((float)x, y, posZ);
+            note.transform.rotation = rotation;
+            
+            var vm = note.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
             vm.SetInitialPosZ(posZ);
             vm.SetGuid(noteGuid);
             
@@ -170,9 +190,9 @@ namespace OctaNotes.Scripts.Play.Model
             longNote.transform.rotation = rotation;
             longNote.transform.localScale = new Vector3(1,1, ((lane < 4)?1:-1) * (float)(endZ - startZ)*noteSpeed);
             
-            var vm = longNote.GetComponent<INoteViewModel>();
+            var vm = longNote.GetComponent<GameObjectContext>().Container.Resolve<ILongNoteViewModel>();
+            _laneSubContainerFactory.GetLaneSubContainer(lane).Inject(vm); // ノーツごとのViewModelにレーンのSubContainerからDI
             vm.SetInitialPosZ(startPosZ);
-            vm.SetGuid(noteGuid);
             
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
@@ -197,7 +217,7 @@ namespace OctaNotes.Scripts.Play.Model
                 // 補助線、補助面は常に0番レーンのコンテナによって制御する
                 var line = _laneSubContainerFactory.GetLaneSubContainer(0).InstantiatePrefab(supportLinePrefab);
                 
-                var vm  = line.GetComponent<ISupportLineViewModel>();
+                var vm  = line.GetComponent<GameObjectContext>().Container.Resolve<ISupportLineViewModel>();
                 vm.SetInitialPosZ(posZ);
                 vm.SetGuids(guids);
                 
@@ -214,6 +234,9 @@ namespace OctaNotes.Scripts.Play.Model
                 var mesh = GenerateMesh(lanes.Select(lane => new Vector3((float)laneXPositions[lane], (lane < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, posZ)).ToList());
                 // var supportPlane = new GameObject("SupportPlane", typeof(MeshFilter), typeof(MeshRenderer));
                 var supportPlane = _laneSubContainerFactory.GetLaneSubContainer(0).InstantiatePrefab(supportPlanePrefab);
+                var vm  = supportPlane.GetComponent<GameObjectContext>().Container.Resolve<ISupportLineViewModel>();
+                vm.SetInitialPosZ(posZ);
+                vm.SetGuids(guids);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;
             }
         }

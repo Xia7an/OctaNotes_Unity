@@ -11,5 +11,7 @@ namespace OctaNotes.Scripts.Settings
         public int badRangeMs = 150;
         public int maxMissDelayMs = 200;
         public double songStartDelay = 3;
+
+        public int maxScore = 1000000;
     }
 }

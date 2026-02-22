@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 842914223053466453}
-  - component: {fileID: -6600425887572452486}
-  - component: {fileID: 6820860022759324935}
   - component: {fileID: 1584863544632471369}
+  - component: {fileID: 7702581342648851902}
+  - component: {fileID: 3740242645361052908}
+  - component: {fileID: -4542302782079842488}
   m_Layer: 0
   m_Name: Long
   m_TagString: Untagged
@@ -35,31 +36,6 @@ Transform:
   - {fileID: 8398718509236800126}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6600425887572452486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8094131818991120970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827f4e11291b46618a58f9d7ccbd644e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteMoveView
-  _noteViewModel: {fileID: 6820860022759324935}
---- !u!114 &6820860022759324935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8094131818991120970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d681e4736c2d4a73a076d34c5f3e586e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.NoteViewModel
 --- !u!114 &1584863544632471369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,6 +49,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.LongNoteRendererRef
   meshRenderer: {fileID: 8942003413565868157}
+--- !u!114 &7702581342648851902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094131818991120970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d98684fd071f4d64a5943f89418667f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongNoteView
+  longNoteRendererRef: {fileID: 1584863544632471369}
+--- !u!114 &3740242645361052908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094131818991120970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: -4542302782079842488}
+  _installerPrefabs: []
+  _findSiblingMonoInstallers: 0
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &-4542302782079842488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8094131818991120970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8ba7b77ec34928a38a363daf136622, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.DI.LongNoteInstaller
 --- !u!1 &8598344474344782887
 GameObject:
   m_ObjectHideFlags: 0

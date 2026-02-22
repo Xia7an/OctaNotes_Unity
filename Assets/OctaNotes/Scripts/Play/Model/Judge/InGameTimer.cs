@@ -11,7 +11,8 @@ namespace OctaNotes.Scripts.Play.Model
     /// </summary>
     public class InGameTimer: IInGameTimer, ITickable
     {
-        public ReactiveProperty<float> Time { get; private set; }
+        public ReactiveProperty<float> Time { get; } = new(0);
+        private float _initialTime;
         private readonly int TARGET_FRAMERATE = 60;
         
         private readonly PlaySettingsSO _playSettings;
@@ -19,12 +20,12 @@ namespace OctaNotes.Scripts.Play.Model
         public InGameTimer(PlaySettingsSO playSettings)
         {
             _playSettings = playSettings;
-            this.Time = new ReactiveProperty<float>(-1*(float)_playSettings.songStartDelay);
+            _initialTime =-1*(float)_playSettings.songStartDelay;
             Application.targetFrameRate = TARGET_FRAMERATE;
         }
         public void Tick()
         {
-            this.Time.Value += 1.0f / TARGET_FRAMERATE;
+            this.Time.Value = _initialTime + UnityEngine.Time.time;
         }
     }
 }

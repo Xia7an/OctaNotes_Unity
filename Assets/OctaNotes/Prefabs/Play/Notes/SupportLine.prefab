@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 731351616747451153}
   - component: {fileID: 1505540312325108756}
   - component: {fileID: 3670070986092112198}
-  - component: {fileID: -3002613171494338816}
+  - component: {fileID: 5146909758857832296}
+  - component: {fileID: 1382117062062199310}
   m_Layer: 0
   m_Name: SupportLine
   m_TagString: Untagged
@@ -165,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4183d5697ec42f483062c7963da4031, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.SupportlineMoveView
---- !u!114 &-3002613171494338816
+--- !u!114 &5146909758857832296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,6 +175,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2289015693136966333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5d0f5dc383240a1b8e2bf3f2d4bd06c, type: 3}
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.SupportLineViewModel
+  m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 1382117062062199310}
+  _installerPrefabs: []
+  _findSiblingMonoInstallers: 0
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &1382117062062199310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2289015693136966333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f1e72b6d57484a83280ea1130fcc5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.DI.SupportLineInstaller

@@ -1,20 +1,41 @@
+using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
+using R3;
 using UnityEngine;
+using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
 {
     [RequireComponent(typeof(LineRenderer))]
-    public class SupportlineMoveView: NoteMoveView
+    public class SupportlineMoveView: MonoBehaviour
     {
+        ISupportLineViewModel _lineViewModel;
+        
         private LineRenderer _lineRenderer;
+
+        [Inject]
+        public void Construct(ISupportLineViewModel lineViewModel)
+        {
+            _lineViewModel = lineViewModel;
+        }
         
         private void Awake()
         {
             _lineRenderer = GetComponent<LineRenderer>();
         }
-        
-        public override void setPosZ(double posZ)
+
+        private void Start()
         {
-            base.setPosZ(posZ);
+            _lineViewModel.PosZ.Subscribe(SetPosZ).AddTo(this);
+            
+            Observable.FromEvent(h => _lineViewModel.OnJudged += h, 
+                h => _lineViewModel.OnJudged -= h)
+                .Subscribe(_ =>InvokeJudgedEffect()).AddTo(this);
+        }
+        
+        
+        private void SetPosZ(double posZ)
+        {
             
             if (_lineRenderer == null || _lineRenderer.positionCount == 0)
             {
@@ -32,6 +53,11 @@ namespace OctaNotes.Scripts.Play.View
                 pos.z += deltaZ;
                 _lineRenderer.SetPosition(i, pos);
             }
+        }
+
+        private void InvokeJudgedEffect()
+        {
+            Destroy(gameObject);
         }
     }
 }

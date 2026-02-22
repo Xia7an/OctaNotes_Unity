@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 1037293664454181605}
   - component: {fileID: 6262263902507616646}
   - component: {fileID: 134419464706403902}
-  - component: {fileID: 6829927128780710899}
-  - component: {fileID: 7454074711971100894}
+  - component: {fileID: -6361622579823816920}
+  - component: {fileID: 6963485371219529126}
+  - component: {fileID: 7929388369285436755}
   m_Layer: 0
   m_Name: SupportPlane
   m_TagString: Untagged
@@ -91,7 +92,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6829927128780710899
+--- !u!114 &-6361622579823816920
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,10 +101,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8968066720387617639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 827f4e11291b46618a58f9d7ccbd644e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5682d351cb7f48e8912df0d4e40008f2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteMoveView
---- !u!114 &7454074711971100894
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.SupportPlaneMoveView
+--- !u!114 &6963485371219529126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,6 +113,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8968066720387617639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5d0f5dc383240a1b8e2bf3f2d4bd06c, type: 3}
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.SupportLineViewModel
+  m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 7929388369285436755}
+  _installerPrefabs: []
+  _findSiblingMonoInstallers: 0
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &7929388369285436755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8968066720387617639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f1e72b6d57484a83280ea1130fcc5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.DI.SupportLineInstaller

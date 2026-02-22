@@ -147,7 +147,8 @@ namespace OctaNotes.Scripts.Play.Model
                 justTiming = (float)closestTiming.timing,
                 laneNumber = _laneIndex,
                 noteType = closestTiming.noteType,
-                timingDelta = (float)(timer - closestTiming.timing)
+                timingDelta = (float)(timer - closestTiming.timing),
+                isEx = closestTiming.isEx,
             };
             
             CurrentNote.Value = note;

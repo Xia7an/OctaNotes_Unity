@@ -1,7 +1,6 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
@@ -12,33 +11,28 @@ namespace OctaNotes.Scripts.Play.DI.Lane
     public class LaneOutputPort : ILaneOutputPort, IInitializable, IDisposable
     {
         private readonly IJudgeContext _judgeContext;
-        private readonly IInGameTimer _inGameTimer;
         private readonly CompositeDisposable _disposables = new();
 
-        public LaneOutputPort(IJudgeContext judgeContext, IInGameTimer inGameTimer)
+        public LaneOutputPort(IJudgeContext judgeContext)
         {
             _judgeContext = judgeContext;
-            _inGameTimer = inGameTimer;
         }
         public void Dispose()
         {
             _disposables.Dispose();
         }
 
-        public ReactiveProperty<JudgeResult> JudgeResult { get; private set; } = new();
+        public ReactiveProperty<JudgeResult> JudgeResult { get; private set; } = new(new JudgeResult
+        {
+            judge = Judge.NotJudged,
+            guid = Guid.Empty
+        });
 
         public void Initialize()
         {
             _judgeContext.JudgeResult
-                .SubscribeAwait(async (result,ct) => await AwaitJudgeUpdate(result, ct))
+                .Subscribe(result => JudgeResult.OnNext(result))
                 .AddTo(_disposables);
-        }
-
-        // エフェクト発動時間まで待ってから判定結果を更新する
-        private async UniTask AwaitJudgeUpdate(JudgeResult judgeResult, CancellationToken token)
-        {
-            await UniTask.WaitUntil(() => judgeResult.effectInvokeTiming <= _inGameTimer.Time.Value, cancellationToken: token);
-            JudgeResult.OnNext(judgeResult);
         }
     }
 }

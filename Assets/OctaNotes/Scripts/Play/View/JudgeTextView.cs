@@ -17,9 +17,14 @@ namespace OctaNotes.Scripts.Play.View
         [SerializeField] private Sprite badText;
         [SerializeField] private Sprite missText;
         [SerializeField] private Image judgeText;
+
+        private const float YDifference = 10;
         
         private ILaneViewModel _laneViewModel;
-
+        
+        private Vector2 _initialPosition;
+        
+        
         [Inject]
         public void Construct([InjectOptional] ILaneViewModel laneViewModel = null)
         {
@@ -37,6 +42,8 @@ namespace OctaNotes.Scripts.Play.View
             {
                 await ShowJudgeResult(v,ct);
             }, AwaitOperation.Switch).AddTo(this);
+            
+            _initialPosition = judgeText.rectTransform.anchoredPosition;
         }
 
         private async UniTask ShowJudgeResult(Judge judge, CancellationToken token)
@@ -50,14 +57,21 @@ namespace OctaNotes.Scripts.Play.View
                 _ => null
             };
             if (sprite == null) return;
+            
+            // 色と座標を初期化
             judgeText.color = new Color(1, 1, 1, 1);
+            judgeText.rectTransform.anchoredPosition = _initialPosition;
+            
             judgeText.sprite = sprite;
             var rect = judgeText.rectTransform;
             rect.sizeDelta = new Vector2(
                 sprite.rect.width / 2,
                 sprite.rect.height / 2
             );
-            await judgeText.DOFade(0, 0.2f).ToUniTask(cancellationToken: token);
+            await UniTask.WhenAll(
+                judgeText.DOFade(0, 0.2f).ToUniTask(cancellationToken: token),
+                judgeText.rectTransform.DOAnchorPosY(_initialPosition.y + YDifference, 0.2f).SetEase(Ease.OutCubic).ToUniTask(cancellationToken: token)
+            );
         }
     }
 }

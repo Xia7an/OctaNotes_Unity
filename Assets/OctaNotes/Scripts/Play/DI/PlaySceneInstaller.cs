@@ -1,7 +1,6 @@
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Zenject;
@@ -19,6 +18,8 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ComboCalcurator>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<ScoreCalcurator>().AsSingle().NonLazy();
         
         // レーン毎にSubContainerを用意する
         var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
@@ -31,9 +32,6 @@ public class PlaySceneInstaller : MonoInstaller
         var laneDefinitions = laneLayout.LaneDefinitions
             .OrderBy(definition => definition.LaneId)
             .ToList();
-        var laneContainers = new List<DiContainer>(laneDefinitions.Count); // レーン毎に作るSubContainerを束ねるリスト
-        var laneInputPorts = new List<ILaneInputPort>(laneDefinitions.Count); 
-
         // レーンごとにSubContainerを作り、対応するレーンのViewにDI
         for (int expectedLaneId = 0; expectedLaneId < laneDefinitions.Count; expectedLaneId++)
         {
@@ -49,10 +47,9 @@ public class PlaySceneInstaller : MonoInstaller
             }
 
             var subContainer = laneSubContainerFactory.CreateLaneSubContainer(laneDefinition.LaneId);
-            laneContainers.Add(subContainer);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
             
-            // レーン内のViewに1つずつDI
+            // レーン内のViewに対応するContainerから1つずつDI
             foreach (var view in laneDefinition.ViewBundle.Views) 
             {
                 if (view == null)
@@ -62,14 +59,7 @@ public class PlaySceneInstaller : MonoInstaller
 
                 subContainer.Inject(view);
             }
-
-            laneInputPorts.Add(subContainer.Resolve<ILaneInputPort>());
         }
 
-        Container.Bind<List<ILaneInputPort>>().FromInstance(laneInputPorts).AsSingle();
-        Container.Bind<List<ILaneOutputPort>>()
-            .FromMethod(_ => laneContainers.Select(subContainer => subContainer.Resolve<ILaneOutputPort>()).ToList())
-            .AsSingle();
-        Container.BindInterfacesAndSelfTo<LaneInputManager>().AsSingle().NonLazy();
     }
 }

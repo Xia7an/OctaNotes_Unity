@@ -15,13 +15,13 @@ namespace OctaNotes.Scripts.Play.View
         [SerializeField] private AudioClip badClip;
         [SerializeField] private AudioClip noneClip;
 
-        private ILaneOutputPort _laneOutputPort;
+        private IJudgeSoundViewModel _judgeSoundViewModel;
         private AudioSource _audioSource;
 
         [Inject]
-        public void Construct(ILaneOutputPort laneOutputPort)
+        public void Construct(IJudgeSoundViewModel judgeSoundViewModel)
         {
-            this._laneOutputPort = laneOutputPort;
+            _judgeSoundViewModel = judgeSoundViewModel;
         }
 
         private void Awake()
@@ -31,10 +31,7 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
-            _laneOutputPort.JudgeResult.Subscribe(v =>
-            {
-                PlayJudgeSound(v.judge);
-            });
+            _judgeSoundViewModel.JudgeForSound.Subscribe(PlayJudgeSound).AddTo(this);
         }
 
         private void PlayJudgeSound(Judge judge)

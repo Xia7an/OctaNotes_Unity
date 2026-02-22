@@ -32,6 +32,7 @@ namespace OctaNotes.Scripts.Play.Model
         [SerializeField] private GameObject tapNotePrefab;
         [SerializeField] private GameObject longNotePrefab;
         [SerializeField] private GameObject chainNotePrefab;
+        [SerializeField] private GameObject longEndPrefab;
         [SerializeField] private GameObject supportPlanePrefab;
         [SerializeField] private GameObject supportLinePrefab;
         [SerializeField] private Material supportPlaneMaterial;
@@ -108,6 +109,7 @@ namespace OctaNotes.Scripts.Play.Model
                             if (!double.IsNaN(longStartTmpPos[lane]))
                             { 
                                 GenerateLongNote(lane, longStartTmpPos[lane], zPos, noteGuid, longNoteColor[lane]);
+                                GenerateLongEnd(lane, zPos,  noteGuid, longNoteColor[lane]);
                                 longStartTmpPos[lane] = double.NaN;
                             }
                             break;
@@ -150,6 +152,24 @@ namespace OctaNotes.Scripts.Play.Model
             note.transform.position =  new Vector3((float)x, y, posZ);
             note.transform.rotation = rotation;
 
+            var vm = note.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
+            vm.SetInitialPosZ(posZ);
+            vm.SetGuid(noteGuid);
+            
+            SetNoteColor(note.GetComponent<MeshRenderer>(), noteColor);
+        }
+
+        private void GenerateLongEnd(int lane, double z, Guid noteGuid, NoteColor noteColor)
+        {
+            var x = laneXPositions[lane];
+            float y = (lane < 4) ? bottonYPosition : topYPosition;
+            var rotation = Quaternion.Euler((lane < 4)?0:180, 0f, 0f);
+            float posZ = (float)(z * noteSpeed + zOffset);
+            
+            var note = _laneSubContainerFactory.GetLaneSubContainer(lane).InstantiatePrefab(longEndPrefab);
+            note.transform.position =  new Vector3((float)x, y, posZ);
+            note.transform.rotation = rotation;
+            
             var vm = note.GetComponent<GameObjectContext>().Container.Resolve<INoteViewModel>();
             vm.SetInitialPosZ(posZ);
             vm.SetGuid(noteGuid);

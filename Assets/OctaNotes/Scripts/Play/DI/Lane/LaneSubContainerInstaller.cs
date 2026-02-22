@@ -25,6 +25,7 @@ namespace OctaNotes.Scripts.Play.DI.Lane
             Container.BindInterfacesAndSelfTo<JudgeContext>().AsSingle();
 
             Container.BindInterfacesAndSelfTo<LaneOutputPort>().AsSingle();
+            Container.BindInterfacesAndSelfTo<JudgeSoundViewModel>().AsSingle();
             Container.BindInterfacesAndSelfTo<LaneViewModel>().AsSingle();
         }
     }

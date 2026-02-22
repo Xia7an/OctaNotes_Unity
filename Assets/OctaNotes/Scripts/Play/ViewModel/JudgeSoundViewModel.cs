@@ -11,11 +11,13 @@ using Zenject;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
-    public class JudgeSoundViewModel : IJudgeSoundViewModel, IInitializable, IDisposable
+    public class JudgeSoundViewModel : IJudgeSoundViewModel, IInitializable, IDisposable, ITickable
     {
         private readonly IInGameTimer _inGameTimer;
         private readonly ILaneOutputPort _laneOutputPort;
         private readonly CompositeDisposable _disposables = new();
+
+        private bool _isWaiting = false;
 
         public JudgeSoundViewModel(IInGameTimer inGameTimer, ILaneOutputPort laneOutputPort)
         {
@@ -28,10 +30,23 @@ namespace OctaNotes.Scripts.Play.ViewModel
         public void Initialize()
         {
             _laneOutputPort.JudgeResult.Where(IsSoundTarget)
-                .SubscribeAwait(async (result, ct) =>
-                {
-                    await WaitAndNotify(result, ct);
-                }).AddTo(_disposables);
+                .Subscribe(_ => _isWaiting = true).AddTo(_disposables);
+        }
+        
+        // UniTaskによる非同期処理では、タイミング"ちょうど"にイベントが発火される保証がないため、Tickによって毎フレームチェックする実装としている
+        // (非同期処理は指定された時間"以上"待つことを保証しているだけ)
+        public void Tick()
+        {
+            if(!_isWaiting) return; // エフェクト発動待ちのノーツがなければ何もしない
+            if (!(_laneOutputPort.JudgeResult.Value.effectInvokeTiming <= _inGameTimer.Time.Value)) return; // 時間までは何もしない
+            
+            // 時間になったらイベント発火 & 待ち状態解除
+            JudgeForSound.OnNext(new JudgeSound()
+            {
+                judge = _laneOutputPort.JudgeResult.Value.judge,
+                isEx = _laneOutputPort.JudgeResult.Value.isEx
+            });
+            _isWaiting = false;
         }
 
         public void Dispose()
@@ -44,15 +59,6 @@ namespace OctaNotes.Scripts.Play.ViewModel
         {
             return result.judge != Judge.NotJudged;
         }
-
-        private async UniTask WaitAndNotify(JudgeResult result, CancellationToken cancellationToken)
-        {
-            await UniTask.WaitUntil(() => result.effectInvokeTiming <= _inGameTimer.Time.Value, cancellationToken: cancellationToken);
-            JudgeForSound.OnNext(new  JudgeSound()
-            {
-                judge = result.judge,
-                isEx = result.isEx
-            });
-        }
+        
     }
 }

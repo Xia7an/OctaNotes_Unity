@@ -1,3 +1,6 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using OctaNotes.Scripts.Play.ViewModel.Interface;
 using TMPro;
 using UnityEngine;
@@ -21,8 +24,19 @@ namespace OctaNotes.Scripts.Play.View.UI
 
         private void Start()
         {
-            _viewModel.ComboText.Subscribe(v => comboText.text = v).AddTo(this);
+            _viewModel.ComboText.SubscribeAwait(async (v,ct) 
+                => await SetComboText(v,ct), AwaitOperation.Switch).AddTo(this);
             _viewModel.ScoreText.Subscribe(v => scoreText.text = v).AddTo(this);
         }
+
+        private async UniTask SetComboText(string combo, CancellationToken ct)
+        {
+            comboText.text = combo;
+            await comboText.rectTransform.DOScale(1.4f, 0.2f)
+                .SetEase(Ease.OutSine).ToUniTask(cancellationToken: ct);
+            await comboText.rectTransform.DOScale(1f, 0.1f)
+                .SetEase(Ease.InSine).ToUniTask(cancellationToken: ct);
+        }
+        
     }
 }

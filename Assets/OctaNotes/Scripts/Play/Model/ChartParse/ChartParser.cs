@@ -59,7 +59,7 @@ namespace OctaNotes.Scripts.Play.Model
         
         public void Initialize()
         {
-            LoadChart(Application.persistentDataPath + "/Charts/Shoushitu/dual.onc");
+            LoadChart(Application.persistentDataPath + "/Charts/Shoushitu/octa.onc");
         }
         
         public void LoadChart(string path)

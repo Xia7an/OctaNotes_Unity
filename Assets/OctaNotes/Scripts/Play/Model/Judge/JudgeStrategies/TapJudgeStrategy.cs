@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
+using OctaNotes.Scripts.Settings;
 
 namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
 {
     public class TapJudgeStrategy : IJudgeStrategy
     {
+        private readonly PlaySettingsSO _playSettings;
+
+        public TapJudgeStrategy(PlaySettingsSO playSettings)
+        {
+            _playSettings = playSettings;
+        }
         private readonly Judge[] pushedJudges = new Judge[]
         {
             Judge.None,   // 早入りBad範囲より前
@@ -65,20 +72,19 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
 
         private int RangeSelect(float timeDelta)
         {
-            const float BadThreshold = 0.15f;
-            const float GoodThreshold = 0.10f;
-            const float PerfectThreshold = 0.05f;
-            var range = timeDelta switch
+            float badThreshold = _playSettings.badRangeMs / 1000f;
+            float goodThreshold =  _playSettings.goodRangeMs / 1000f;
+            float perfectThreshold =  _playSettings.perfectRangeMs / 1000f;
+            return timeDelta switch
             {
-                < -BadThreshold => 0,
-                >= -BadThreshold and < -GoodThreshold => 1,
-                >= -GoodThreshold and < -PerfectThreshold => 2,
-                >= -PerfectThreshold and <= PerfectThreshold => 3,
-                > PerfectThreshold and <= GoodThreshold => 4,
-                > GoodThreshold and <= BadThreshold => 5,
+                _ when timeDelta < -badThreshold => 0,
+                _ when timeDelta < -goodThreshold => 1,
+                _ when timeDelta < -perfectThreshold => 2,
+                _ when timeDelta <= perfectThreshold => 3,
+                _ when timeDelta <= goodThreshold => 4,
+                _ when timeDelta <= badThreshold => 5,
                 _ => 6
             };
-            return range;
         }
     }
 }

@@ -658,6 +658,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &1653733485764235954
 GameObject:
   m_ObjectHideFlags: 0
@@ -874,6 +875,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &1692649351590886750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1215,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &2259053736423122124
 GameObject:
   m_ObjectHideFlags: 0
@@ -2927,6 +2930,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &4018031428570886674
 GameObject:
   m_ObjectHideFlags: 0
@@ -3912,6 +3916,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &4612808053828393016
 GameObject:
   m_ObjectHideFlags: 0
@@ -4205,6 +4210,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &4780545163599862736
 GameObject:
   m_ObjectHideFlags: 0
@@ -4351,6 +4357,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &4831495933502977322
 GameObject:
   m_ObjectHideFlags: 0
@@ -7057,6 +7064,7 @@ MonoBehaviour:
   goodClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   badClip: {fileID: 8300000, guid: bfcb352f5a7424a2a845111de4d83587, type: 3}
   noneClip: {fileID: 8300000, guid: 5e1eba6781b5c4204802bc493b600466, type: 3}
+  exPerfectClip: {fileID: 8300000, guid: 45e8a4ce177fa4d27a99d3adcb2c9d59, type: 3}
 --- !u!1 &8507291762120201794
 GameObject:
   m_ObjectHideFlags: 0

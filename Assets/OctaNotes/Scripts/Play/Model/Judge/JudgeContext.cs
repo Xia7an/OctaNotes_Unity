@@ -50,7 +50,7 @@ namespace OctaNotes.Scripts.Play.Model
         {
             if(note.guid == judgedNoteGuid) return; // 直前に判定済みのノーツは再判定しない
             
-            IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType);
+            IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType, note.isEx);
             var result = strategy.JudgeNote(note,
                 _inputLayer.IsButtonPressing.Select(state => state.Value).ToList(), 
                 _longMiddleHandler.LongPushedRate.Value);

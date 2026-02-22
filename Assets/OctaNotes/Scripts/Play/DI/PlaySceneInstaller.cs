@@ -18,6 +18,8 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ComboCalcurator>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<ScoreCalcurator>().AsSingle().NonLazy();
         
         // レーン毎にSubContainerを用意する
         var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();
@@ -47,7 +49,7 @@ public class PlaySceneInstaller : MonoInstaller
             var subContainer = laneSubContainerFactory.CreateLaneSubContainer(laneDefinition.LaneId);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
             
-            // レーン内のViewに1つずつDI
+            // レーン内のViewに対応するContainerから1つずつDI
             foreach (var view in laneDefinition.ViewBundle.Views) 
             {
                 if (view == null)

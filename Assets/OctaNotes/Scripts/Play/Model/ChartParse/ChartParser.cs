@@ -59,7 +59,7 @@ namespace OctaNotes.Scripts.Play.Model
         
         public void Initialize()
         {
-            LoadChart(Application.persistentDataPath + "/Charts/ShiningStar/octa.onc");
+            LoadChart(Application.persistentDataPath + "/Charts/Shoushitu/dual.onc");
         }
         
         public void LoadChart(string path)
@@ -224,7 +224,7 @@ namespace OctaNotes.Scripts.Play.Model
                     ShowErrorMessage("ノーツタイプが不正です");
                     return;
                 }
-
+                
                 NoteColor noteColor = colorChar switch
                 {
                     'r' => NoteColor.Red,
@@ -265,7 +265,8 @@ namespace OctaNotes.Scripts.Play.Model
                 {
                     timing = timing,
                     noteType = noteType,
-                    guid = noteGuid
+                    guid = noteGuid,
+                    isEx = noteColor == NoteColor.Yellow // 黄色ノーツはExとして扱う
                 });
             }
             catch (System.InvalidOperationException)

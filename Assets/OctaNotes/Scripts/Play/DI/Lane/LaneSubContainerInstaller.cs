@@ -2,6 +2,7 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.JudgeStrategies;
+using OctaNotes.Scripts.Play.ViewModel;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.DI.Lane

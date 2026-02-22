@@ -8,6 +8,7 @@ namespace OctaNotes.Scripts.Play.Model
     {
         public double timing;
         public NoteType noteType;
+        public bool isEx;
         public Guid guid;
     }
 }

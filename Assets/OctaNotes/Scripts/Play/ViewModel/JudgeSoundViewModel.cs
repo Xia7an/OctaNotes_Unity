@@ -5,10 +5,11 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using R3;
 using Zenject;
 
-namespace OctaNotes.Scripts.Play.DI.Lane
+namespace OctaNotes.Scripts.Play.ViewModel
 {
     public class JudgeSoundViewModel : IJudgeSoundViewModel, IInitializable, IDisposable
     {
@@ -22,7 +23,7 @@ namespace OctaNotes.Scripts.Play.DI.Lane
             _laneOutputPort = laneOutputPort;
         }
 
-        public ReactiveProperty<Judge> JudgeForSound { get; } = new(Judge.NotJudged);
+        public ReactiveProperty<JudgeSound> JudgeForSound { get; } = new(new JudgeSound(){judge = Judge.NotJudged});
 
         public void Initialize()
         {
@@ -47,7 +48,11 @@ namespace OctaNotes.Scripts.Play.DI.Lane
         private async UniTask WaitAndNotify(JudgeResult result, CancellationToken cancellationToken)
         {
             await UniTask.WaitUntil(() => result.effectInvokeTiming <= _inGameTimer.Time.Value, cancellationToken: cancellationToken);
-            JudgeForSound.OnNext(result.judge);
+            JudgeForSound.OnNext(new  JudgeSound()
+            {
+                judge = result.judge,
+                isEx = result.isEx
+            });
         }
     }
 }

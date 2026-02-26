@@ -65,6 +65,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
         {
             // エフェクト発動時刻まで待つ
             await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value, cancellationToken: token);
+            
             Debug.Log($"Delete note. Guid: {guid}");
             OnJudged?.Invoke();
         }

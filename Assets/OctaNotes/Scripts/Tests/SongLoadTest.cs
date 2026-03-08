@@ -1,0 +1,18 @@
+#if UNITY_EDITOR || UNITY_INCLUDE_TESTS
+using System.Collections;
+using NUnit.Framework;
+using OctaNotes.Scripts.SongSelect.Model;
+using UnityEngine;
+
+public class SongLoadTest
+{
+    // A Test behaves as an ordinary method
+    [Test]
+    public void SongLoadTestSimplePasses()
+    {
+        // var songRepository = new SongRepository();
+        // songRepository.LoadSongData();
+    }
+}
+#endif
+

@@ -1,3 +1,4 @@
+using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.SongSelect.Model.Actions;
 using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
@@ -10,6 +11,8 @@ namespace OctaNotes.Scripts.SongSelect.Model
         private const float NOTESPEED_INTERVAL = 0.5f;
         
         private const float JUDGEOFFSET_INTERVAL = 0.1f;
+
+        private readonly Category[] _categories = new Category[] { Category.Pops , Category.Vocaloid, Category.Game};
         
         public UIState Reduce(UIState oldState, UIAction action)
         {
@@ -28,6 +31,20 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 {
                     controlTarget = v
                 },
+                SelectSong(var v) => oldState with
+                {
+                    selectedSongId = v is Direction.Up ?
+                        oldState.guidList[oldState.selectedSongId].next : 
+                        oldState.guidList[oldState.selectedSongId].prev
+                },
+                ConfirmSong => oldState with
+                {
+                    songConfirmed = true
+                },
+                SelectDifficulty(var v) => oldState with
+                {
+                    // 選択された難易度が
+                }
             };
         }
     }

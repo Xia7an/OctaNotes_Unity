@@ -80,7 +80,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 case 4:
                     action = state.controlTarget switch
                     {
-                        Target.SongList => new SelectSong(Direction.Down),
+                        Target.SongList => new SelectDifficulty(Direction.Down),
                         Target.GameOptions when state.selectedOption is Options.NoteSpeed => new ChangeNoteSpeed(
                             Direction.Down),
                         Target.GameOptions when state.selectedOption is Options.JudgeOffset => new ChangeJudgeOffset(

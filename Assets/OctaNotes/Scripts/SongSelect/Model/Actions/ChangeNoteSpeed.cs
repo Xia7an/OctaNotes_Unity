@@ -2,5 +2,5 @@ using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;
 
 namespace OctaNotes.Scripts.SongSelect.Model.Actions
 {
-    public record ChangeNoteSpeed(Direction Direction)  : UIAction;
+    public record ChangeNoteSpeed(Direction Direction) : UIAction;
 }

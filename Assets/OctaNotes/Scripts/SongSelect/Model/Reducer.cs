@@ -1,3 +1,4 @@
+using System;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.SongSelect.Model.Actions;
 using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;
@@ -43,9 +44,29 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 },
                 SelectDifficulty(var v) => oldState with
                 {
-                    // 選択された難易度が
-                }
+                    selectedDifficulty = CalcDifficulty(oldState.selectedDifficulty, v)
+                },
+                SelectOption(var v) => oldState with
+                {
+                    selectedOption = CalcOptions(oldState.selectedOption, v)
+                },
             };
+        }
+
+        private Difficulty CalcDifficulty(Difficulty difficulty, Direction direction)
+        {
+            if (direction is Direction.Up)
+                return difficulty < Difficulty.Octa ? difficulty + 1 : Difficulty.Octa;
+            else
+                return difficulty > Difficulty.Dual ? difficulty - 1 : Difficulty.Dual;
+        }
+
+        private Options CalcOptions(Options option, Direction direction)
+        {
+            if(direction is Direction.Up)
+                return option < Options.JudgeOffset ? option + 1 : option;
+            else
+                return option > Options.JudgeOffset ? option - 1 : option;
         }
     }
 }

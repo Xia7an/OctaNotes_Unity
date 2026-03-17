@@ -26,14 +26,14 @@ namespace OctaNotes.Scripts.SongSelect.View
         // UnityのanchoredPositionはY軸上向きなので符号を反転して格納
         private static readonly Vector2[] CardPositions = new Vector2[]
         {
-            new Vector2(490f, -14f),   // 2つ前
-            new Vector2(433f, -222f),  // 1つ前
+            new Vector2(560f, -50f),   // 2つ前
+            new Vector2(510f, -240f),  // 1つ前
             new Vector2(260f, -430f),  // 選択中
-            new Vector2(200f, -670f),  // 1つ次
-            new Vector2(146f, -890f),  // 2つ次
+            new Vector2(210f, -670f),  // 1つ次
+            new Vector2(160f, -860f),  // 2つ次
         };
-        private static readonly Vector2 FarPrevPosition = new Vector2(547f, 194f);   // 3つ前以降 (Y反転)
-        private static readonly Vector2 FarNextPosition = new Vector2(92f, -1120f);  // 3つ次以降 (Y反転)
+        private static readonly Vector2 FarPrevPosition = new Vector2(620f, 170f);   // 3つ前以降 (Y反転)
+        private static readonly Vector2 FarNextPosition = new Vector2(100f, -1100f);  // 3つ次以降 (Y反転)
 
         [Inject]
         public void Construct(IUIState uiState)
@@ -106,44 +106,47 @@ namespace OctaNotes.Scripts.SongSelect.View
             }
 
             var songCount = songCards.Count;
-            var selected = Mod(selectedSongIdx, songCount);
+            // 循環なし: インデックスを [0, songCount-1] にクランプ
+            var selected = Mathf.Clamp(selectedSongIdx, 0, songCount - 1);
 
             // 各カードのインデックスと配置先を決定する
             // offset: selected基準のオフセット (-: 前, +: 次)
             // CardPositions配列のインデックス: 0=2つ前, 1=1つ前, 2=選択中, 3=1つ次, 4=2つ次
             var assignments = new Dictionary<int, Vector2>();
             var scaleMap = new Dictionary<int, float>();
+            var visibilityMap = new Dictionary<int, bool>();
 
             for (int i = 0; i < songCount; i++)
             {
-                // selectedとの相対オフセットを計算（循環リスト）
                 int offset = i - selected;
-                // 循環を考慮して最短経路のオフセットにする
-                if (offset > songCount / 2) offset -= songCount;
-                else if (offset < -(songCount / 2)) offset += songCount;
 
                 Vector2 pos;
                 float scale;
+                bool visible;
 
                 if (offset <= -3)
                 {
                     pos = FarPrevPosition;
                     scale = 0.75f;
+                    visible = true;
                 }
                 else if (offset >= 3)
                 {
                     pos = FarNextPosition;
                     scale = 0.75f;
+                    visible = true;
                 }
                 else
                 {
                     // offset: -2 -> index 0, -1 -> index 1, 0 -> index 2, 1 -> index 3, 2 -> index 4
                     pos = CardPositions[offset + 2];
                     scale = (offset == 0) ? 1f : 0.75f;
+                    visible = true;
                 }
 
                 assignments[i] = pos;
                 scaleMap[i] = scale;
+                visibilityMap[i] = visible;
             }
 
             var tweens = new List<Tween>();
@@ -155,8 +158,10 @@ namespace OctaNotes.Scripts.SongSelect.View
 
                 var targetPos = assignments[i];
                 var targetScale = scaleMap[i];
+                var targetVisible = visibilityMap[i];
 
-                card.SetActive(true);
+                card.SetActive(targetVisible);
+                if (!targetVisible) continue;
 
                 if (card.TryGetComponent<RectTransform>(out var rt))
                 {
@@ -197,12 +202,6 @@ namespace OctaNotes.Scripts.SongSelect.View
             {
                 await UniTask.WhenAll(tweens.Select(t => t.ToUniTask()));
             }
-        }
-
-        private int Mod(int value, int modulo)
-        {
-            var result = value % modulo;
-            return result < 0 ? result + modulo : result;
         }
 
         private Sprite CreateJacketSpriteFromPath(string jacketPath)

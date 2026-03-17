@@ -21,7 +21,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 },
                 SelectSong(var v) => oldState with
                 {
-                    selectedSongIndex = oldState.selectedSongIndex + (int)v
+                    selectedSongIndex = Math.Clamp(
+                        oldState.selectedSongIndex + (int)v,
+                        0,
+                        oldState.songDataList != null && oldState.songDataList.Count > 0
+                            ? oldState.songDataList.Count - 1
+                            : 0)
                 },
                 SelectDifficulty(var v) => oldState with
                 {

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Structs;
 using R3;
@@ -12,11 +15,25 @@ namespace OctaNotes.Scripts.SongSelect.View
     {
         [SerializeField] private GameObject songCardPrefab;
         [SerializeField] private Canvas canvas;
+        [SerializeField] private float tweenDuration = 0.3f;
         
         private IUIState _uiState;
 
         private List<GameObject> songCards = new();
-        private Vector2 _cardBaseSizeDelta;
+
+        // 仕様の座標 (画面左上基準、コンポーネント左上の角を基準点)
+        // anchorMin/Max = (0,1)、pivot = (0,1) として使用する
+        // UnityのanchoredPositionはY軸上向きなので符号を反転して格納
+        private static readonly Vector2[] CardPositions = new Vector2[]
+        {
+            new Vector2(490f, -14f),   // 2つ前
+            new Vector2(433f, -222f),  // 1つ前
+            new Vector2(260f, -430f),  // 選択中
+            new Vector2(200f, -670f),  // 1つ次
+            new Vector2(146f, -890f),  // 2つ次
+        };
+        private static readonly Vector2 FarPrevPosition = new Vector2(547f, 194f);   // 3つ前以降 (Y反転)
+        private static readonly Vector2 FarNextPosition = new Vector2(92f, -1120f);  // 3つ次以降 (Y反転)
 
         [Inject]
         public void Construct(IUIState uiState)
@@ -26,10 +43,10 @@ namespace OctaNotes.Scripts.SongSelect.View
 
         private void Start()
         {
-            _uiState.State.Select(v => v.songDataList).Subscribe(ReConstructSongList).AddTo(this);
+            _uiState.State.Select(v => v.songDataList).DistinctUntilChanged().Subscribe(ReConstructSongList).AddTo(this);
             _uiState.State
                 .Select(v => v.selectedSongIndex)
-                .Subscribe(v => PlaceCards(v, _uiState.State.Value.songDataList))
+                .Subscribe(v => PlaceCardsAsync(v, _uiState.State.Value.songDataList).Forget())
                 .AddTo(this);
         }
 
@@ -58,8 +75,9 @@ namespace OctaNotes.Scripts.SongSelect.View
                 var card = Instantiate(songCardPrefab, canvas.transform);
                 if (card.TryGetComponent<RectTransform>(out var rt))
                 {
-                    rt.pivot = new Vector2(0f, 0.5f);
-                    _cardBaseSizeDelta = rt.sizeDelta;
+                    rt.pivot = new Vector2(0f, 1f);
+                    rt.anchorMin = new Vector2(0f, 1f);
+                    rt.anchorMax = new Vector2(0f, 1f);
                 }
                 var jacketSprite = CreateJacketSpriteFromPath(songData.jacketPath);
                 card.GetComponent<SongCardView>().Apply(
@@ -72,10 +90,15 @@ namespace OctaNotes.Scripts.SongSelect.View
                 tmp.Add(card);
             }
             songCards = tmp;
-            PlaceCards(_uiState.State.Value.selectedSongIndex, songList);
+            PlaceCardsAsync(_uiState.State.Value.selectedSongIndex, songList, animate: false).Forget();
         }
 
         private void PlaceCards(int selectedSongIdx, List<SongData> songList)
+        {
+            PlaceCardsAsync(selectedSongIdx, songList, animate: false).Forget();
+        }
+
+        private async UniTask PlaceCardsAsync(int selectedSongIdx, List<SongData> songList, bool animate = true)
         {
             if (songList == null || songCards.Count == 0)
             {
@@ -85,49 +108,94 @@ namespace OctaNotes.Scripts.SongSelect.View
             var songCount = songCards.Count;
             var selected = Mod(selectedSongIdx, songCount);
 
-            foreach (var card in songCards)
+            // 各カードのインデックスと配置先を決定する
+            // offset: selected基準のオフセット (-: 前, +: 次)
+            // CardPositions配列のインデックス: 0=2つ前, 1=1つ前, 2=選択中, 3=1つ次, 4=2つ次
+            var assignments = new Dictionary<int, Vector2>();
+            var scaleMap = new Dictionary<int, float>();
+
+            for (int i = 0; i < songCount; i++)
             {
-                if (card != null)
+                // selectedとの相対オフセットを計算（循環リスト）
+                int offset = i - selected;
+                // 循環を考慮して最短経路のオフセットにする
+                if (offset > songCount / 2) offset -= songCount;
+                else if (offset < -(songCount / 2)) offset += songCount;
+
+                Vector2 pos;
+                float scale;
+
+                if (offset <= -3)
                 {
-                    card.SetActive(false);
+                    pos = FarPrevPosition;
+                    scale = 0.75f;
                 }
-            }
-
-            var placements = new List<(int index, float y, float scale)>
-            {
-                (selected, 0f, 1f),
-                (Mod(selected + 1, songCount), -240f, 0.75f),
-                (Mod(selected + 2, songCount), -295f, 0.75f),
-                (Mod(selected - 1, songCount), 240f, 0.75f),
-                (Mod(selected - 2, songCount), 295f, 0.75f)
-            };
-
-            var placedIndexes = new HashSet<int>();
-            foreach (var placement in placements)
-            {
-                if (!placedIndexes.Add(placement.index))
+                else if (offset >= 3)
                 {
-                    continue;
-                }
-
-                var card = songCards[placement.index];
-                var y = placement.y;
-                var x = -55f / 205f * y + 260f;
-
-                if (card.TryGetComponent<RectTransform>(out var rectTransform))
-                {
-                    rectTransform.anchorMin = new Vector2(0f, 0.5f);
-                    rectTransform.anchorMax = new Vector2(0f, 0.5f);
-                    rectTransform.anchoredPosition = new Vector2(x, y);
-                    rectTransform.sizeDelta = _cardBaseSizeDelta * placement.scale;
+                    pos = FarNextPosition;
+                    scale = 0.75f;
                 }
                 else
                 {
-                    card.transform.localPosition = new Vector3(x, y, card.transform.localPosition.z);
+                    // offset: -2 -> index 0, -1 -> index 1, 0 -> index 2, 1 -> index 3, 2 -> index 4
+                    pos = CardPositions[offset + 2];
+                    scale = (offset == 0) ? 1f : 0.75f;
                 }
 
-                card.transform.localScale = Vector3.one * placement.scale;
+                assignments[i] = pos;
+                scaleMap[i] = scale;
+            }
+
+            var tweens = new List<Tween>();
+
+            for (int i = 0; i < songCount; i++)
+            {
+                var card = songCards[i];
+                if (card == null) continue;
+
+                var targetPos = assignments[i];
+                var targetScale = scaleMap[i];
+
                 card.SetActive(true);
+
+                if (card.TryGetComponent<RectTransform>(out var rt))
+                {
+                    rt.anchorMin = new Vector2(0f, 1f);
+                    rt.anchorMax = new Vector2(0f, 1f);
+                    rt.pivot = new Vector2(0f, 1f);
+
+                    if (animate)
+                    {
+                        tweens.Add(rt.DOAnchorPos(targetPos, tweenDuration));
+                        tweens.Add(card.transform.DOScale(targetScale, tweenDuration));
+                    }
+                    else
+                    {
+                        rt.anchoredPosition = targetPos;
+                        card.transform.localScale = Vector3.one * targetScale;
+                    }
+                }
+                else
+                {
+                    if (animate)
+                    {
+                        tweens.Add(card.transform.DOLocalMove(
+                            new Vector3(targetPos.x, targetPos.y, card.transform.localPosition.z),
+                            tweenDuration));
+                        tweens.Add(card.transform.DOScale(targetScale, tweenDuration));
+                    }
+                    else
+                    {
+                        card.transform.localPosition = new Vector3(targetPos.x, targetPos.y,
+                            card.transform.localPosition.z);
+                        card.transform.localScale = Vector3.one * targetScale;
+                    }
+                }
+            }
+
+            if (animate && tweens.Count > 0)
+            {
+                await UniTask.WhenAll(tweens.Select(t => t.ToUniTask()));
             }
         }
 

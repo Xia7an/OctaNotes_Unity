@@ -35,7 +35,6 @@ namespace OctaNotes.Scripts.Title.Model
 
         public void Dispose()
         {
-            _inputLayer?.Dispose();
             _disposables?.Dispose();
         }
     }

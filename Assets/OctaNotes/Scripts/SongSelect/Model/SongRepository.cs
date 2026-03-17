@@ -59,8 +59,8 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 {
                     songName = data.title,
                     composerName = data.composer,
-                    musicPath = data.musicPath,
-                    jacketPath = data.jacketPath,
+                    musicPath = folder + "/" + data.musicPath,
+                    jacketPath = folder + "/" + data.jacketPath,
                     chartDatas = chartDataList.ToArray()
                 };
                 var songId = Guid.NewGuid();

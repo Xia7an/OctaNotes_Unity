@@ -20,7 +20,7 @@ namespace OctaNotes.Scripts.Play.Model
         public InGameTimer(PlaySettingsSO playSettings)
         {
             _playSettings = playSettings;
-            _initialTime =-1*(float)_playSettings.songStartDelay;
+            _initialTime =-1*(float)_playSettings.songStartDelay - UnityEngine.Time.time;
             Application.targetFrameRate = TARGET_FRAMERATE;
         }
         public void Tick()

@@ -1,5 +1,8 @@
 using System;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using OctaNotes.Scripts.Core.Model.Interface;
+using OctaNotes.Scripts.Core.Model.Structs;
 using OctaNotes.Scripts.SongSelect.Model.Actions;
 using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
@@ -15,17 +18,20 @@ namespace OctaNotes.Scripts.SongSelect.Model
         private readonly IDispachable _dispachable;
         private readonly ISongRepository _songRepository;
         private readonly IGlobalSongDataContext _globalSongDataContext;
+        private readonly ISceneController _sceneController;
 
         public SongSelectActionContext(
             IUIState uiState, 
             IGlobalSongDataContext globalSongDataContext,
             IDispachable dispachable,
-            ISongRepository songRepository)
+            ISongRepository songRepository,
+            ISceneController sceneController)
         {
             _uiState = uiState;
             _globalSongDataContext = globalSongDataContext;
             _dispachable = dispachable;
             _songRepository = songRepository;
+            _sceneController = sceneController;
         }
         
         public void Dispatch(UIAction action)
@@ -36,6 +42,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     _globalSongDataContext.ChartData = 
                         _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex]
                             .chartDatas[(int)_uiState.State.Value.selectedDifficulty];
+                    _sceneController.ChangeScene(Scenes.Play).Forget();
                     break;
             }
         }

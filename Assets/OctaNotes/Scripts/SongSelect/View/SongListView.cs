@@ -208,6 +208,7 @@ namespace OctaNotes.Scripts.SongSelect.View
         {
             if (string.IsNullOrWhiteSpace(jacketPath) || !File.Exists(jacketPath))
             {
+                Debug.LogWarning($"{jacketPath} not found.");
                 return null;
             }
 

@@ -1,5 +1,6 @@
 using System;
 using OctaNotes.Scripts.Core.Model;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
@@ -10,16 +11,16 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class LongMiddleHandler : ILongMiddleHandler, IInitializable, IDisposable
     {
-        private readonly IPlayInputLayer _playInputLayer;
+        private readonly IInputLayer inputLayer;
         private readonly INoteWindow _noteWindow;
         private readonly ILaneContext _laneContext;
         
         public LongMiddleHandler(
-            IPlayInputLayer playInputLayer,
+            IInputLayer inputLayer,
             INoteWindow noteWindow,
             ILaneContext laneContext)
         {
-            _playInputLayer = playInputLayer;
+            this.inputLayer = inputLayer;
             _noteWindow = noteWindow;
             _laneContext = laneContext;
         }
@@ -88,8 +89,8 @@ namespace OctaNotes.Scripts.Play.Model
 
         private void CountPushedFrameOnce()
         {
-            if(_playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
-               || _playInputLayer.IsButtonPressing[laneNumber].Value == ButtonState.BeginPush
+            if(inputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
+               || inputLayer.IsButtonPressing[laneNumber].Value == ButtonState.BeginPush
                )
             {
                 pushedFrame++;

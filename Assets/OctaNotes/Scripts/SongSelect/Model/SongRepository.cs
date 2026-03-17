@@ -5,36 +5,55 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NUnit.Framework;
 using OctaNotes.Scripts.Core.Model;
+using OctaNotes.Scripts.SongSelect.Model.Actions;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Structs;
 using UnityEngine;
+using Zenject;
 
 namespace OctaNotes.Scripts.SongSelect.Model
 {
     // ファイルから楽曲情報を読み込んで、未ソート済みの楽曲リストを提供するクラス
-    public class SongRepository : ISongRepository
+    public class SongRepository : ISongRepository, IInitializable
     {
         public Dictionary<Guid, SongData> SongDataDict { get; }  = new Dictionary<Guid, SongData>();
         public List<Guid> SongIds { get; }  = new List<Guid>();
+
+        public void Initialize()
+        {
+            LoadSongData();
+        }
         
         private void LoadSongData()
         {
             var basePath = Application.persistentDataPath + "/Charts";
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             string[] folders = Directory.GetDirectories(basePath);
             foreach(var folder in folders)
             {
+                if (Path.GetFileName(folder) == ".ignore") continue;
                 var path = folder + "/metadata.json";
                 RawSongData data;
                 try
                 {
                     var metadata = File.ReadAllText(path);
-                    data = JsonSerializer.Deserialize<RawSongData>(metadata);
+                    data = JsonSerializer.Deserialize<RawSongData>(metadata, options);
                 }
                 catch(FileNotFoundException)
                 {
                     Debug.LogWarning($"Path \"{folder}\" does not contain \"metadata.json\". Skipped.");
                     continue;
                 }
+                catch(JsonException e)
+                {
+                    Debug.LogWarning($"Path \"{folder}\" contains invalid \"metadata.json\". Skipped. ({e.Message})");
+                    continue;
+                }
+
+                var chartDataList = new List<ChartData>();
+                if (data.dualData != null) chartDataList.Add(ConvertLevelData(data.dualData, Difficulty.Dual));
+                if (data.quadData != null) chartDataList.Add(ConvertLevelData(data.quadData, Difficulty.Quad));
+                if (data.octaData != null) chartDataList.Add(ConvertLevelData(data.octaData, Difficulty.Octa));
 
                 SongData songData = new SongData()
                 {
@@ -42,12 +61,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     composerName = data.composer,
                     musicPath = data.musicPath,
                     jacketPath = data.jacketPath,
-                    chartDatas = new ChartData[]
-                    {
-                        ConvertLevelData(data.dualData, Difficulty.Dual),
-                        ConvertLevelData(data.quadData, Difficulty.Quad),
-                        ConvertLevelData(data.octaData, Difficulty.Octa),
-                    }
+                    chartDatas = chartDataList.ToArray()
                 };
                 var songId = Guid.NewGuid();
                 SongDataDict.Add(songId,songData);
@@ -70,20 +84,20 @@ namespace OctaNotes.Scripts.SongSelect.Model
     [Serializable]
     public class RawSongData
     {
-        public string title;
-        public string composer;
-        public string jacketPath;
-        public string musicPath;
-        public string musicOffset;
-        [JsonPropertyName("octa")] public LevelData octaData;
-        [JsonPropertyName("quad")] public LevelData quadData;
-        [JsonPropertyName("dual")]  public LevelData dualData;
+        public string title { get; set; }
+        public string composer { get; set; }
+        public string jacketPath { get; set; }
+        public string musicPath { get; set; }
+        public float musicOffset { get; set; }
+        [JsonPropertyName("octa")] public LevelData octaData { get; set; }
+        [JsonPropertyName("quad")] public LevelData quadData { get; set; }
+        [JsonPropertyName("dual")]  public LevelData dualData { get; set; }
     }
 
     [Serializable]
     public class LevelData
     {
-        public int level;
-        public string chartPath;
+        public int level { get; set; }
+        public string chartPath { get; set; }
     }
 }

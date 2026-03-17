@@ -10,6 +10,5 @@ namespace OctaNotes.Scripts.SongSelect.Model.Structs
         public string jacketPath;
         public ChartData[]  chartDatas; // [0]: dual, [1]: quad, [2]: octa, [3]: duet?
         public Guid guid;
-        public Category category;
     }
 }

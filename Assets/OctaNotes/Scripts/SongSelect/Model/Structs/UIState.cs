@@ -7,19 +7,13 @@ namespace OctaNotes.Scripts.SongSelect.Model.Structs
 {
     public record UIState()
     {
-        public Target controlTarget;
+        public Target controlTarget { get; init; }
         
-        public Guid selectedSongId;
-        public Dictionary<Guid, GuidBridge> guidList; // Keyとして与えられたGuidの次と前のGuidを保持するDict 
+        public int selectedSongIndex { get; init; }
+        public List<SongData> songDataList { get; init; }
+        public Difficulty selectedDifficulty { get; init; }
+        public SongSort selectedSongSort { get; init; }
         
-        public Difficulty selectedDifficulty;
-        public Category selectedCategory;
-        public Options selectedOption;
-        public SongSort selectedSongSort;
-
-        public float noteSpeed;
-        public float judgeOffset;
-
-        public bool songConfirmed;
+        public Options selectedOptions { get; init; }
     }
 }

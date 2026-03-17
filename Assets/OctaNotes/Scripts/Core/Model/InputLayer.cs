@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 using UnityEngine.InputSystem;
 using Zenject;
 
-namespace OctaNotes.Scripts.Play.Model
+namespace OctaNotes.Scripts.Core.Model
 {
-    public class PlayInputLayer: ITickable, IDisposable, IPlayInputLayer
+    public class InputLayer: ITickable, IDisposable, IInputLayer
     {
         private const int LaneCount = 8;
 
@@ -17,7 +17,7 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly bool[] _wasPressed = new bool[LaneCount];
 
         public List<ReactiveProperty<ButtonState>> IsButtonPressing { get; } = new();
-        public PlayInputLayer()
+        public InputLayer()
         {
             for (int i = 0; i < LaneCount; i++)
             {

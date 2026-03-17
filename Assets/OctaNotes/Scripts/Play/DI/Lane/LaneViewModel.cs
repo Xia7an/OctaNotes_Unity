@@ -1,4 +1,5 @@
 using System;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
@@ -11,14 +12,14 @@ namespace OctaNotes.Scripts.Play.DI.Lane
     public class LaneViewModel : ILaneViewModel, IInitializable, IDisposable
     {
         private readonly ILaneContext _laneContext;
-        private readonly IPlayInputLayer _playInputLayer;
+        private readonly IInputLayer inputLayer;
         private readonly IJudgeContext _judgeContext;
         private readonly CompositeDisposable _disposables = new();
 
-        public LaneViewModel(ILaneContext laneContext, IPlayInputLayer playInputLayer, IJudgeContext judgeContext)
+        public LaneViewModel(ILaneContext laneContext, IInputLayer inputLayer, IJudgeContext judgeContext)
         {
             _laneContext = laneContext;
-            _playInputLayer = playInputLayer;
+            this.inputLayer = inputLayer;
             _judgeContext = judgeContext;
         }
 
@@ -27,7 +28,7 @@ namespace OctaNotes.Scripts.Play.DI.Lane
 
         public void Initialize()
         {
-            _playInputLayer.IsButtonPressing[_laneContext.LaneIndex]
+            inputLayer.IsButtonPressing[_laneContext.LaneIndex]
                 .Subscribe(state => ButtonState.Value = state)
                 .AddTo(_disposables);
 

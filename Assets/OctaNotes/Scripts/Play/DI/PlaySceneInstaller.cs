@@ -2,6 +2,7 @@ using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model;
 using System.Linq;
+using OctaNotes.Scripts.Core.Model;
 using UnityEngine;
 using Zenject;
 
@@ -15,7 +16,6 @@ public class PlaySceneInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<ChartRepository>().AsSingle();
         Container.BindInterfacesAndSelfTo<ChartParser>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<PlayInputLayer>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<InGameTimer>().AsSingle().NonLazy();
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
         Container.BindInterfacesAndSelfTo<ComboCalcurator>().AsSingle().NonLazy();

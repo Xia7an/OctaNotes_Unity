@@ -1,5 +1,6 @@
 using System;
 using DefaultNamespace;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using OctaNotes.Scripts.SongSelect.Model.Actions;
@@ -11,104 +12,146 @@ using Zenject;
 
 namespace OctaNotes.Scripts.SongSelect.Model
 {
-    // ボタン入力から操作の意味に変換するクラス
+    // 物理的なボタン入力からユーザーの行いたい操作の意味に変換するクラス
     public class InputContextResolver : IInitializable, IDisposable
     {
-        private readonly IPlayInputLayer _playInputLayer;
-        
+        private readonly IInputLayer inputLayer;
+        private readonly IUIState _state;
+        private readonly IDispachable _dispachable;
+        private readonly ISongSelectActionContext _actionContext;
+
         private CompositeDisposable _disposables = new();
-        private IDispachable _dispachable;
-        private IUIState _state;
+
+        public InputContextResolver(
+            IInputLayer inputLayer,
+            IDispachable dispachable,
+            IUIState state,
+            ISongSelectActionContext actionContext)
+        {
+            this.inputLayer = inputLayer;
+            _dispachable = dispachable;
+            _actionContext = actionContext;
+            _state = state;
+        }
 
         public void Initialize()
         {
             for (int i = 0; i < 8; i++)
             {
-                var i1 = i; // Subscribeの中身がラムダ式であり、変数がそのままキャプチャされるため、各講読で独立した変数が割り当てられるように別の変数を定義している。
-                _playInputLayer.IsButtonPressing[i]
+                var i1 = i; // Subscribeの中身がラムダ式であり、変数がそのままキャプチャされるため、各購読で独立した変数が割り当てられるように別の変数を定義している。
+                inputLayer.IsButtonPressing[i]
                     .Where(v => v is ButtonState.BeginPush)
                     .Subscribe(_ => OnPhysicalButtonPressed(i1)).AddTo(_disposables);
             }
         }
+
         public void Dispose()
         {
             _disposables?.Dispose();
         }
 
-        public InputContextResolver(IDispachable dispachable)
-        {
-            _dispachable = dispachable;
-        }
-        
-        
         private void OnPhysicalButtonPressed(int buttonIdx)
         {
-            UIAction action = new DoNothing();
             var state = _state.State.Value;
             switch (buttonIdx)
             {
                 case 0:
-                    action = state.controlTarget switch
+                {
+                    UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectSong(Direction.Down),
                         // Target.CategoryList => new SelectCategory(Direction.Down),
-                        Target.GameOptions => new SelectOption(Direction.Down)
+                        Target.GameOptions => new SelectOption(Direction.Down),
+                        _ => new NotAssigned()
                     };
+                    DispatchAction(action, state);
                     break;
-                
+                }
+
                 case 1:
-                    action = state.controlTarget switch
+                {
+                    UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectSong(Direction.Up),
                         // Target.CategoryList => new SelectCategory(Direction.Up),
-                        Target.GameOptions => new SelectOption(Direction.Up)
+                        Target.GameOptions => new SelectOption(Direction.Up),
+                        _ => new NotAssigned()
                     };
+                    DispatchAction(action, state);
                     break;
-                
+                }
+
                 case 2:
-                    action = state.controlTarget switch
+                {
+                    UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new ConfirmSong(),
                         _ => new ChangeControlTarget(Target.SongList)
                     };
+                    DispatchAction(action, state);
                     break;
-                
+                }
+
                 case 3:
-                    if (state.controlTarget == Target.SongList) action = new ChangeControlTarget(Target.GameOptions);
+                {
+                    if (state.controlTarget == Target.SongList)
+                        DispatchAction(new ChangeControlTarget(Target.GameOptions), state);
                     break;
-                
+                }
+
                 case 4:
-                    action = state.controlTarget switch
+                {
+                    UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectDifficulty(Direction.Down),
-                        Target.GameOptions when state.selectedOption is Options.NoteSpeed => new ChangeNoteSpeed(
-                            Direction.Down),
-                        Target.GameOptions when state.selectedOption is Options.JudgeOffset => new ChangeJudgeOffset(
-                            Direction.Down),
+                        Target.GameOptions => new ChangeNoteSpeed(Direction.Down),
+                        _ => new NotAssigned()
                     };
+                    DispatchAction(action, state);
                     break;
-                
+                }
+
                 case 5:
-                    action = state.controlTarget switch
+                {
+                    UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectSong(Direction.Up),
-                        Target.GameOptions when state.selectedOption is Options.NoteSpeed => new ChangeNoteSpeed(
-                            Direction.Up),
-                        Target.GameOptions when state.selectedOption is Options.JudgeOffset => new ChangeJudgeOffset(
-                            Direction.Up),
+                        Target.GameOptions => new ChangeNoteSpeed(Direction.Up),
+                        _ => new NotAssigned()
                     };
+                    DispatchAction(action, state);
                     break;
-                
+                }
+
                 case 6:
-                    if (state.controlTarget == Target.SongList) action = new ChangeControlTarget(Target.CategoryList);
+                {
+                    if (state.controlTarget == Target.SongList)
+                        DispatchAction(new ChangeControlTarget(Target.CategoryList), state);
                     break;
-                
+                }
+
                 case 7:
-                    if (state.controlTarget == Target.SongList) action = new ChangeControlTarget(Target.SongSort);
+                {
+                    if (state.controlTarget == Target.SongList)
+                        DispatchAction(new ChangeControlTarget(Target.SongSort), state);
                     break;
+                }
             }
-            _dispachable.Dispatch(action);
         }
 
+        // UIActionの種類に応じて、UIStoreへのDispatchかSongSelectActionContextへの委譲を振り分ける
+        private void DispatchAction(UIAction action, UIState state)
+        {
+            switch (action)
+            {
+                // ボタンが状態変化ではなく何かしらの操作を伴う場合にはActionContextにActionを委譲
+                case ConfirmSong:
+                    _actionContext.Dispatch(action);
+                    break;
+                default:
+                    _dispachable.Dispatch(action);
+                    break;
+            }
+        }
     }
 }

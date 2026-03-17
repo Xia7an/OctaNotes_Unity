@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5344526007670838483}
   - component: {fileID: 1871700669973389456}
+  - component: {fileID: -7580748816018262267}
   m_Layer: 0
   m_Name: ProjectContext
   m_TagString: Untagged
@@ -46,7 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zenject::Zenject.ProjectContext
   _scriptableObjectInstallers:
   - {fileID: 11400000, guid: a2ba29c669b4e49f88b94e8b20fea77c, type: 2}
-  _monoInstallers: []
+  _monoInstallers:
+  - {fileID: -7580748816018262267}
   _installerPrefabs: []
   _findSiblingMonoInstallers: 0
   _parentNewObjectsUnderContext: 1
@@ -63,3 +65,15 @@ MonoBehaviour:
       _missingHandlerDefaultResponse: 2
       _requireStrictUnsubscribe: 0
       _defaultAsyncTickPriority: 1
+--- !u!114 &-7580748816018262267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5761897823754442334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b2d8ac6cc394c598d2c6f82c474fa71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.SongSelect.DI.GlobalSongContextInstaller

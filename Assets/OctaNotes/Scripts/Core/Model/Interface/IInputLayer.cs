@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
 
-namespace OctaNotes.Scripts.Play.Interface
+namespace OctaNotes.Scripts.Core.Model.Interface
 {
-    public interface IPlayInputLayer
+    public interface IInputLayer
     {
         List<ReactiveProperty<ButtonState>> IsButtonPressing { get; }
     }

@@ -51,9 +51,9 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 }
 
                 var chartDataList = new List<ChartData>();
-                if (data.dualData != null) chartDataList.Add(ConvertLevelData(data.dualData, Difficulty.Dual));
-                if (data.quadData != null) chartDataList.Add(ConvertLevelData(data.quadData, Difficulty.Quad));
-                if (data.octaData != null) chartDataList.Add(ConvertLevelData(data.octaData, Difficulty.Octa));
+                if (data.dualData != null) chartDataList.Add(ConvertLevelData(data.dualData, Difficulty.Dual, folder));
+                if (data.quadData != null) chartDataList.Add(ConvertLevelData(data.quadData, Difficulty.Quad, folder));
+                if (data.octaData != null) chartDataList.Add(ConvertLevelData(data.octaData, Difficulty.Octa, folder));
 
                 SongData songData = new SongData()
                 {
@@ -69,12 +69,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
             }
         }
 
-        private ChartData ConvertLevelData(LevelData levelData, Difficulty difficulty)
+        private ChartData ConvertLevelData(LevelData levelData, Difficulty difficulty, string folder)
         {
             return new ChartData()
             {
                 level = levelData.level,
-                chartPath = levelData.chartPath,
+                chartPath = folder + "/" + levelData.chartPath,
                 difficulty =  difficulty,
             };
         }

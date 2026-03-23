@@ -49,7 +49,7 @@ public class PlaySceneInstaller : MonoInstaller
             var subContainer = laneSubContainerFactory.CreateLaneSubContainer(laneDefinition.LaneId);
             subContainer.InjectGameObject(laneDefinition.ViewBundle.gameObject);
             
-            // レーン内のViewに対応するContainerから1つずつDI
+            // 対応するContainerからレーン内のViewに1つずつDI
             foreach (var view in laneDefinition.ViewBundle.Views) 
             {
                 if (view == null)

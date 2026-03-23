@@ -6,5 +6,7 @@ namespace OctaNotes.Scripts.SongSelect.Model.Interface
     public interface IGlobalSongDataContext
     {
         ChartData ChartData { get; set; }
+        
+        string MusicPath { get; set; }
     }
 }

@@ -115,7 +115,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 {
                     UIAction action = state.controlTarget switch
                     {
-                        Target.SongList => new SelectSong(Direction.Up),
+                        Target.SongList => new SelectDifficulty(Direction.Up),
                         Target.GameOptions => new ChangeNoteSpeed(Direction.Up),
                         _ => new NotAssigned()
                     };

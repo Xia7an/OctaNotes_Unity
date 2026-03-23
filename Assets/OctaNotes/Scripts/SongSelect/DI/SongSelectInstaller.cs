@@ -1,4 +1,7 @@
+using OctaNotes.Scripts.SongSelect.DI.Hud;
 using OctaNotes.Scripts.SongSelect.Model;
+using OctaNotes.Scripts.SongSelect.ViewModel.Hud;
+using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.SongSelect.DI
@@ -12,6 +15,7 @@ namespace OctaNotes.Scripts.SongSelect.DI
             Container.BindInterfacesAndSelfTo<UIStateStore>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<SongSelectActionContext>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<InputContextResolver>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<HudCalcFactory>().AsSingle();
         }
     }
 }

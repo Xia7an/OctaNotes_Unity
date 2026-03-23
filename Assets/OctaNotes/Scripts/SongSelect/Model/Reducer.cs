@@ -22,7 +22,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 SelectSong(var v) => oldState with
                 {
                     selectedSongIndex = Math.Clamp(
-                        oldState.selectedSongIndex + (int)v,
+                        oldState.selectedSongIndex - (int)v,
                         0,
                         oldState.songDataList != null && oldState.songDataList.Count > 0
                             ? oldState.songDataList.Count - 1
@@ -34,7 +34,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 },
                 SelectOption(var v) => oldState with
                 {
-                    selectedOptions =(Options)(((int)oldState.selectedOptions +  (int)v) % 2)
+                    selectedOptions =(Options)(((int)oldState.selectedOptions + (int)v) % 2)
                 },
                 ReloadSongList(var v) => oldState with
                 {

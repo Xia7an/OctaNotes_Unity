@@ -39,9 +39,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
             switch (action)
             {
                 case ConfirmSong:
+                    // 今選択されている楽曲の譜面データなどをProjectContext側に渡す
                     _globalSongDataContext.ChartData = 
                         _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex]
                             .chartDatas[(int)_uiState.State.Value.selectedDifficulty];
+                    _globalSongDataContext.MusicPath = _uiState.State.Value
+                        .songDataList[_uiState.State.Value.selectedSongIndex].musicPath;
                     _sceneController.ChangeScene(Scenes.Play).Forget();
                     break;
             }

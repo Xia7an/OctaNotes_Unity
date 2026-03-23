@@ -1,3 +1,4 @@
+using System;
 using R3;
 
 namespace OctaNotes.Scripts.Play.Model.Interface
@@ -9,5 +10,7 @@ namespace OctaNotes.Scripts.Play.Model.Interface
     public interface IInGameTimer
     {
         public ReactiveProperty<float> Time { get; }
+
+        public event Action OnMusicStart;
     }
 }

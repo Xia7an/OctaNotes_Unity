@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.Interface;
+using OctaNotes.Scripts.SongSelect.Model.Interface;
 using UnityEngine;
 using Zenject;
 
@@ -13,6 +14,8 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class ChartParser: IChartParser, IInitializable
     {
+        private readonly IGlobalSongDataContext _globalSongDataContext;
+        
         public Dictionary<double, List<GraphicalNoteEntry>> GraphicalChartData => _chartData1;
         public List<List<NoteTiming>> LaneWiseChartData => _chartData2;
         public List<(double,double)> HsChangeData => _hschangeData;
@@ -56,10 +59,15 @@ namespace OctaNotes.Scripts.Play.Model
         };
 
         private List<string> ChartData;
+
+        public ChartParser(IGlobalSongDataContext globalSongDataContext)
+        {
+            _globalSongDataContext = globalSongDataContext;
+        }
         
         public void Initialize()
         {
-            LoadChart(Application.persistentDataPath + "/Charts/ShiningStar/octa.onc");
+            LoadChart(_globalSongDataContext.ChartData.chartPath);
         }
         
         public void LoadChart(string path)

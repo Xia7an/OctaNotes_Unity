@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
@@ -11,7 +12,7 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class JudgeContext : IJudgeContext, IInitializable, IDisposable
     {
-        private readonly IPlayInputLayer _inputLayer;
+        private readonly IInputLayer _inputLayer;
         private readonly INoteWindow _noteWindow;
         private readonly ILongMiddleHandler _longMiddleHandler;
         private readonly IJudgeStrategyFactory _judgeStrategyFactory;
@@ -19,7 +20,7 @@ namespace OctaNotes.Scripts.Play.Model
         private Guid judgedNoteGuid = Guid.Empty; // 直前に判定が確定したノーツのGuid
         
         public JudgeContext(
-            IPlayInputLayer inputLayer,
+            IInputLayer inputLayer,
             INoteWindow noteWindow,
             ILongMiddleHandler longMiddleHandler,
             IJudgeStrategyFactory judgeStrategyFactory)

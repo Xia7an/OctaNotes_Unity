@@ -5,9 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/OctaNotes/Scenes/Title.unity
+    guid: aeb72171a04a04b339a744d03194265e
+  - enabled: 1
+    path: Assets/OctaNotes/Scenes/SongSelect.unity
+    guid: c49e2a8e8ef3f4ebb9fb53c1d1d24e16
+  - enabled: 1
+    path: Assets/OctaNotes/Scenes/Play.unity
+    guid: f33f4109461d34738b7523d46d077d91
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

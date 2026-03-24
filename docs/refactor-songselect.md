@@ -1,0 +1,28 @@
+# SongSelectシーン 大規模リファクタリング計画
+## 目的
+本計画では、SongSelectシーンにおける状態管理を、現状のUIState一極集中から、切り離せる状態を切り離し、InputContextResolverで適切な処理を呼び出し(実際はInputContextResolverがViewModelに依存する実装や、InputContextResolverがたくさんのイベントを提供する実装にはしたくないため、InputContextResolverはUIStoreの管理する状態とキー入力をもとに意味の解釈を行うことに専念し、ViewModelはすべてSongSelectActionContextという名前のクラスに依存する実装とする。InputContextResolverはSongSelectActionContextに依存し、与えられたUIActionの種類によっては、UIStoreの状態変更ではなく、SongSelectActionContextに処理を移譲するようにする。)これをトリガーに状態を変更する実装に変更することを目的とします。
+
+## リファクタリングにおけるルール
+- クラスがクラスに直接依存する実装は避けてください。クラスはインターフェイスに依存するようにしてください。
+- 任意のViewは必ず単一のViewModelに依存するようにしてください。また、ViewModelは原則として単一のViewのみから依存されるようにしてください。
+- DIにはZenjectを用い、非MonoBehaviorクラスではコンストラクタインジェクションとし、MonoBehaviorクラスでは `Construct` という名前のメソッドを用いてメソッドインジェクションをしてください。
+- イベントの購読・解除には `R3` の記法を用いてください。以下に、`_foodViewModel`が提供するイベント`OnFoodDestroy`を購読し、`TryDestroyFood`メソッドを呼び出す例を示します。
+  ` Observable.FromEvent(
+       h => _foodViewModel.OnFoodDestroy += h,
+       h =>  _foodViewModel.OnFoodDestroy -= h
+       ).Subscribe(_ => TryDestroyFood()).AddTo(this);`
+- 以下で"イベント"という言葉で説明しているものでも、変数の変化を購読する・してもらう場合には、 `ReactiveProperty<T>` を用いてください。これは例えばViewがViewModelの管理する状態の変化に応じてUIを再描画する場合などが該当します。
+
+
+
+## 切り離すべき状態
+UIStateが管理している状態のうち、以下の条件を満たす状態はUIStateから切り離して、当該状態を表示するViewに対応するViewModel側で管理するようにリファクタリングする。
+- noteSpeedのように、当該状態が必要なクラスが限られるような状態
+  - 別の言い方をすると、その状態によってボタン入力の意味が変化しない(InputContextResolverがボタン入力の意味を解析するために必要としない)ような状態は切り離すべきとも言えます。
+
+## SongSelectActionContextの存在意義と実装方針
+SongSelectActionContextは、InputContextResolverの責務を「状態に応じたボタン入力の意味解釈」に限定し、イベント発火の責務を分離するために用意しています。SongSelectActionContextは、InputContextResolverが処理を委譲するためのメソッド(SongSelectActionContextが実装するメソッドは移譲される処理ごとに分けず1つのメソッドとし、引数として `UIAction` を受け取る実装とすることで、今後の拡張に堅牢な設計としてください。)と、ViewModelが購読するためのイベントを実装します。処理移譲メソッドとイベントの双方に依存するクラスは存在しない(処理のトリガーはボタン入力以外ありえず、SongSelectActionContextに移譲された処理結果が反映されるのはViewModel以外ありえない)ため、これら2つを提供するインターフェイスは分離するのが好ましいです。
+
+## ViewModelが管理する状態の変更方法
+ViewModelが管理する状態は、以下の実装によって変更する。
+- InpucContextResolverがSongSelectActionContextに処理を委譲した場合、SongSelectActionContextは、InpucContextResolverが渡したUIActionと(必要なら)UIStateの状態をもとにしてイベントを発火する。ViewModelは、SongSelectActionContextが提供するイベントを購読し、各UIActionのパラメータをもとにして自身が保持する内部状態を書き換える。

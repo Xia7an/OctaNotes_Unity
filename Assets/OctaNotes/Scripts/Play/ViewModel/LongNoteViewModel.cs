@@ -1,4 +1,5 @@
 using System;
+using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
@@ -11,7 +12,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
 {
     public class LongNoteViewModel : ILongNoteViewModel, IInitializable
     {
-        private readonly IPlayInputLayer _playInputLayer;
+        private readonly IInputLayer inputLayer;
         private readonly ILaneContext _laneContext;
         private readonly IInGameTimer _inGameTimer;
         private readonly PlaySettingsSO _playSettingsSO;
@@ -23,9 +24,9 @@ namespace OctaNotes.Scripts.Play.ViewModel
         private Guid[]  _guids;
         private CompositeDisposable _disposables = new();
 
-        public LongNoteViewModel(IPlayInputLayer playInputLayer, ILaneContext laneContext, IInGameTimer inGameTimer,  PlaySettingsSO playSettingsSO)
+        public LongNoteViewModel(IInputLayer inputLayer, ILaneContext laneContext, IInGameTimer inGameTimer,  PlaySettingsSO playSettingsSO)
         {
-            _playInputLayer = playInputLayer;
+            this.inputLayer = inputLayer;
             _laneContext = laneContext;
             _inGameTimer = inGameTimer;
             _playSettingsSO = playSettingsSO;
@@ -34,10 +35,10 @@ namespace OctaNotes.Scripts.Play.ViewModel
         public void Initialize()
         {
             // レーンに対応するボタンが押されているかどうかを反映する
-            _playInputLayer.IsButtonPressing[_laneContext.LaneIndex]
+            inputLayer.IsButtonPressing[_laneContext.LaneIndex]
                 .Where(v => v is ButtonState.BeginPush or ButtonState.Pushed)
                 .Subscribe(v => IsPushed.Value = true).AddTo(_disposables);
-            _playInputLayer.IsButtonPressing[_laneContext.LaneIndex]
+            inputLayer.IsButtonPressing[_laneContext.LaneIndex]
                 .Where(v => v is ButtonState.Released or  ButtonState.EndPush)
                 .Subscribe(v => IsPushed.Value = false).AddTo(_disposables);
             

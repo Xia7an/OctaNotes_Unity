@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
+using OctaNotes.Scripts.Settings;
 using R3;
-using UnityEngine;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.Model
@@ -15,26 +14,31 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly IInGameTimer inGameTimer;
         private readonly IChartRepositoryImmutable _chartRepository;
         private readonly ILaneContext _laneContext;
+        private readonly PlaySettingsSO _playSettings;
 
         private readonly CompositeDisposable _disposables = new();
         private int _laneIndex;
-        private int _lastClosestIndex = -1;
+        private int _nextCandidateIndex;
+        private readonly Dictionary<Guid, int> _noteIndexByGuid = new();
 
         public ReactiveProperty<Note> CurrentNote { get; private set; } = new();
         
         public NoteWindow(
             IInGameTimer inGameTimer,
             IChartRepositoryImmutable chartRepository,
-            ILaneContext laneContext)
+            ILaneContext laneContext,
+            PlaySettingsSO playSettings)
         {
             this.inGameTimer = inGameTimer;
             _chartRepository = chartRepository;
             _laneContext = laneContext;
+            _playSettings = playSettings;
         }
 
         public void Initialize()
         {
             this._laneIndex = _laneContext.LaneIndex;
+            BuildGuidIndexMap();
             inGameTimer.Time.Subscribe(v => GetCurrentNote(v, _chartRepository.LaneWiseChartData)).AddTo(_disposables);
         }
         
@@ -43,12 +47,46 @@ namespace OctaNotes.Scripts.Play.Model
             CurrentNote?.Dispose();
             _disposables.Dispose();
         }
+
+        public void NotifyJudged(Guid noteGuid)
+        {
+            if (noteGuid == Guid.Empty)
+            {
+                return;
+            }
+
+            if (_noteIndexByGuid.TryGetValue(noteGuid, out var judgedIndex))
+            {
+                _nextCandidateIndex = Math.Max(_nextCandidateIndex, judgedIndex + 1);
+            }
+        }
+
+        private void BuildGuidIndexMap()
+        {
+            _noteIndexByGuid.Clear();
+
+            var laneNotes = _chartRepository.LaneWiseChartData;
+            if (_laneIndex < 0 || _laneIndex >= laneNotes.Count)
+            {
+                return;
+            }
+
+            var lane = laneNotes[_laneIndex];
+            for (var i = 0; i < lane.Count; i++)
+            {
+                var guid = lane[i].guid;
+                if (guid == Guid.Empty || _noteIndexByGuid.ContainsKey(guid))
+                {
+                    continue;
+                }
+
+                _noteIndexByGuid[guid] = i;
+            }
+        }
         
 
         private void GetCurrentNote(float timer, List<List<NoteTiming>> chartData)
         {
-            // 入力やレーンの妥当性チェック
-            // Find the nearest note within the target lane only.
             if (chartData == null || _laneIndex < 0 || _laneIndex >= chartData.Count)
             {
                 return;
@@ -60,87 +98,21 @@ namespace OctaNotes.Scripts.Play.Model
                 return;
             }
 
-            int closestIndex = -1;
-            double closestDiff = double.MaxValue;
+            float badThresholdSec = _playSettings.badRangeMs / 1000f;
+            float timeoutBorder = timer - badThresholdSec;
 
-            // 前回インデックスを使ったO(1)近傍判定
-            // 最も近くのノーツが、前回実行時に選択されたノーツ、もしくは前回実行時に選択されたノーツの次のノーツであると仮定して、
-            // それが最も近くであることが確定できる場合には、そのノーツを選択する。
-            if (_lastClosestIndex >= 0 && _lastClosestIndex < lane.Count)
+            while (_nextCandidateIndex < lane.Count && lane[_nextCandidateIndex].timing < timeoutBorder)
             {
-                int prevIndex = _lastClosestIndex;
-                int nextIndex = prevIndex + 1;
-                int beforeIndex = prevIndex - 1;
-
-                double t1 = Math.Abs(lane[prevIndex].timing - timer);
-                double t2 = beforeIndex >= 0 ? Math.Abs(lane[beforeIndex].timing - timer) : double.MaxValue;
-                double t3 = nextIndex < lane.Count ? Math.Abs(lane[nextIndex].timing - timer) : double.MaxValue;
-
-                if (t1 <= t2 && t1 <= t3)
-                {
-                    closestIndex = prevIndex;
-                    closestDiff = t1;
-                }
-                else if (nextIndex < lane.Count)
-                {
-                    int nextNextIndex = nextIndex + 1;
-                    double t4 = nextNextIndex < lane.Count
-                        ? Math.Abs(lane[nextNextIndex].timing - timer)
-                        : double.MaxValue;
-
-                    if (t3 <= t1 && t3 <= t4)
-                    {
-                        closestIndex = nextIndex;
-                        closestDiff = t3;
-                    }
-                }
+                _nextCandidateIndex++;
             }
 
-            // O(1)で確定できない場合は二分探索へフォールバック
-            if (closestIndex < 0)
-            {
-                int left = 0;
-                int right = lane.Count;
-                while (left < right)
-                {
-                    int mid = left + (right - left) / 2;
-                    if (lane[mid].timing < timer)
-                    {
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid;
-                    }
-                }
-
-                // Check candidate at lower-bound and the previous one.
-                for (int i = left; i >= left - 1; i--)
-                {
-                    if (i < 0 || i >= lane.Count)
-                    {
-                        continue;
-                    }
-
-                    double diff = Math.Abs(lane[i].timing - timer);
-                    if (diff < closestDiff)
-                    {
-                        closestDiff = diff;
-                        closestIndex = i;
-                    }
-                }
-            }
-
-            // 最終的な最寄りノーツが見つからない場合は終了
-            if (closestIndex < 0)
+            if (_nextCandidateIndex >= lane.Count)
             {
                 return;
             }
 
-            _lastClosestIndex = closestIndex;
-            NoteTiming closestTiming = lane[closestIndex];
+            NoteTiming closestTiming = lane[_nextCandidateIndex];
 
-            // 最寄りノーツ情報を使ってNoteを生成し通知
             Note note = new Note()
             {
                 guid = closestTiming.guid,
@@ -152,13 +124,6 @@ namespace OctaNotes.Scripts.Play.Model
             };
             
             CurrentNote.Value = note;
-            // _printCurrentNote(CurrentNote.Value);
-        }
-
-        private void _printCurrentNote(Note note)
-        {
-            if(note.laneNumber != 0) return;
-            Debug.Log($"[Current Note] Type: {note.noteType},\n GUID: {note.guid},\n Lane: {note.laneNumber}");
         }
 
     }

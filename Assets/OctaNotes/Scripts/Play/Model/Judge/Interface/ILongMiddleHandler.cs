@@ -1,4 +1,6 @@
 using R3;
+using System;
+using OctaNotes.Scripts.Play.Model.Struct;
 
 namespace OctaNotes.Scripts.Play.Model.Interface
 {
@@ -8,5 +10,15 @@ namespace OctaNotes.Scripts.Play.Model.Interface
         /// ロング視点から終点までの何割ボタンが押されていたかを返す
         /// </summary>
         public ReactiveProperty<float> LongPushedRate { get; }
+
+        /// <summary>
+        /// 指定したロング終点Guidに対応する押下率が確定済みなら取得する
+        /// </summary>
+        bool TryGetLongEndPushedRate(Guid longEndGuid, out float pushedRate);
+
+        /// <summary>
+        /// 判定直前に最新ノーツ状態を同期する
+        /// </summary>
+        void SyncWithCurrentNote(Note note);
     }
 }

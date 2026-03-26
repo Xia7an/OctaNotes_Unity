@@ -8,12 +8,14 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
     public class JudgeStrategyFactory : IJudgeStrategyFactory
     {
         private readonly PlaySettingsSO _playSettings;
+        private readonly ILongMiddleHandler _longMiddleHandler;
         private readonly Dictionary<(NoteType noteType, bool isEx), IJudgeStrategy> _strategyCache = new();
         
 
-        public JudgeStrategyFactory(PlaySettingsSO playSettings)
+        public JudgeStrategyFactory(PlaySettingsSO playSettings, ILongMiddleHandler longMiddleHandler)
         {
             _playSettings = playSettings;
+            _longMiddleHandler = longMiddleHandler;
         }
         
         
@@ -32,11 +34,11 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
             {
                (NoteType.Tap or NoteType.LongStart) when !isEx 
                     => new TapJudgeStrategy(_playSettings), // Exでない場合は通常の判定
-               (NoteType.Tap or NoteType.LongStart) when (isEx) 
+                (NoteType.Tap or NoteType.LongStart) when (isEx) 
                     => new ExTapJudgeStrategy(_playSettings),
                 NoteType.Chain 
                     => new ChainJudgeStrategy(_playSettings),
-                NoteType.LongEnd => new LongEndJudgeStrategy(),
+                NoteType.LongEnd => new LongEndJudgeStrategy(_longMiddleHandler),
             };
             _strategyCache[key] = strategy;
             return strategy;

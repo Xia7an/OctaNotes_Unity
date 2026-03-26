@@ -68,6 +68,8 @@ namespace OctaNotes.Scripts.Play.Model
         {
             if (note.guid == Guid.Empty) return;
             if (note.guid == _lastJudgedNoteGuid) return;
+
+            _longMiddleHandler.SyncWithCurrentNote(note);
             
             IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType, note.isEx);
             var result = strategy.JudgeNote(note,

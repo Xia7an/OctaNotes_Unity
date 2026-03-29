@@ -43,7 +43,7 @@ namespace OctaNotes.Scripts.Play.View
                 {
                     ToggleOffEffect();
                 }
-            });
+            }).AddTo(this);
         }
         private void ToggleOnEffect(Judge judge)
         {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
@@ -22,6 +21,7 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly IChartRepositoryImmutable _chartRepository;
         private readonly ILaneContext _laneContext;
         private readonly PlaySettingsSO _playSettings;
+        private readonly List<ButtonState> _buttonStatesBuffer;
 
         private Guid _lastJudgedNoteGuid = Guid.Empty;
         private readonly HashSet<Guid> _judgedNoteGuids = new();
@@ -45,6 +45,12 @@ namespace OctaNotes.Scripts.Play.Model
             _chartRepository = chartRepository;
             _laneContext = laneContext;
             _playSettings = playSettings;
+            _buttonStatesBuffer = new List<ButtonState>(_inputLayer.IsButtonPressing.Count);
+
+            for (var i = 0; i < _inputLayer.IsButtonPressing.Count; i++)
+            {
+                _buttonStatesBuffer.Add(_inputLayer.IsButtonPressing[i].Value);
+            }
         }
 
         public ReactiveProperty<JudgeResult> JudgeResult { get; private set; } = new();
@@ -54,6 +60,14 @@ namespace OctaNotes.Scripts.Play.Model
 
         public void Initialize()
         {
+            for (var i = 0; i < _inputLayer.IsButtonPressing.Count; i++)
+            {
+                var index = i;
+                _inputLayer.IsButtonPressing[index]
+                    .Subscribe(state => _buttonStatesBuffer[index] = state)
+                    .AddTo(_disposables);
+            }
+
             _noteWindow.CurrentNote.Subscribe(Judge).AddTo(_disposables);
             _inGameTimer.Time.Subscribe(CheckTimeoutMiss).AddTo(_disposables);
         }
@@ -73,7 +87,7 @@ namespace OctaNotes.Scripts.Play.Model
             
             IJudgeStrategy strategy = _judgeStrategyFactory.Create(note.noteType, note.isEx);
             var result = strategy.JudgeNote(note,
-                _inputLayer.IsButtonPressing.Select(state => state.Value).ToList(), 
+                _buttonStatesBuffer,
                 _longMiddleHandler.LongPushedRate.Value);
 
             if (result.judge is Enum.Judge.NotJudged or Enum.Judge.None) return;

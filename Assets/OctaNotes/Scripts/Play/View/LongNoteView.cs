@@ -10,6 +10,7 @@ namespace OctaNotes.Scripts.Play.View
     public class LongNoteView : MonoBehaviour
     {
         private ILongNoteViewModel  _longNoteViewModel;
+        private Material _material;
         
         [SerializeField] private LongNoteRendererRef longNoteRendererRef;
 
@@ -21,6 +22,7 @@ namespace OctaNotes.Scripts.Play.View
 
         private void Start()
         {
+            _material = longNoteRendererRef.meshRenderer.material;
             _longNoteViewModel.PosZ.Subscribe(SetPosZ).AddTo(this);
             _longNoteViewModel.IsPushed.Subscribe(SetLongBottomHide).AddTo(this);
         }
@@ -34,7 +36,7 @@ namespace OctaNotes.Scripts.Play.View
 
         private void SetLongBottomHide(bool hide)
         {
-            longNoteRendererRef.meshRenderer.material.SetFloat("_IsJudging", hide ? 1f : 0f);
+            _material.SetFloat("_IsJudging", hide ? 1f : 0f);
         }
         
     }

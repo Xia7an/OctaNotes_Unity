@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc92dbba8fb4ecda0adf1114701a8ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Title.View.GameStartSEView
-  clip: {fileID: 8300000, guid: 6272c39981e784db6b09904e775ab3e7, type: 3}
+  clip: {fileID: 8300000, guid: 80ef40d1056c049198029f23c6463d70, type: 3}
 --- !u!82 &623493437
 AudioSource:
   m_ObjectHideFlags: 0

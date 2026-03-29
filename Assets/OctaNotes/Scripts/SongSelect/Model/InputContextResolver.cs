@@ -18,7 +18,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
         private readonly IInputLayer inputLayer;
         private readonly IUIState _state;
         private readonly IDispachable _dispachable;
-        private readonly ISongSelectActionContext _actionContext;
+        private readonly ISongSelectActionDispatchable actionDispatchable;
 
         private CompositeDisposable _disposables = new();
 
@@ -26,11 +26,11 @@ namespace OctaNotes.Scripts.SongSelect.Model
             IInputLayer inputLayer,
             IDispachable dispachable,
             IUIState state,
-            ISongSelectActionContext actionContext)
+            ISongSelectActionDispatchable actionDispatchable)
         {
             this.inputLayer = inputLayer;
             _dispachable = dispachable;
-            _actionContext = actionContext;
+            this.actionDispatchable = actionDispatchable;
             _state = state;
         }
 
@@ -146,7 +146,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
             {
                 // ボタンが状態変化ではなく何かしらの操作を伴う場合にはActionContextにActionを委譲
                 case ConfirmSong:
-                    _actionContext.Dispatch(action);
+                    actionDispatchable.Dispatch(action);
                     break;
                 default:
                     _dispachable.Dispatch(action);

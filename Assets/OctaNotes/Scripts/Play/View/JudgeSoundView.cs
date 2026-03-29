@@ -61,6 +61,7 @@ namespace OctaNotes.Scripts.Play.View
                 _  => null
             };
             _audioSource.PlayOneShot(clip);
+            Debug.Log("Played Judge sound.");
         }
     }
 }

@@ -12,7 +12,7 @@ using Zenject;
 namespace OctaNotes.Scripts.SongSelect.Model
 {
     // InputContextResolverから委譲されたUIActionを受け取り、状態変化を伴わない処理を行うクラス
-    public class SongSelectActionContext : ISongSelectActionContext, IInitializable
+    public class SongSelectActionDispatchable : ISongSelectActionDispatchable, ISongSelectActionEventSource, IInitializable
     {
         private readonly IUIState _uiState;
         private readonly IDispachable _dispachable;
@@ -20,7 +20,8 @@ namespace OctaNotes.Scripts.SongSelect.Model
         private readonly IGlobalSongDataContext _globalSongDataContext;
         private readonly ISceneController _sceneController;
 
-        public SongSelectActionContext(
+        public event Action<UIAction> OnActionDispatched;
+        public SongSelectActionDispatchable(
             IUIState uiState, 
             IGlobalSongDataContext globalSongDataContext,
             IDispachable dispachable,
@@ -36,6 +37,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
         
         public void Dispatch(UIAction action)
         {
+            OnActionDispatched?.Invoke(action);
             switch (action)
             {
                 case ConfirmSong:
@@ -55,5 +57,6 @@ namespace OctaNotes.Scripts.SongSelect.Model
             var tmpList = _songRepository.SongDataDict.Values.ToArray();
             _dispachable.Dispatch(new ReloadSongList(tmpList));
         }
+
     }
 }

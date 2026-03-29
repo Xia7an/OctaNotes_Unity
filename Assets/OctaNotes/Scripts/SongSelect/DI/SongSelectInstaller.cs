@@ -13,7 +13,7 @@ namespace OctaNotes.Scripts.SongSelect.DI
             Container.BindInterfacesAndSelfTo<SongRepository>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<Reducer>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<UIStateStore>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SongSelectActionContext>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<SongSelectActionDispatchable>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<InputContextResolver>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<HudCalcFactory>().AsSingle();
         }

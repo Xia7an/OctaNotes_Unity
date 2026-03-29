@@ -16,7 +16,7 @@ namespace OctaNotes.Scripts.Play.Model
         public event Action OnMusicStart; 
         
         private float _initialTime;
-        private readonly int TARGET_FRAMERATE = 60;
+        private readonly int TARGET_FRAMERATE = 120;
         private bool isStarted = false;
         
         private readonly PlaySettingsSO _playSettings;

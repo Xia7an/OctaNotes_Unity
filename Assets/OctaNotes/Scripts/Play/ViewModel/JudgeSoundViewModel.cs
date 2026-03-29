@@ -1,6 +1,5 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
@@ -16,8 +15,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
         private readonly IInGameTimer _inGameTimer;
         private readonly ILaneOutputPort _laneOutputPort;
         private readonly CompositeDisposable _disposables = new();
-
-        private bool _isWaiting = false;
+        private readonly Queue<JudgeResult> _waitingJudgeResults = new();
 
         public JudgeSoundViewModel(IInGameTimer inGameTimer, ILaneOutputPort laneOutputPort)
         {
@@ -30,23 +28,26 @@ namespace OctaNotes.Scripts.Play.ViewModel
         public void Initialize()
         {
             _laneOutputPort.JudgeResult.Where(IsSoundTarget)
-                .Subscribe(_ => _isWaiting = true).AddTo(_disposables);
+                .Subscribe(result => _waitingJudgeResults.Enqueue(result)).AddTo(_disposables);
         }
         
         // UniTaskによる非同期処理では、タイミング"ちょうど"にイベントが発火される保証がないため、Tickによって毎フレームチェックする実装としている
         // (非同期処理は指定された時間"以上"待つことを保証しているだけ)
         public void Tick()
         {
-            if(!_isWaiting) return; // エフェクト発動待ちのノーツがなければ何もしない
-            if (!(_laneOutputPort.JudgeResult.Value.effectInvokeTiming <= _inGameTimer.Time.Value)) return; // 時間までは何もしない
-            
-            // 時間になったらイベント発火 & 待ち状態解除
-            JudgeForSound.OnNext(new JudgeSound()
+            if(_waitingJudgeResults.Count == 0) return; // エフェクト発動待ちのノーツがなければ何もしない
+
+            while (_waitingJudgeResults.Count > 0 && _waitingJudgeResults.Peek().effectInvokeTiming <= _inGameTimer.Time.Value)
             {
-                judge = _laneOutputPort.JudgeResult.Value.judge,
-                isEx = _laneOutputPort.JudgeResult.Value.isEx
-            });
-            _isWaiting = false;
+                var result = _waitingJudgeResults.Dequeue();
+
+                // 時間になったらイベント発火
+                JudgeForSound.OnNext(new JudgeSound()
+                {
+                    judge = result.judge,
+                    isEx = result.isEx
+                });
+            }
         }
 
         public void Dispose()

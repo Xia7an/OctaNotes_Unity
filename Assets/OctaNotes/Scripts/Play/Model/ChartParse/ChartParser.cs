@@ -82,6 +82,15 @@ namespace OctaNotes.Scripts.Play.Model
                 _chartData2.Add(new List<NoteTiming>());
             }
             Parse();
+            SortLaneWiseChartDataByTiming();
+        }
+
+        private void SortLaneWiseChartDataByTiming()
+        {
+            foreach (var lane in _chartData2)
+            {
+                lane.Sort((a, b) => a.timing.CompareTo(b.timing));
+            }
         }
         
         private void Parse()

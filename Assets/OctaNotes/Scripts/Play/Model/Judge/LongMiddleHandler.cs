@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Core.Model.Interface;
+using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
 using R3;
@@ -13,92 +14,65 @@ namespace OctaNotes.Scripts.Play.Model
     {
         private readonly IInputLayer inputLayer;
         private readonly ILaneContext _laneContext;
+        private readonly IChartRepositoryImmutable _chartRepository;
         
         public LongMiddleHandler(
             IInputLayer inputLayer,
-            ILaneContext laneContext)
+            ILaneContext laneContext,
+            IChartRepositoryImmutable chartRepository)
         {
             this.inputLayer = inputLayer;
             _laneContext = laneContext;
+            _chartRepository = chartRepository;
         }
         
         public ReactiveProperty<float> LongPushedRate { get; } = new ReactiveProperty<float>(0);
         
-        private CompositeDisposable _disposable = new CompositeDisposable();
-        
-        private ReactiveProperty<bool> isHandlingLongNote = new ReactiveProperty<bool>(false);
-        private Guid _currentLongEndGuid = Guid.Empty;
+        private readonly CompositeDisposable _disposable = new CompositeDisposable();
+
+        private bool _isHandlingLongNote;
         private readonly Dictionary<Guid, float> _longEndPushedRates = new();
+        private Guid _activeLongGuid = Guid.Empty;
+        private readonly Dictionary<Guid, Guid> _longStartToEndGuid = new();
 
         private int laneNumber;
 
-        private int pushedFrame = 0;
-        private int notPushedFrame = 0;
+        private int pushedFrame;
+        private int notPushedFrame;
 
         public void Initialize()
         {
             this.laneNumber = _laneContext.LaneIndex;
+            BuildLongGuidMap();
 
-            // 毎フレーム1回だけ入力状態を読む。ロング処理中のみカウントする。
             Observable.EveryUpdate()
-                .Where(_ => isHandlingLongNote.Value)
+                .Where(_ => _isHandlingLongNote)
                 .Subscribe(_ => CountPushedFrameOnce())
-                .AddTo(_disposable);
-
-            isHandlingLongNote
-                .DistinctUntilChanged()
-                .Subscribe(isHandling =>
-                {
-                    // ロング始点になった→フレームカウント開始
-                    if (isHandling)
-                    {
-                        pushedFrame = 0;
-                        notPushedFrame = 0;
-                    }
-                    // ロング終点になった→押されたレートをReactivePropertyに書き込んでカウント終了
-                    else
-                    {
-                        int totalFrame = pushedFrame + notPushedFrame;
-                        LongPushedRate.Value = totalFrame > 0
-                            ? (float)pushedFrame / totalFrame
-                            : 0f;
-
-                        if (_currentLongEndGuid != Guid.Empty)
-                        {
-                            _longEndPushedRates[_currentLongEndGuid] = LongPushedRate.Value;
-                            _currentLongEndGuid = Guid.Empty;
-                        }
-                    }
-                })
                 .AddTo(_disposable);
         }
         
         public void Dispose()
         {
             _disposable?.Dispose();
-            isHandlingLongNote?.Dispose();
             LongPushedRate?.Dispose();
         }
+
         private void HandleNoteChange(Note note)
         {
             this.laneNumber = note.laneNumber;
 
-            var wasHandling = isHandlingLongNote.Value;
-
-            if (wasHandling && note.noteType == NoteType.LongEnd && note.timingDelta >= 0)
+            if (_isHandlingLongNote && note.noteType == NoteType.LongEnd && note.timingDelta >= 0)
             {
-                _currentLongEndGuid = note.guid;
+                if (_activeLongGuid != note.guid)
+                {
+                    return;
+                }
+
                 CountPushedFrameOnce();
+                FinalizeCurrentLong(note.guid);
+                _isHandlingLongNote = false;
+                _activeLongGuid = Guid.Empty;
             }
-
-            var nextHandling = note switch
-            {
-                { noteType: NoteType.LongStart, timingDelta: >= 0 } => true,
-                { noteType: NoteType.LongEnd, timingDelta: >= 0 } => false,
-                _ => isHandlingLongNote.Value
-            };
-
-            isHandlingLongNote.Value = nextHandling;
         }
 
         private void CountPushedFrameOnce()
@@ -112,6 +86,20 @@ namespace OctaNotes.Scripts.Play.Model
             else
             {
                 notPushedFrame++;
+            }
+        }
+
+        private void FinalizeCurrentLong(Guid longEndGuid)
+        {
+            int totalFrame = pushedFrame + notPushedFrame;
+            var pushedRate = totalFrame > 0
+                ? (float)pushedFrame / totalFrame
+                : 0f;
+
+            LongPushedRate.Value = pushedRate;
+            if (longEndGuid != Guid.Empty)
+            {
+                _longEndPushedRates[longEndGuid] = pushedRate;
             }
         }
 
@@ -129,6 +117,51 @@ namespace OctaNotes.Scripts.Play.Model
         public void SyncWithCurrentNote(Note note)
         {
             HandleNoteChange(note);
+        }
+
+        public void NotifyLongStartJudged(Note note)
+        {
+            if (note.noteType != NoteType.LongStart)
+            {
+                return;
+            }
+
+            _isHandlingLongNote = true;
+            _activeLongGuid = _longStartToEndGuid.TryGetValue(note.guid, out var longEndGuid)
+                ? longEndGuid
+                : Guid.Empty;
+            pushedFrame = 0;
+            notPushedFrame = 0;
+        }
+
+        private void BuildLongGuidMap()
+        {
+            _longStartToEndGuid.Clear();
+
+            var laneIndex = _laneContext.LaneIndex;
+            var laneWise = _chartRepository.LaneWiseChartData;
+            if (laneIndex < 0 || laneIndex >= laneWise.Count)
+            {
+                return;
+            }
+
+            var laneNotes = laneWise[laneIndex];
+            var waitingLongStarts = new Queue<Guid>();
+            for (var i = 0; i < laneNotes.Count; i++)
+            {
+                var note = laneNotes[i];
+                if (note.noteType == NoteType.LongStart && note.guid != Guid.Empty)
+                {
+                    waitingLongStarts.Enqueue(note.guid);
+                    continue;
+                }
+
+                if (note.noteType == NoteType.LongEnd && note.guid != Guid.Empty && waitingLongStarts.Count > 0)
+                {
+                    var startGuid = waitingLongStarts.Dequeue();
+                    _longStartToEndGuid[startGuid] = note.guid;
+                }
+            }
         }
         
     }

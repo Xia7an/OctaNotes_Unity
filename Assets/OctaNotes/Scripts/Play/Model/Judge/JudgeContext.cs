@@ -82,6 +82,12 @@ namespace OctaNotes.Scripts.Play.Model
             JudgeResult.Value = result;
             _lastJudgedNoteGuid = note.guid;
             _judgedNoteGuids.Add(note.guid);
+
+            if (note.noteType == NoteType.LongStart)
+            {
+                _longMiddleHandler.NotifyLongStartJudged(note);
+            }
+
             _noteWindow.NotifyJudged(note.guid);
             _printJudgeResult(JudgeResult.Value);
         }

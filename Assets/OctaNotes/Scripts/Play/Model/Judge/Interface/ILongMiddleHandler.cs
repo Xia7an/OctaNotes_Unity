@@ -20,5 +20,10 @@ namespace OctaNotes.Scripts.Play.Model.Interface
         /// 判定直前に最新ノーツ状態を同期する
         /// </summary>
         void SyncWithCurrentNote(Note note);
+
+        /// <summary>
+        /// ロング始点の判定確定時にロング計測を開始する
+        /// </summary>
+        void NotifyLongStartJudged(Note note);
     }
 }

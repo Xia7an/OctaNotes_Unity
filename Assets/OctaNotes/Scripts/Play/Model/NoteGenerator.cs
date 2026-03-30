@@ -34,6 +34,7 @@ namespace OctaNotes.Scripts.Play.Model
         [SerializeField] private GameObject longEndPrefab;
         [SerializeField] private GameObject supportPlanePrefab;
         [SerializeField] private GameObject supportLinePrefab;
+        [SerializeField] private GameObject topSupportPlanePrefab;
         [SerializeField] private Material supportPlaneMaterial;
         
         private double zOffset = 0; // ノーツ生成のZオフセット
@@ -124,9 +125,14 @@ namespace OctaNotes.Scripts.Play.Model
                             break;
                         case NoteType.None:
                             break;
-                    } 
+                    }
+                    if (lane >= 4 && noteEntry.noteType is NoteType.Tap or NoteType.LongStart or NoteType.Chain)
+                    {
+                        GenerateTopSupport(laneContainerCache[lane], lane, zPos, noteGuid);
+                    }
                 }
                 GenerateSupportPlane(_tapnoteLaneFlagBuffer, zPos, _guidsBuffer, laneContainerCache[0]); // 補助線・補助面の生成
+
             }
         }
         
@@ -206,6 +212,21 @@ namespace OctaNotes.Scripts.Play.Model
             SetNoteColor(longNote.GetComponent<LongNoteRendererRef>().meshRenderer, noteColor);
         }
 
+        private void GenerateTopSupport(Zenject.DiContainer laneContainer, int lane, double startZ, Guid noteGuid)
+        {
+            
+            var x = _laneXPositionCache[lane];
+            float y = 1;
+            float startPosZ = (float)(startZ * noteSpeed + zOffset);
+            
+            var longNote = laneContainer.InstantiatePrefab(topSupportPlanePrefab);
+            longNote.transform.position =  new Vector3((float)x, y, startPosZ);
+            
+            var vm = longNote.GetComponent<GameObjectContext>().Container.Resolve<ISupportLineViewModel>();
+            laneContainer.Inject(vm); // ノーツごとのViewModelにレーンのSubContainerからDI
+            vm.SetInitialPosZ(startPosZ);
+        }
+
         private void GenerateSupportPlane(bool[] noteLaneFlag, double z, Guid[] guids, Zenject.DiContainer supportContainer)
         {
             // 頂点を反時計回りに並べたいので、0,1,2,3,7,6,5,4の順番に走査する
@@ -244,7 +265,8 @@ namespace OctaNotes.Scripts.Play.Model
                 for (var i = 0; i < lanes.Count; i++)
                 {
                     var lane = lanes[i];
-                    vertices.Add(new Vector3((float)_laneXPositionCache[lane], (lane < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, posZ));
+                    // SupportPlane は transform の z 移動で制御するため、頂点はローカル座標で保持する
+                    vertices.Add(new Vector3((float)_laneXPositionCache[lane], (lane < 4) ? bottonYPosition + 0.001f : topYPosition - 0.001f, 0f));
                 }
 
                 var mesh = GenerateMesh(vertices);
@@ -254,6 +276,7 @@ namespace OctaNotes.Scripts.Play.Model
                 vm.SetInitialPosZ(posZ);
                 vm.SetGuids(guids);
                 supportPlane.GetComponent<MeshFilter>().mesh = mesh;
+                supportPlane.transform.position = new Vector3(0f, 0f, posZ);
             }
         }
         

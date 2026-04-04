@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
+using DefaultNamespace;
 using DG.Tweening;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Structs;
@@ -14,7 +16,8 @@ namespace OctaNotes.Scripts.SongSelect.View
     public class SongListView : MonoBehaviour
     {
         [SerializeField] private GameObject songCardPrefab;
-        [SerializeField] private Canvas canvas;
+        [SerializeField] private GameObject songListParent;
+        [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private float tweenDuration = 0.3f;
         
         private IUIState _uiState;
@@ -48,6 +51,11 @@ namespace OctaNotes.Scripts.SongSelect.View
                 .Select(v => v.selectedSongIndex)
                 .Subscribe(v => PlaceCardsAsync(v, _uiState.State.Value.songDataList).Forget())
                 .AddTo(this);
+            
+            _uiState.State
+                .Select(v => v.controlTarget)
+                .SubscribeAwait((target, ct) => ToggleAllCardsAsync(target == Target.SongList, ct))
+                .AddTo(this);
         }
 
         // リストの変更に伴って楽曲ごとのカードリストの再構築を行うメソッド
@@ -72,7 +80,7 @@ namespace OctaNotes.Scripts.SongSelect.View
 
             foreach (var songData in songList)
             {
-                var card = Instantiate(songCardPrefab, canvas.transform);
+                var card = Instantiate(songCardPrefab, songListParent.transform);
                 if (card.TryGetComponent<RectTransform>(out var rt))
                 {
                     rt.pivot = new Vector2(0f, 1f);
@@ -202,6 +210,11 @@ namespace OctaNotes.Scripts.SongSelect.View
             {
                 await UniTask.WhenAll(tweens.Select(t => t.ToUniTask()));
             }
+        }
+
+        private async UniTask ToggleAllCardsAsync(bool show, CancellationToken ct)
+        {
+            await canvasGroup.DOFade(show ? 1f : 0, 0.1f).ToUniTask(cancellationToken: ct);
         }
 
         private Sprite CreateJacketSpriteFromPath(string jacketPath)

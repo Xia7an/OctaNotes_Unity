@@ -100,12 +100,7 @@ namespace OctaNotes.Scripts.SongSelect.View
             songCards = tmp;
             PlaceCardsAsync(_uiState.State.Value.selectedSongIndex, songList, animate: false).Forget();
         }
-
-        private void PlaceCards(int selectedSongIdx, List<SongData> songList)
-        {
-            PlaceCardsAsync(selectedSongIdx, songList, animate: false).Forget();
-        }
-
+        
         private async UniTask PlaceCardsAsync(int selectedSongIdx, List<SongData> songList, bool animate = true)
         {
             if (songList == null || songCards.Count == 0)

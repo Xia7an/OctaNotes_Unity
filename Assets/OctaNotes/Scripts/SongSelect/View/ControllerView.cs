@@ -8,7 +8,7 @@ using Zenject;
 
 namespace OctaNotes.Scripts.SongSelect.View
 {
-    public class HudView : MonoBehaviour
+    public class ControllerView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI label;   
         [SerializeField] private Image background;

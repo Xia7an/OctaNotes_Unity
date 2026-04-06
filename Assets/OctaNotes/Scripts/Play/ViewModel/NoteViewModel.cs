@@ -1,9 +1,9 @@
 using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Enum;
 using OctaNotes.Scripts.Play.Model.Interface;
+using OctaNotes.Scripts.Play.Model.Struct;
 using OctaNotes.Scripts.Settings;
 using R3;
 using UnityEngine;
@@ -24,6 +24,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
         private double _initialPosZ = 0;
         private Guid guid = Guid.Empty;
         private CompositeDisposable _disposables = new();
+        private bool _isJudged;
         
         public NoteViewModel(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
         {
@@ -50,23 +51,37 @@ namespace OctaNotes.Scripts.Play.ViewModel
                 PosZ.Value = -time * _playSettingsSO.noteSpeed + _initialPosZ;
             }).AddTo(_disposables);
             
-            // 判定が確定したノーツのGuidが自身のGuidと一致したら、エフェクト発動をスケジュール
-            _laneOutputPort.JudgeResult.Where(v => 
-                (
-                    guid != Guid.Empty &&
-                    v.guid == guid
-                    && v.judge is not (Judge.NotJudged or Judge.None)
-                )
-            ).SubscribeAwait(async (result, ct) =>
-                await ScheduleDeleteNote(result.effectInvokeTiming, ct)).AddTo(_disposables);
+            _laneOutputPort.JudgeResult
+                .Subscribe(HandleJudgeResult)
+                .AddTo(_disposables);
         }
 
-        private async UniTask ScheduleDeleteNote(float time, CancellationToken token)
+        private void HandleJudgeResult(JudgeResult result)
+        {
+            if (_isJudged || guid == Guid.Empty)
+            {
+                return;
+            }
+
+            if (result.guid != guid || result.judge is Judge.NotJudged or Judge.None)
+            {
+                return;
+            }
+
+            ScheduleDeleteNote(result.effectInvokeTiming).Forget();
+        }
+
+        private async UniTask ScheduleDeleteNote(float time)
         {
             // エフェクト発動時刻まで待つ
-            await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value, cancellationToken: token);
-            
-            Debug.Log($"Delete note. Guid: {guid}");
+            await UniTask.WaitUntil(() => time <= _inGameTimer.Time.Value);
+
+            if (_isJudged)
+            {
+                return;
+            }
+
+            _isJudged = true;
             OnJudged?.Invoke();
         }
     }

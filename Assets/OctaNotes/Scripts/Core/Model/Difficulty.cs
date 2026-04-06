@@ -2,8 +2,8 @@ namespace OctaNotes.Scripts.Core.Model
 {
     public enum Difficulty
     {
-        Dual,
-        Quad,
-        Octa
+        Dual = 0,
+        Quad = 1,
+        Octa = 2
     }
 }

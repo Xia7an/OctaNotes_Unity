@@ -6,7 +6,7 @@ namespace OctaNotes.Scripts.SongSelect.DI.Hud
 {
     public class HudLayout : MonoBehaviour
     {
-        [SerializeField] private List<HudView> hudViews = new();
-        public IReadOnlyList<HudView> HUDViews => hudViews;
+        [SerializeField] private List<ControllerView> hudViews = new();
+        public IReadOnlyList<ControllerView> HUDViews => hudViews;
     }
 }

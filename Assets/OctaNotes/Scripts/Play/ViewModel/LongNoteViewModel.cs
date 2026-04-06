@@ -36,11 +36,10 @@ namespace OctaNotes.Scripts.Play.ViewModel
         {
             // レーンに対応するボタンが押されているかどうかを反映する
             inputLayer.IsButtonPressing[_laneContext.LaneIndex]
-                .Where(v => v is ButtonState.BeginPush or ButtonState.Pushed)
-                .Subscribe(v => IsPushed.Value = true).AddTo(_disposables);
-            inputLayer.IsButtonPressing[_laneContext.LaneIndex]
-                .Where(v => v is ButtonState.Released or  ButtonState.EndPush)
-                .Subscribe(v => IsPushed.Value = false).AddTo(_disposables);
+                .Subscribe(state =>
+                {
+                    IsPushed.Value = state is ButtonState.BeginPush or ButtonState.Pushed;
+                }).AddTo(_disposables);
             
             // 時刻に応じたノーツ座標を設定
             _inGameTimer.Time.Subscribe(time =>

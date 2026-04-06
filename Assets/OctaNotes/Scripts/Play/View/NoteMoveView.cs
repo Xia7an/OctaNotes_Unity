@@ -22,7 +22,8 @@ namespace OctaNotes.Scripts.Play.View
             _noteViewModel.PosZ.Subscribe(SetPosZ).AddTo(this);
             Observable.FromEvent(h => _noteViewModel.OnJudged += h, 
                 h => _noteViewModel.OnJudged -= h)
-                .Subscribe(_ => InvokeJudgedEffect());
+                .Subscribe(_ => InvokeJudgedEffect())
+                .AddTo(this);
         }
 
         protected virtual void SetPosZ(double posZ)

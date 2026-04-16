@@ -21,12 +21,13 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 },
                 SelectSong(var v) => oldState with
                 {
-                    selectedSongIndex = Math.Clamp(
-                        oldState.selectedSongIndex - (int)v,
-                        0,
-                        oldState.songDataList != null && oldState.songDataList.Count > 0
-                            ? oldState.songDataList.Count - 1
-                            : 0)
+                    cursor = oldState.cursor with
+                    {
+                        songIndex = MoveClamped(
+                            oldState.selectedSongIndex,
+                            v,
+                            oldState.songDataList?.Count ?? 0)
+                    }
                 },
                 SelectDifficulty(var v) => oldState with
                 {
@@ -34,13 +35,53 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 },
                 SelectOption(var v) => oldState with
                 {
-                    selectedOptions =(Options)(((int)oldState.selectedOptions + (int)v) % 2)
+                    cursor = oldState.cursor with
+                    {
+                        optionIndex = MoveCyclic(
+                            (int)oldState.selectedOptions,
+                            v,
+                            Enum.GetValues(typeof(Options)).Length)
+                    }
+                },
+                ChangeNoteSpeed(var v) => oldState with
+                {
+                    noteSpeed = Math.Clamp(oldState.noteSpeed + (int)v * 0.5, 1.0, 20.0)
+                },
+                ChangeJudgeOffset(var v) => oldState with
+                {
+                    judgeOffsetMs = Math.Clamp(oldState.judgeOffsetMs + (int)v*10, -500, 500)
                 },
                 ReloadSongList(var v) => oldState with
                 {
-                    songDataList = new List<SongData>(v)
+                    songDataList = new List<SongData>(v),
+                    cursor = oldState.cursor with
+                    {
+                        songIndex = MoveClamped(oldState.selectedSongIndex, Direction.Down, v.Length)
+                    }
                 }
             };
+        }
+
+        private static int MoveClamped(int current, Direction direction, int count)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            var next = current - (int)direction;
+            return Math.Clamp(next, 0, count - 1);
+        }
+
+        private static int MoveCyclic(int current, Direction direction, int count)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            var next = current - (int)direction;
+            return (next % count + count) % count;
         }
 
         private Difficulty CalcDifficulty(Difficulty difficulty, Direction direction)

@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
@@ -42,6 +43,25 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 inputLayer.IsButtonPressing[i]
                     .Where(v => v is ButtonState.BeginPush)
                     .Subscribe(_ => OnPhysicalButtonPressed(i1)).AddTo(_disposables);
+                
+                // 長押しでイベントが連続発火するための実装
+                inputLayer.IsButtonPressing[i]
+                    .Where(v => v is ButtonState.Pushed)
+                    .Select(_ => 
+                        Observable.Timer(
+                                TimeSpan.FromSeconds(0.25), // 初回は0.25秒後に発火
+                                TimeSpan.FromSeconds(0.1) // 0.1秒間隔で実行 
+                            )
+                            // 2. ボタンの状態が Pushed 以外になったらタイマーをキャンセルして終了する
+                            .TakeUntil(inputLayer.IsButtonPressing[i1].Where(state => state is not ButtonState.Pushed))
+                    )
+                    .Switch()
+                    .Subscribe(_ =>
+                    {
+                        OnPhysicalButtonPressed(i1);
+                    })
+                    // 5. 破棄の紐づけ（自身のコンポーネントやCancellationTokenを指定してください）
+                    .AddTo(_disposables);
             }
         }
 
@@ -104,7 +124,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectDifficulty(Direction.Down),
-                        Target.GameOptions => new ChangeNoteSpeed(Direction.Down),
+                        Target.GameOptions => state.selectedOptions switch
+                        {
+                            Options.NoteSpeed => new ChangeNoteSpeed(Direction.Down),
+                            Options.JudgeOffset => new ChangeJudgeOffset(Direction.Down),
+                            _ => new NotAssigned()
+                        },
                         _ => new NotAssigned()
                     };
                     DispatchAction(action, state);
@@ -116,7 +141,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     UIAction action = state.controlTarget switch
                     {
                         Target.SongList => new SelectDifficulty(Direction.Up),
-                        Target.GameOptions => new ChangeNoteSpeed(Direction.Up),
+                        Target.GameOptions => state.selectedOptions switch
+                        {
+                            Options.NoteSpeed => new ChangeNoteSpeed(Direction.Up),
+                            Options.JudgeOffset => new ChangeJudgeOffset(Direction.Up),
+                            _ => new NotAssigned()
+                        },
                         _ => new NotAssigned()
                     };
                     DispatchAction(action, state);

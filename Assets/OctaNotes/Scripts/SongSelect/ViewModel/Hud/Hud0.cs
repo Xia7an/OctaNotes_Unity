@@ -11,7 +11,7 @@ namespace OctaNotes.Scripts.SongSelect.ViewModel.Hud
             var res = new  HudParam();
             switch (uiState.controlTarget)
             {
-                case Target.SongList:
+                case Target.SongList or Target.GameOptions:
                     res.hudText = "↓下";
                     if (uiState.IsLastSong) res.color = HudColor.Gray;
                     else res.color = HudColor.Green;

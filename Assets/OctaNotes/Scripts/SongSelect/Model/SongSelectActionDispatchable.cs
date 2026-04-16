@@ -41,6 +41,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
             switch (action)
             {
                 case ConfirmSong:
+                    if (_uiState.State.Value.songConfirmed) return;
                     // 今選択されている楽曲の譜面データなどをProjectContext側に渡す
                     _globalSongDataContext.ChartData = 
                         _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex]

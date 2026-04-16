@@ -26,7 +26,8 @@ namespace OctaNotes.Scripts.SongSelect.Model
                 selectedDifficulty = Difficulty.Dual,
                 selectedSongSort = new SongSort { order = SortOrder.Ascending, sortKey = SortKey.Abc },
                 noteSpeed = 5.0,
-                judgeOffsetMs = 0
+                judgeOffsetMs = 0,
+                songConfirmed = false
             }
         );
 

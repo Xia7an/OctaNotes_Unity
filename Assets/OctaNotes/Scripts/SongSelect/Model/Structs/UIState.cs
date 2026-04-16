@@ -24,6 +24,8 @@ namespace OctaNotes.Scripts.SongSelect.Model.Structs
 
         public double noteSpeed { get; init; }
         public int judgeOffsetMs { get; init; }
+        
+        public bool songConfirmed { get; init; }
 
         public bool IsOptionValueAtMin => selectedOptions switch
         {

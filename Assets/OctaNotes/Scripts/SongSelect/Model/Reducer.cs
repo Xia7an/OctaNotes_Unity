@@ -58,6 +58,10 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     {
                         songIndex = MoveClamped(oldState.selectedSongIndex, Direction.Down, v.Length)
                     }
+                },
+                ConfirmSong => oldState with
+                {
+                    songConfirmed = true
                 }
             };
         }

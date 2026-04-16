@@ -40,8 +40,10 @@ namespace OctaNotes.Scripts.Play.Model
         private double zOffset = 0; // ノーツ生成のZオフセット
         private readonly bool[] _tapnoteLaneFlagBuffer = new bool[8];
         private readonly Guid[] _guidsBuffer = new Guid[8];
+        private const float bottonYPosition = -0.1f;
+        private const float topYPosition = 1.08f;
         private readonly double[] _laneXPositionCache = { -1.5, -0.5, 0.5, 1.5, -1.5, -0.5, 0.5, 1.5 };
-        private readonly float[] _laneYPositionCache = { -0.1f, -0.1f, -0.1f, -0.1f, 2.1f, 2.1f, 2.1f, 2.1f };
+        private readonly float[] _laneYPositionCache = { -0.1f, -0.1f, -0.1f, -0.1f, topYPosition, topYPosition, topYPosition, topYPosition };
         private static readonly Quaternion[] LaneRotationCache =
         {
             Quaternion.Euler(0f, 0f, 0f),
@@ -56,8 +58,6 @@ namespace OctaNotes.Scripts.Play.Model
         private static readonly int[] SupportLaneOrder = { 0, 1, 2, 3, 7, 6, 5, 4 };
 
 
-        private readonly float bottonYPosition = -0.1f;
-        private readonly float topYPosition = 2.1f;
         
         private float noteSpeed = 1.0f; // ノーツの移動速度（例）
 

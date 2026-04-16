@@ -15,8 +15,8 @@ namespace OctaNotes.Scripts.Play.View
 
         private float Scale(float distance)
         {
-            if (distance <= 2) return 0.08f;
-            return distance * 0.01f + 0.06f;
+            // if (distance <= 2) return 0.08f;
+            return distance * 0.005f + 0.08f;
         }
     }
 }

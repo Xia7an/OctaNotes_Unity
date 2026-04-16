@@ -172,16 +172,12 @@ namespace OctaNotes.Scripts.SongSelect.Model
         // UIActionの種類に応じて、UIStoreへのDispatchかSongSelectActionContextへの委譲を振り分ける
         private void DispatchAction(UIAction action, UIState state)
         {
-            switch (action)
+            // ボタンが状態変化ではなく何かしらの操作を伴う場合にはActionContextにActionを委譲
+            if (action is ConfirmSong)
             {
-                // ボタンが状態変化ではなく何かしらの操作を伴う場合にはActionContextにActionを委譲
-                case ConfirmSong:
-                    actionDispatchable.Dispatch(action);
-                    break;
-                default:
-                    _dispachable.Dispatch(action);
-                    break;
+                actionDispatchable.Dispatch(action);
             }
+            _dispachable.Dispatch(action);
         }
     }
 }

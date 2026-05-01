@@ -1037,6 +1037,7 @@ MonoBehaviour:
   - {fileID: 8558490425047252701}
   - {fileID: 4280343905908555910}
   - {fileID: 2768977902938064868}
+  - {fileID: 48208231680006884}
 --- !u!1 &2194640645360536002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1739,6 +1740,7 @@ MonoBehaviour:
   - {fileID: 6473727410189993155}
   - {fileID: 2439352339852721184}
   - {fileID: 4343591151686524592}
+  - {fileID: 1909999828297892784}
 --- !u!1 &2806932393158799315
 GameObject:
   m_ObjectHideFlags: 0
@@ -3533,6 +3535,7 @@ MonoBehaviour:
   - {fileID: 5702039566660531419}
   - {fileID: 2921467018789878346}
   - {fileID: 2434926815777370898}
+  - {fileID: 507990397620153874}
 --- !u!1 &4505308953270872599
 GameObject:
   m_ObjectHideFlags: 0
@@ -4708,6 +4711,7 @@ MonoBehaviour:
   - {fileID: 1272013315566779464}
   - {fileID: 8809914738437694024}
   - {fileID: 529922571995839848}
+  - {fileID: 2421967240393597032}
 --- !u!1 &5456721016548766667
 GameObject:
   m_ObjectHideFlags: 0
@@ -5923,6 +5927,7 @@ MonoBehaviour:
   - {fileID: 1167437898413943845}
   - {fileID: 7319438174990099725}
   - {fileID: 2757624593755711408}
+  - {fileID: 36920981544925872}
 --- !u!1 &6948570661308442369
 GameObject:
   m_ObjectHideFlags: 0
@@ -6886,6 +6891,7 @@ MonoBehaviour:
   - {fileID: 5918480211354926411}
   - {fileID: 2391674978415535056}
   - {fileID: 3598546865795311383}
+  - {fileID: 1672731930339965463}
 --- !u!1 &8292274920814110277
 GameObject:
   m_ObjectHideFlags: 0
@@ -7290,6 +7296,7 @@ MonoBehaviour:
   - {fileID: 7439159645107903170}
   - {fileID: 3422623061136903536}
   - {fileID: 5902553211356639433}
+  - {fileID: 8587294963581988297}
 --- !u!1 &8919839170693337600
 GameObject:
   m_ObjectHideFlags: 0
@@ -7688,6 +7695,7 @@ MonoBehaviour:
   - {fileID: 5544767472061186283}
   - {fileID: 2412247204051703590}
   - {fileID: 3487943677195294512}
+  - {fileID: 1630740471435577904}
 --- !u!1 &9126501363031946028
 GameObject:
   m_ObjectHideFlags: 0
@@ -7728,6 +7736,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.5
@@ -7788,6 +7800,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a2f07ba1934f97985460ec257c1e86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.JudgeEffectView
+--- !u!114 &8587294963581988297 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 1416087657813111772}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &8854525278099708754 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -7801,6 +7824,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.5
@@ -7861,6 +7888,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a2f07ba1934f97985460ec257c1e86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.JudgeEffectView
+--- !u!114 &2421967240393597032 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 4978246849393000061}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &3193380655159088883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -7874,6 +7912,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
@@ -7923,6 +7965,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+--- !u!114 &507990397620153874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 7171553521697337351}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &774929220154611849 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -7947,6 +8000,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.5
@@ -7996,6 +8053,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+--- !u!114 &36920981544925872 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 7208552243567764645}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &958862073635916843 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -8020,6 +8088,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
@@ -8069,6 +8141,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+--- !u!114 &48208231680006884 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 7215191413288633585}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &965707349410901119 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -8093,6 +8176,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.5
@@ -8142,6 +8229,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+--- !u!114 &1630740471435577904 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 8226751250470310949}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &1975999724562611371 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -8166,6 +8264,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.5
@@ -8215,6 +8317,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+--- !u!114 &1672731930339965463 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 8339676577026548738}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!4 &1944174336462703756 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
@@ -8239,6 +8352,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8604863698474236923}
     m_Modifications:
+    - target: {fileID: 7248036092179947740, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+      propertyPath: m_Name
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.5
@@ -8293,6 +8410,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7586141960060692622, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
   m_PrefabInstance: {fileID: 9082469364825660837}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1909999828297892784 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7244822291522903573, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}
+  m_PrefabInstance: {fileID: 9082469364825660837}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fbd85ce3934773ae8646d7652dfccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.LongEffectView
 --- !u!114 &4343591151686524592 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4777440590428308245, guid: 0ee6f20c7f183419f88ce2543f3ec2b6, type: 3}

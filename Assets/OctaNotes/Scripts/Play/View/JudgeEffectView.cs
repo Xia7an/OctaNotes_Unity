@@ -8,10 +8,9 @@ using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
 {
-    [RequireComponent(typeof(VisualEffect))]
     public class JudgeEffectView : MonoBehaviour
     {
-        private VisualEffect vfx;
+        [SerializeField] private VisualEffect vfx;
         
         private ILaneViewModel _laneViewModel;
         
@@ -31,10 +30,6 @@ namespace OctaNotes.Scripts.Play.View
             }
         }
 
-        private void Awake()
-        {
-            vfx = GetComponent<VisualEffect>();
-        }
 
         private void Start()
         {

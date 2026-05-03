@@ -2,7 +2,7 @@ namespace OctaNotes.Scripts.Play.Model.Struct
 {
     public struct SongEndState
     {
-        ClearMark clearMark;
+        public ClearMark clearMark;
     }
 
     public enum ClearMark

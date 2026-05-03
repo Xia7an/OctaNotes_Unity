@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OctaNotes.Scripts.ParserUtils
+namespace OctaNotes.Scripts.Utils
 {
     public class ParserUtils
     {

@@ -20,6 +20,8 @@ public class PlaySceneInstaller : MonoInstaller
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
         Container.BindInterfacesAndSelfTo<ComboCalcurator>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<ScoreCalcurator>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<SongEndDetector>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<SongEndHandler>().AsSingle().NonLazy();
         
         // レーン毎にSubContainerを用意する
         var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();

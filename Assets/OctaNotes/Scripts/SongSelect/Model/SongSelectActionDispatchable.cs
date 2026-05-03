@@ -52,9 +52,9 @@ namespace OctaNotes.Scripts.SongSelect.Model
                             .chartDatas[(int)_uiState.State.Value.selectedDifficulty];
                     _globalSongDataContext.MusicPath = _uiState.State.Value
                         .songDataList[_uiState.State.Value.selectedSongIndex].musicPath;
-                    
-                    _globalPlayResultContext.ChartData = _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex]
-                        .chartDatas[(int)_uiState.State.Value.selectedDifficulty];
+
+                    _globalPlayResultContext.SongData =
+                        _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex];
                     _globalPlayResultContext.Difficulty = _uiState.State.Value.selectedDifficulty;
                     _sceneController.ChangeScene(Scenes.Play).Forget();
                     break;

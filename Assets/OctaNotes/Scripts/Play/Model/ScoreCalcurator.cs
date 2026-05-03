@@ -31,10 +31,10 @@ namespace OctaNotes.Scripts.Play.Model
             [Judge.Miss] = 0f
         };
 
-        private int perfectCount = 0;
-        private int goodCount = 0;
-        private int badCount = 0;
-        private int missCount = 0;
+        public int perfectCount { get; private set; } = 0;
+        public int goodCount { get; private set; }  = 0;
+        public int badCount { get; private set; }  = 0;
+        public int missCount { get; private set; }  = 0;
 
         private CompositeDisposable _disposables = new();
 

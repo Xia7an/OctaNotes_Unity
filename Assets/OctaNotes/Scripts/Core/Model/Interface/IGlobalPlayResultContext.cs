@@ -10,8 +10,13 @@ namespace OctaNotes.Scripts.Play.Model.Interface
         int Score { get; set; }
         int MaxCombo { get; set; }
         ClearMark  ClearMark { get; set; }
-        ChartData ChartData { get; set; }
-        
+        SongData SongData { get; set; }
         Difficulty Difficulty { get; set; }
+        
+        int PerfectCount { get; set; }
+        int GoodCount { get; set; }
+        int BadCount { get; set; }
+        int MissCount { get; set; }
+        
     }
 }

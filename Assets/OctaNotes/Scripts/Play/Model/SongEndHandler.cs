@@ -15,7 +15,7 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly IComboCalcurator _comboCalcurator;
         
         
-        private CompositeDisposable _disposables;
+        private CompositeDisposable _disposables = new CompositeDisposable();
 
         public SongEndHandler(
             ISongEndDetector songEndDetector,
@@ -44,6 +44,10 @@ namespace OctaNotes.Scripts.Play.Model
             _globalPlayResultContext.ClearMark = state.clearMark;
             _globalPlayResultContext.Score = _scoreCalcurator.Score.Value;
             _globalPlayResultContext.MaxCombo = _comboCalcurator.MaxCombo.Value;
+            _globalPlayResultContext.PerfectCount = _scoreCalcurator.perfectCount;
+            _globalPlayResultContext.GoodCount = _scoreCalcurator.goodCount;
+            _globalPlayResultContext.BadCount = _scoreCalcurator.badCount;
+            _globalPlayResultContext.MissCount = _scoreCalcurator.missCount;
         }
     }
 }

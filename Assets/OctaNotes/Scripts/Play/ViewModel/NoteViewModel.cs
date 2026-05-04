@@ -99,11 +99,6 @@ namespace OctaNotes.Scripts.Play.ViewModel
 
         private double CalcPositionByHs(double time)
         {
-            if (time <= 0d)
-            {
-                return 0d;
-            }
-
             var pos = 0d;
             var currentTime = 0d;
             var currentHs = 1d;
@@ -127,10 +122,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
             }
 
             var remain = time - currentTime;
-            if (remain > 0d)
-            {
-                pos += currentHs * remain;
-            }
+            pos += currentHs * remain;
 
             return pos;
         }

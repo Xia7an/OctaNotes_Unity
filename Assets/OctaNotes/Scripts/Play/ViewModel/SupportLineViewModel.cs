@@ -10,6 +10,7 @@ using OctaNotes.Scripts.Play.ViewModel.Interface;
 using OctaNotes.Scripts.Settings;
 using R3;
 using Zenject;
+using System.Linq;
 
 namespace OctaNotes.Scripts.Play.ViewModel
 {
@@ -18,6 +19,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
         private PlaySettingsSO _playSettingsSO;
         private IInGameTimer _inGameTimer;
         private ILaneOutputPort _laneOutputPort;
+        private readonly List<(double timing, double hs)> _hsChanges;
         
         public ReactiveProperty<double> PosZ { get; } = new();
         public event Action OnJudged;
@@ -51,18 +53,27 @@ namespace OctaNotes.Scripts.Play.ViewModel
             }
         }
         
-        public SupportLineViewModel(PlaySettingsSO playSettingsSO, IInGameTimer inGameTimer,  ILaneOutputPort laneOutputPort)
+        public SupportLineViewModel(
+            PlaySettingsSO playSettingsSO,
+            IInGameTimer inGameTimer,
+            ILaneOutputPort laneOutputPort,
+            IChartRepositoryImmutable chartRepository)
         {
             this._playSettingsSO = playSettingsSO;
             _inGameTimer = inGameTimer;
             _laneOutputPort = laneOutputPort;
+            _hsChanges = chartRepository.HsChangeData
+                .OrderBy(x => x.Item1)
+                .Select(x => (x.Item1, x.Item2))
+                .ToList();
         }
 
         public void Initialize()
         {
             _inGameTimer.Time.Subscribe(time =>
             {
-                PosZ.Value = -time * _playSettingsSO.noteSpeed + _initialPosZ;
+                var traveledPosition = CalcPositionByHs(time);
+                PosZ.Value = -traveledPosition * _playSettingsSO.noteSpeed + _initialPosZ;
             }).AddTo(_disposables);
 
             _laneOutputPort.JudgeResult
@@ -110,6 +121,44 @@ namespace OctaNotes.Scripts.Play.ViewModel
 
             _isJudged = true;
             OnJudged?.Invoke();
+        }
+
+        private double CalcPositionByHs(double time)
+        {
+            if (time <= 0d)
+            {
+                return 0d;
+            }
+
+            var pos = 0d;
+            var currentTime = 0d;
+            var currentHs = 1d;
+
+            for (var i = 0; i < _hsChanges.Count; i++)
+            {
+                var (changeTime, nextHs) = _hsChanges[i];
+                if (changeTime > time)
+                {
+                    break;
+                }
+
+                var dt = changeTime - currentTime;
+                if (dt > 0d)
+                {
+                    pos += currentHs * dt;
+                }
+
+                currentTime = changeTime;
+                currentHs = nextHs;
+            }
+
+            var remain = time - currentTime;
+            if (remain > 0d)
+            {
+                pos += currentHs * remain;
+            }
+
+            return pos;
         }
 
     }

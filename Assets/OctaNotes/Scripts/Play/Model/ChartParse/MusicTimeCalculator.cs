@@ -159,7 +159,7 @@ public class MusicTimeCalculator
             var hc = hsChanges[hsIdx];
             double changeTime = CalcTime(hc.bar, hc.m, hc.n);
 
-            if (changeTime >= time)
+            if (changeTime > time)
                 break;
 
             double dt = changeTime - currentTime;

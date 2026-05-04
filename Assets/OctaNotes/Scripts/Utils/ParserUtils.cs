@@ -62,7 +62,7 @@ namespace OctaNotes.Scripts.Utils
         }
         
         private static readonly Regex TokenRegex =
-            new Regex(@"[A-Za-z][A-Za-z0-9]*|\d+", RegexOptions.Compiled);
+            new Regex(@"[A-Za-z][A-Za-z0-9]*|[-+]?\d+(?:\.\d+)?", RegexOptions.Compiled);
 
         public static List<string> Tokenize(string input)
         {

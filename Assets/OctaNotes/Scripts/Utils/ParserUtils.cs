@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OctaNotes.Scripts.ParserUtils
+namespace OctaNotes.Scripts.Utils
 {
     public class ParserUtils
     {
@@ -62,7 +62,7 @@ namespace OctaNotes.Scripts.ParserUtils
         }
         
         private static readonly Regex TokenRegex =
-            new Regex(@"[A-Za-z][A-Za-z0-9]*|\d+", RegexOptions.Compiled);
+            new Regex(@"[A-Za-z][A-Za-z0-9]*|[-+]?\d+(?:\.\d+)?", RegexOptions.Compiled);
 
         public static List<string> Tokenize(string input)
         {

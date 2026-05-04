@@ -97,7 +97,7 @@ namespace OctaNotes.Scripts.Play.Model
                     var noteGuid = noteEntry.guid;
                     _guidsBuffer[lane] = noteGuid;
 
-                    if (noteEntry.noteType is NoteType.Tap or NoteType.LongStart or NoteType.Chain)
+                    if (noteEntry.noteType is NoteType.Tap or NoteType.LongStart or NoteType.Chain or NoteType.LongEnd)
                     {
                         _tapnoteLaneFlagBuffer[lane] = true;
                     }

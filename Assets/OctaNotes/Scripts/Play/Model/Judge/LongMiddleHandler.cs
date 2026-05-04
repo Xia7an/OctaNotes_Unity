@@ -28,6 +28,8 @@ namespace OctaNotes.Scripts.Play.Model
         
         public ReactiveProperty<float> LongPushedRate { get; } = new ReactiveProperty<float>(0);
         
+        public ReactiveProperty<bool> IsPushedLongNote { get; } = new ReactiveProperty<bool>(false);
+        
         private readonly CompositeDisposable _disposable = new CompositeDisposable();
 
         private bool _isHandlingLongNote;
@@ -45,10 +47,14 @@ namespace OctaNotes.Scripts.Play.Model
             this.laneNumber = _laneContext.LaneIndex;
             BuildLongGuidMap();
 
-            Observable.EveryUpdate()
-                .Where(_ => _isHandlingLongNote)
-                .Subscribe(_ => CountPushedFrameOnce())
-                .AddTo(_disposable);
+        Observable.EveryUpdate()
+            .Where(_ => _isHandlingLongNote)
+            .Subscribe(_ =>
+            {
+                CountPushedFrameOnce();
+                UpdateIsPushedLongNote();
+            })
+            .AddTo(_disposable);
         }
         
         public void Dispose()
@@ -67,11 +73,12 @@ namespace OctaNotes.Scripts.Play.Model
                 {
                     return;
                 }
-
+                
                 CountPushedFrameOnce();
                 FinalizeCurrentLong(note.guid);
                 _isHandlingLongNote = false;
                 _activeLongGuid = Guid.Empty;
+                IsPushedLongNote.Value = false;
             }
         }
 
@@ -87,6 +94,13 @@ namespace OctaNotes.Scripts.Play.Model
             {
                 notPushedFrame++;
             }
+        }
+
+        private void UpdateIsPushedLongNote()
+        {
+            IsPushedLongNote.Value = _isHandlingLongNote
+                && (inputLayer.IsButtonPressing[laneNumber].Value == ButtonState.Pushed
+                    || inputLayer.IsButtonPressing[laneNumber].Value == ButtonState.BeginPush);
         }
 
         private void FinalizeCurrentLong(Guid longEndGuid)

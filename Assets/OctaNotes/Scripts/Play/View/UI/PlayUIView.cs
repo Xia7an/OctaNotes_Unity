@@ -31,8 +31,9 @@ namespace OctaNotes.Scripts.Play.View.UI
 
         private async UniTask SetComboText(string combo, CancellationToken ct)
         {
+            comboText.rectTransform.localScale = Vector3.one;
             comboText.text = combo;
-            await comboText.rectTransform.DOScale(1.4f, 0.2f)
+            await comboText.rectTransform.DOScale(1.4f, 0.1f)
                 .SetEase(Ease.OutSine).ToUniTask(cancellationToken: ct);
             await comboText.rectTransform.DOScale(1f, 0.1f)
                 .SetEase(Ease.InSine).ToUniTask(cancellationToken: ct);

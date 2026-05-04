@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/OctaNotes/Scenes/Play.unity
     guid: f33f4109461d34738b7523d46d077d91
+  - enabled: 1
+    path: Assets/OctaNotes/Scenes/Result.unity
+    guid: 2dd009a8cb17244869a70a2ba4576db2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

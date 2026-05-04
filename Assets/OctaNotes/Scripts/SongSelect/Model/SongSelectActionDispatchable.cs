@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Core.Model.Structs;
+using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Actions;
 using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
@@ -18,18 +19,22 @@ namespace OctaNotes.Scripts.SongSelect.Model
         private readonly IDispachable _dispachable;
         private readonly ISongRepository _songRepository;
         private readonly IGlobalSongDataContext _globalSongDataContext;
+        private readonly IGlobalPlayResultContext _globalPlayResultContext;
         private readonly ISceneController _sceneController;
 
         public event Action<UIAction> OnActionDispatched;
         public SongSelectActionDispatchable(
             IUIState uiState, 
             IGlobalSongDataContext globalSongDataContext,
+            IGlobalPlayResultContext globalPlayResultContext,
             IDispachable dispachable,
             ISongRepository songRepository,
-            ISceneController sceneController)
+            ISceneController sceneController
+            )
         {
             _uiState = uiState;
             _globalSongDataContext = globalSongDataContext;
+            _globalPlayResultContext = globalPlayResultContext;
             _dispachable = dispachable;
             _songRepository = songRepository;
             _sceneController = sceneController;
@@ -47,6 +52,10 @@ namespace OctaNotes.Scripts.SongSelect.Model
                             .chartDatas[(int)_uiState.State.Value.selectedDifficulty];
                     _globalSongDataContext.MusicPath = _uiState.State.Value
                         .songDataList[_uiState.State.Value.selectedSongIndex].musicPath;
+
+                    _globalPlayResultContext.SongData =
+                        _uiState.State.Value.songDataList[_uiState.State.Value.selectedSongIndex];
+                    _globalPlayResultContext.Difficulty = _uiState.State.Value.selectedDifficulty;
                     _sceneController.ChangeScene(Scenes.Play).Forget();
                     break;
             }

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2122443337498008899}
   - component: {fileID: -6151693162552852823}
   - component: {fileID: 577478526609574930}
+  - component: {fileID: 765816423578064666}
   m_Layer: 0
   m_Name: Note
   m_TagString: Untagged
@@ -159,6 +160,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5961a192dc492d815219850de8343e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.ViewModel.DI.NoteInstaller
+--- !u!114 &765816423578064666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640209973998861577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22d60deedc94932b3817defd1b8f9ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OctaNotes.Scripts.Play.View.NoteScaleView
 --- !u!1 &4732326857325570775
 GameObject:
   m_ObjectHideFlags: 0

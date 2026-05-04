@@ -15,6 +15,9 @@ namespace OctaNotes.Scripts.SongSelect.ViewModel.Hud
                 case Target.SongList:
                     res.hudText = "決定";
                     break;
+                case Target.GameOptions:
+                    res.hudText = "保存";
+                    break;
             }
             return res;
         }

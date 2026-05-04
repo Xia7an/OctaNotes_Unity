@@ -4,6 +4,7 @@ using System.Linq;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
+using OctaNotes.Scripts.Utils;
 using UnityEngine;
 using Zenject;
 
@@ -98,7 +99,7 @@ namespace OctaNotes.Scripts.Play.Model
             foreach (var rawline in ChartData)
             {
                 currentline++;
-                var line = ParserUtils.ParserUtils.RemoveLineCommentsSmart(rawline);
+                var line = ParserUtils.RemoveLineCommentsSmart(rawline);
                 if(line.Length <= 1) continue; // 空行(コメント行)はスキップ
 
                 if (line[0] == '#')
@@ -138,7 +139,7 @@ namespace OctaNotes.Scripts.Play.Model
                 }
                 else // 通常の命令だったらこっち
                 {
-                    var tokens = ParserUtils.ParserUtils.Tokenize(line);
+                    var tokens = ParserUtils.Tokenize(line);
                     string opcode = tokens[0];
                     string[] operands = tokens.Skip(1).ToArray();
                     switch (opcode.ToLower())

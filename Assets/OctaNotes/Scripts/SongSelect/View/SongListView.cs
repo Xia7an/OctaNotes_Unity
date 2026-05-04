@@ -24,19 +24,16 @@ namespace OctaNotes.Scripts.SongSelect.View
 
         private List<GameObject> songCards = new();
 
-        // 仕様の座標 (画面左上基準、コンポーネント左上の角を基準点)
-        // anchorMin/Max = (0,1)、pivot = (0,1) として使用する
-        // UnityのanchoredPositionはY軸上向きなので符号を反転して格納
-        private static readonly Vector2[] CardPositions = new Vector2[]
+        private static readonly Vector2[] CardPositions =
         {
-            new Vector2(560f, -50f),   // 2つ前
-            new Vector2(510f, -240f),  // 1つ前
-            new Vector2(260f, -430f),  // 選択中
-            new Vector2(210f, -670f),  // 1つ次
-            new Vector2(160f, -860f),  // 2つ次
+            new(560f, -50f),
+            new(510f, -240f),
+            new(260f, -430f),
+            new(210f, -670f),
+            new(160f, -860f),
         };
-        private static readonly Vector2 FarPrevPosition = new Vector2(620f, 170f);   // 3つ前以降 (Y反転)
-        private static readonly Vector2 FarNextPosition = new Vector2(100f, -1100f);  // 3つ次以降 (Y反転)
+        private static readonly Vector2 FarPrevPosition = new(620f, 170f);
+        private static readonly Vector2 FarNextPosition = new(100f, -1100f);
 
         [Inject]
         public void Construct(IUIState uiState)
@@ -109,62 +106,37 @@ namespace OctaNotes.Scripts.SongSelect.View
             }
 
             var songCount = songCards.Count;
-            // 循環なし: インデックスを [0, songCount-1] にクランプ
             var selected = Mathf.Clamp(selectedSongIdx, 0, songCount - 1);
 
-            // 各カードのインデックスと配置先を決定する
-            // offset: selected基準のオフセット (-: 前, +: 次)
-            // CardPositions配列のインデックス: 0=2つ前, 1=1つ前, 2=選択中, 3=1つ次, 4=2つ次
             var assignments = new Dictionary<int, Vector2>();
             var scaleMap = new Dictionary<int, float>();
-            var visibilityMap = new Dictionary<int, bool>();
 
-            for (int i = 0; i < songCount; i++)
+            for (var i = 0; i < songCount; i++)
             {
-                int offset = i - selected;
-
-                Vector2 pos;
-                float scale;
-                bool visible;
-
-                if (offset <= -3)
+                var offset = i - selected;
+                var pos = offset switch
                 {
-                    pos = FarPrevPosition;
-                    scale = 0.75f;
-                    visible = true;
-                }
-                else if (offset >= 3)
-                {
-                    pos = FarNextPosition;
-                    scale = 0.75f;
-                    visible = true;
-                }
-                else
-                {
-                    // offset: -2 -> index 0, -1 -> index 1, 0 -> index 2, 1 -> index 3, 2 -> index 4
-                    pos = CardPositions[offset + 2];
-                    scale = (offset == 0) ? 1f : 0.75f;
-                    visible = true;
-                }
+                    <= -3 => FarPrevPosition,
+                    >= 3 => FarNextPosition,
+                    _ => CardPositions[offset + 2]
+                };
+                var scale = offset == 0 ? 1f : 0.75f;
 
                 assignments[i] = pos;
                 scaleMap[i] = scale;
-                visibilityMap[i] = visible;
             }
 
             var tweens = new List<Tween>();
 
-            for (int i = 0; i < songCount; i++)
+            for (var i = 0; i < songCount; i++)
             {
                 var card = songCards[i];
                 if (card == null) continue;
 
                 var targetPos = assignments[i];
                 var targetScale = scaleMap[i];
-                var targetVisible = visibilityMap[i];
 
-                card.SetActive(targetVisible);
-                if (!targetVisible) continue;
+                card.SetActive(true);
 
                 if (card.TryGetComponent<RectTransform>(out var rt))
                 {
@@ -203,7 +175,7 @@ namespace OctaNotes.Scripts.SongSelect.View
 
             if (animate && tweens.Count > 0)
             {
-                await UniTask.WhenAll(tweens.Select(t => t.ToUniTask()));
+                await UniTask.WhenAll(tweens.Select(v => v.ToUniTask()));
             }
         }
 

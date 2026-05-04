@@ -15,6 +15,8 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly ILaneSubContainerFactory _laneSubContainerFactory;
 
         public ReactiveProperty<int> Combo { get; } = new(0);
+        
+        public ReactiveProperty<int> MaxCombo { get; } = new(0);
 
         private readonly List<ILaneOutputPort> _laneOutputPorts = new(8);
         private readonly CompositeDisposable _disposables = new();
@@ -52,6 +54,7 @@ namespace OctaNotes.Scripts.Play.Model
                     Combo.Value = 0;
                     break;
             }
+            MaxCombo.Value = Math.Max(Combo.Value, MaxCombo.Value);
         }
         
         public void Dispose()

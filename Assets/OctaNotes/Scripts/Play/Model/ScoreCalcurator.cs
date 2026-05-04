@@ -23,6 +23,19 @@ namespace OctaNotes.Scripts.Play.Model
         private int _perNoteScore; // Perfect時の1ノーツあたりのスコア
         private float _internalScore; // 内部で保持している小数点以下まで考慮したスコア
 
+        private readonly Dictionary<Judge, float> ScoreRate = new()
+        {
+            [Judge.Perfect] = 1.0f,
+            [Judge.Good] = 0.7f,
+            [Judge.Bad] = 0.4f,
+            [Judge.Miss] = 0f
+        };
+
+        public int perfectCount { get; private set; } = 0;
+        public int goodCount { get; private set; }  = 0;
+        public int badCount { get; private set; }  = 0;
+        public int missCount { get; private set; }  = 0;
+
         private CompositeDisposable _disposables = new();
 
         public ScoreCalcurator(ILaneSubContainerFactory laneSubContainerFactory,
@@ -56,6 +69,21 @@ namespace OctaNotes.Scripts.Play.Model
             _perNoteScore = _playSettings.maxScore / _chartRepository.GetNoteCount();
             Debug.Log($"{_perNoteScore} per note score");
         }
+        
+
+        private float CalcScore(
+            int perfectCount, 
+            int goodCount, 
+            int badCount, 
+            int missCount, 
+            int totalNoteCount,
+            int maxScore)
+        {
+            return (perfectCount * ScoreRate[Judge.Perfect] 
+                   + goodCount * ScoreRate[Judge.Good] 
+                   + badCount * ScoreRate[Judge.Bad] 
+                   + missCount * ScoreRate[Judge.Miss])/totalNoteCount * maxScore;
+        }
 
 
         private void HandleJudge(JudgeResult result)
@@ -68,7 +96,22 @@ namespace OctaNotes.Scripts.Play.Model
                 Judge.Bad => 0.4f,
                 Judge.Miss => 0
             };
-            _internalScore += _perNoteScore * rate;
+            switch (result.judge)
+            {
+                case Judge.Perfect:
+                    perfectCount++;
+                    break;
+                case Judge.Good:
+                    goodCount++;
+                    break;
+                case Judge.Bad:
+                    badCount++;
+                    break;
+                case Judge.Miss:
+                    missCount++;
+                    break;
+            }
+            _internalScore = CalcScore(perfectCount, goodCount, badCount, missCount, _chartRepository.GetNoteCount(), _playSettings.maxScore);
             Score.Value = (int)_internalScore;
         }
     }

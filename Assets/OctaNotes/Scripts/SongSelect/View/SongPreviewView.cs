@@ -41,7 +41,7 @@ namespace OctaNotes.Scripts.SongSelect.View
             var audioClip = CreateAudioClip(songPath);
             _audioSource.clip = audioClip;
             _audioSource.Play();
-            await _audioSource.DOFade(1, 0.2f).ToUniTask(cancellationToken: ct);
+            await _audioSource.DOFade(0.3f, 0.2f).ToUniTask(cancellationToken: ct);
         }
         
         // audioPathで指定された音源ファイルを読み込み、AudioClipにして返す関数

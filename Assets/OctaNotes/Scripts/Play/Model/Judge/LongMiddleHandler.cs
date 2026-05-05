@@ -46,6 +46,13 @@ namespace OctaNotes.Scripts.Play.Model
         {
             this.laneNumber = _laneContext.LaneIndex;
             BuildLongGuidMap();
+            _longEndPushedRates.Clear();
+            _isHandlingLongNote = false;
+            _activeLongGuid = Guid.Empty;
+            pushedFrame = 0;
+            notPushedFrame = 0;
+            LongPushedRate.Value = 0f;
+            IsPushedLongNote.Value = false;
 
         Observable.EveryUpdate()
             .Where(_ => _isHandlingLongNote)
@@ -146,6 +153,8 @@ namespace OctaNotes.Scripts.Play.Model
                 : Guid.Empty;
             pushedFrame = 0;
             notPushedFrame = 0;
+            LongPushedRate.Value = 0f;
+            IsPushedLongNote.Value = false;
         }
 
         private void BuildLongGuidMap()

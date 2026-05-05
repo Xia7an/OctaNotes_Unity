@@ -18,7 +18,7 @@ namespace OctaNotes.Scripts.Play.Model.JudgeStrategies
         {
             var resolvedLongPushedRate = _longMiddleHandler.TryGetLongEndPushedRate(note.guid, out var cachedRate)
                 ? cachedRate
-                : longPushedRate;
+                : 0f;
 
             JudgeResult result = new JudgeResult()
             {

@@ -113,6 +113,7 @@ namespace System.Runtime.CompilerServices.Result.View
                     ColorUtils.GetColor("#656565"),
                     ColorUtils.GetColor("#000000")
                 );
+                rankText.text = "D";
             }
         }
     }

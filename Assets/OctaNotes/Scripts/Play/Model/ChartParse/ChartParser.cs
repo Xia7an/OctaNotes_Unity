@@ -78,6 +78,23 @@ namespace OctaNotes.Scripts.Play.Model
             ChartData = new List<string>(data); //.oncファイルの各行をプレーンテキストで要素に持つリスト
             _chartData1 = new Dictionary<double, List<GraphicalNoteEntry>>();
             _chartData2 = new List<List<NoteTiming>>(8);
+            _hschangeData = new List<(double, double)>();
+
+            M = 0;
+            N = 0;
+            bpm = 0;
+            l = 0;
+            m = 0;
+            n = 0;
+            _timing = 0f;
+            _noteZPosition = 0f;
+            currentline = 0;
+            _version = string.Empty;
+            _initializing = false;
+            _initialized = false;
+            _isvalid = false;
+            _calculator = null;
+
             for (int i = 0; i < 8; i++)
             {
                 _chartData2.Add(new List<NoteTiming>());

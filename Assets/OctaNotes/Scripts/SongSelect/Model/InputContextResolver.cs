@@ -1,6 +1,5 @@
 using System;
 using Cysharp.Threading.Tasks;
-using DefaultNamespace;
 using OctaNotes.Scripts.Core.Model.Interface;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;

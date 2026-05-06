@@ -1,4 +1,3 @@
-using DefaultNamespace;
 using OctaNotes.Scripts.Core.Model;
 using OctaNotes.Scripts.Settings;
 using OctaNotes.Scripts.SongSelect.Model.Actions.Interface;

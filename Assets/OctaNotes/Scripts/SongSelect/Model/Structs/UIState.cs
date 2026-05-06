@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DefaultNamespace;
 using OctaNotes.Scripts.Core.Model;
 
 namespace OctaNotes.Scripts.SongSelect.Model.Structs

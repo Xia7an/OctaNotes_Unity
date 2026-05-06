@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DefaultNamespace;
 using DG.Tweening;
 using OctaNotes.Scripts.SongSelect.Model.Interface;
 using OctaNotes.Scripts.SongSelect.Model.Structs;

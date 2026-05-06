@@ -14,22 +14,20 @@ namespace OctaNotes.Scripts.Play.ViewModel
 {
     public class SongEndUIViewModel : ISongEndUIViewModel, IInitializable, IDisposable
     {
-        private readonly ISongEndDetector _songEndDetector;
-        private readonly ISceneController _sceneController;
+        private readonly IChartEndDetector chartEndDetector;
         
         public ReactiveProperty<ClearMark> ShowClearMark { get; } = new ReactiveProperty<ClearMark>();
         
         private CompositeDisposable _disposables = new CompositeDisposable();
 
-        public SongEndUIViewModel(ISongEndDetector songEndDetector, ISceneController sceneController)
+        public SongEndUIViewModel(IChartEndDetector chartEndDetector)
         {
-            _songEndDetector = songEndDetector;
-            _sceneController = sceneController;
+            this.chartEndDetector = chartEndDetector;
         }
 
         public void Initialize()
         {
-            _songEndDetector.OnSongEnd.Skip(1)
+            chartEndDetector.OnSongEnd.Skip(1)
                 .SubscribeAwait((v, ct) => HandleSongEnd(v, ct))
                 .AddTo(_disposables);
         }
@@ -47,9 +45,6 @@ namespace OctaNotes.Scripts.Play.ViewModel
             }
 
             ShowClearMark.OnNext(songEndState.clearMark);
-            
-            await UniTask.WaitForSeconds(6, cancellationToken: ct);
-            await _sceneController.ChangeScene(Scenes.Result);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace OctaNotes.Scripts.Play.Model
         private readonly int TARGET_FRAMERATE = 120;
         private bool isStarted = false;
         
+        private const float SPEED_RATE = 1;
+        
         private readonly PlaySettingsSO _playSettings;
 
         public InGameTimer(PlaySettingsSO playSettings)
@@ -30,7 +32,7 @@ namespace OctaNotes.Scripts.Play.Model
         }
         public void Tick()
         {
-            this.Time.Value = _initialTime + UnityEngine.Time.time;
+            this.Time.Value = _initialTime + UnityEngine.Time.time * SPEED_RATE;
             
             if (!isStarted && Time.Value >= 0)
             {

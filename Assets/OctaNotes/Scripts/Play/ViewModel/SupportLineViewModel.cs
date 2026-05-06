@@ -125,6 +125,11 @@ namespace OctaNotes.Scripts.Play.ViewModel
 
         private double CalcPositionByHs(double time)
         {
+            if (_hsChanges.Count == 0)
+            {
+                return time;
+            }
+
             var pos = 0d;
             var currentTime = 0d;
             var currentHs = 1d;

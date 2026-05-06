@@ -1,7 +1,11 @@
 using System;
+using Cysharp.Threading.Tasks;
+using OctaNotes.Scripts.Core.Model.Interface;
+using OctaNotes.Scripts.Core.Model.Structs;
 using OctaNotes.Scripts.Play.Interface;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.Model.Struct;
+using OctaNotes.Scripts.Play.ViewModel.Interface;
 using R3;
 using Zenject;
 
@@ -9,29 +13,43 @@ namespace OctaNotes.Scripts.Play.Model
 {
     public class SongEndHandler : ISongEndHandler, IInitializable, IDisposable
     {
-        private readonly ISongEndDetector _songEndDetector;
+        private readonly IChartEndDetector chartEndDetector;
         private readonly IGlobalPlayResultContext _globalPlayResultContext;
         private readonly IScoreCalcurator _scoreCalcurator;
         private readonly IComboCalcurator _comboCalcurator;
+        private readonly IMusicViewModel  _musicViewModel;
+        private readonly ISceneController _sceneController;
         
         
         private CompositeDisposable _disposables = new CompositeDisposable();
 
         public SongEndHandler(
-            ISongEndDetector songEndDetector,
+            IChartEndDetector chartEndDetector,
             IGlobalPlayResultContext globalPlayResultContext,
             IScoreCalcurator scoreCalcurator,
-            IComboCalcurator comboCalcurator)
+            IComboCalcurator comboCalcurator,
+            IMusicViewModel musicViewModel,
+            ISceneController sceneController)
         {
-            _songEndDetector = songEndDetector;
+            this.chartEndDetector = chartEndDetector;
             _globalPlayResultContext = globalPlayResultContext;
             _scoreCalcurator = scoreCalcurator;
             _comboCalcurator = comboCalcurator;
+            _musicViewModel = musicViewModel;
+            _sceneController = sceneController;
         }
         
         public void Initialize()
         {
-            _songEndDetector.OnSongEnd.Subscribe(SetPlayResult).AddTo(_disposables);
+            chartEndDetector.OnSongEnd.Subscribe(SetPlayResult).AddTo(_disposables);
+            Observable.FromEvent(
+                h => _musicViewModel.OnMusicEnd += h,
+                h => _musicViewModel.OnMusicEnd -= h)
+                .SubscribeAwait(async (_, ct) =>
+                {
+                    await UniTask.WaitForSeconds(4, cancellationToken: ct);
+                    await _sceneController.ChangeScene(Scenes.Result);
+                }).AddTo(_disposables);
         }
 
         public void Dispose()

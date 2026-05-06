@@ -3,6 +3,7 @@ using OctaNotes.Scripts.Play.DI.Lane;
 using OctaNotes.Scripts.Play.Model;
 using System.Linq;
 using OctaNotes.Scripts.Core.Model;
+using OctaNotes.Scripts.Play.ViewModel;
 using UnityEngine;
 using Zenject;
 
@@ -20,8 +21,9 @@ public class PlaySceneInstaller : MonoInstaller
         Container.Bind<ILaneSubContainerFactory>().To<LaneSubContainerFactory>().AsSingle();
         Container.BindInterfacesAndSelfTo<ComboCalcurator>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<ScoreCalcurator>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<SongEndDetector>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ChartEndDetector>().AsSingle();
         Container.BindInterfacesAndSelfTo<SongEndHandler>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<MusicViewModel>().AsSingle().NonLazy();
         
         // レーン毎にSubContainerを用意する
         var laneSubContainerFactory = Container.Resolve<ILaneSubContainerFactory>();

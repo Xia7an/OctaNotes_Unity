@@ -4,7 +4,7 @@ using R3;
 namespace OctaNotes.Scripts.Play.Interface
 {
     // 楽曲終了時の演出イベントを提供する
-    public interface ISongEndDetector
+    public interface IChartEndDetector
     {
         ReactiveProperty<SongEndState> OnSongEnd { get; }
     }

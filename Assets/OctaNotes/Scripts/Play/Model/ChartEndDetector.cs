@@ -15,7 +15,7 @@ namespace OctaNotes.Scripts.Play.Model
     /// 全レーンのノーツ判定結果を収集し、全ノーツのエフェクト発火タイミング（effectInvokeTiming）到達をもって
     /// 楽曲終了と判定し、ISongEndHandler に通知するクラス。
     /// </summary>
-    public class SongEndDetector : ISongEndDetector, IInitializable, IDisposable, ITickable
+    public class ChartEndDetector : IChartEndDetector, IInitializable, IDisposable, ITickable
     {
         private readonly ILaneSubContainerFactory _laneSubContainerFactory;
         private readonly IChartRepositoryImmutable _chartRepository;
@@ -35,7 +35,9 @@ namespace OctaNotes.Scripts.Play.Model
         private int _finalizedNoteCount;
         private bool _hasFired;
 
-        public SongEndDetector(
+        private float musicLength = 0f;
+
+        public ChartEndDetector(
             ILaneSubContainerFactory laneSubContainerFactory,
             IChartRepositoryImmutable chartRepository,
             IInGameTimer inGameTimer,
@@ -69,6 +71,8 @@ namespace OctaNotes.Scripts.Play.Model
                     .Subscribe(result => _waitingJudgeResults.Enqueue(result))
                     .AddTo(_disposables);
             }
+            
+            // 楽曲の長さを取得する
         }
 
         /// <summary>

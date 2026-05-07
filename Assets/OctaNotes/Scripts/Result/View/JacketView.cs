@@ -27,7 +27,24 @@ namespace OctaNotes.Scripts.Result.View
 
         private void SetJacket(string jacketpath, Difficulty difficulty)
         {
-            jacket.sprite = CreateJacketSpriteFromPath(jacketpath);
+            var jacketSprite = CreateJacketSpriteFromPath(jacketpath);
+            jacket.sprite = jacketSprite;
+            // アスペクト比を維持しつつ 390x390 の矩形領域を覆い尽くすようにサイズを設定する
+            const float targetWidth = 390f;
+            const float targetHeight = 390f;
+
+            float spriteWidth = jacketSprite.rect.width;
+            float spriteHeight = jacketSprite.rect.height;
+
+            float scaleByWidth = targetWidth / spriteWidth;
+            float scaleByHeight = targetHeight / spriteHeight;
+
+            // 領域全体を覆うには、より大きいスケールを採用する
+            float scale = Mathf.Max(scaleByWidth, scaleByHeight);
+
+            RectTransform rt = jacket.rectTransform;
+            rt.sizeDelta = new Vector2(spriteWidth * scale, spriteHeight * scale);
+            
             jacketBg.color = difficulty switch
             {
                 Difficulty.Dual => new Color(124 / 255f, 168 / 255f, 221 / 255f),

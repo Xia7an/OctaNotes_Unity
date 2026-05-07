@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using Zenject;
 
-namespace System.Runtime.CompilerServices.Result.View
+namespace OctaNotes.Scripts.Result.View
 {
     public class RankView : MonoBehaviour
     {
@@ -96,10 +96,10 @@ namespace System.Runtime.CompilerServices.Result.View
             }
             else if (score >= _playSettingsSO.maxScore * 0.6)
             {
-                var text = "B";
+                var text = "C";
                 if (score >= _playSettingsSO.maxScore * 0.65)
                 {
-                    text = "B+";
+                    text = "C+";
                 }
                 rankText.text = text;
                 rankText.SetGradientColor(

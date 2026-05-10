@@ -24,7 +24,7 @@ namespace OctaNotes.Scripts.Play.ViewModel
         public ReactiveProperty<bool> IsPushed { get; } = new();
         
         private double _initialPosZ;
-        private Guid[]  _guids;
+        private Guid[] _guids;
         private CompositeDisposable _disposables = new();
 
         public LongNoteViewModel(

@@ -35,7 +35,7 @@ namespace OctaNotes.Scripts.Play.View
 
         private void InvokeJudgedEffect()
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

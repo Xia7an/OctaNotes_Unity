@@ -2682,7 +2682,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SSS
+  m_text: C#
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c3d8457275e6e4ee0902fdf324003de2, type: 2}
   m_sharedMaterial: {fileID: 868447622370248002, guid: c3d8457275e6e4ee0902fdf324003de2, type: 2}
@@ -2709,7 +2709,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 140.35
+  m_fontSize: 166.65
   m_fontSizeBase: 120
   m_fontWeight: 400
   m_enableAutoSizing: 1

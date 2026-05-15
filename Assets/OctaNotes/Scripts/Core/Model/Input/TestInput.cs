@@ -199,6 +199,17 @@ public partial class @TestInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""773d8dde-1076-46f2-925e-f9f2ce8d4402"",
+                    ""path"": ""<Joystick>/stick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""d39858c8-5f6a-405c-912f-1cb1ffa1115e"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
@@ -212,6 +223,17 @@ public partial class @TestInput: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""e521cdff-0f53-40ff-8035-6bf09551a6f7"",
                     ""path"": ""<HID::WiseGroup.,Ltd JC-AS01 series>/button2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a8ee2d25-56ef-440e-8b31-2545ca7d32b9"",
+                    ""path"": ""<Joystick>/stick/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -287,6 +309,17 @@ public partial class @TestInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""64a31bf5-5bf5-4ca8-b41e-c742641e6e9c"",
+                    ""path"": ""<Joystick>/stick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""17a81f44-84c6-42d6-a583-718c77567cb1"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -300,6 +333,17 @@ public partial class @TestInput: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""5701248c-d3e4-4101-a002-c4c5f3360944"",
                     ""path"": ""<Joystick>/trigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""85238e52-4ad5-46cd-925b-03ccec5a9547"",
+                    ""path"": ""<Joystick>/stick/right"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

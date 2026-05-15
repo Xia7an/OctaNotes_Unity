@@ -34,6 +34,7 @@ namespace OctaNotes.Scripts.Core.Model
             _laneActions[5] = _input.Play._5;
             _laneActions[6] = _input.Play._6;
             _laneActions[7] = _input.Play._7;
+            
         }
         
         public void Tick()

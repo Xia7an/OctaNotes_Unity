@@ -62,6 +62,7 @@ namespace OctaNotes.Scripts.SongSelect.Model
                     // 5. 破棄の紐づけ（自身のコンポーネントやCancellationTokenを指定してください）
                     .AddTo(_disposables);
             }
+            
         }
 
         public void Dispose()
@@ -161,8 +162,8 @@ namespace OctaNotes.Scripts.SongSelect.Model
 
                 case 7:
                 {
-                    if (state.controlTarget == Target.SongList)
-                        DispatchAction(new ChangeControlTarget(Target.SongSort), state);
+                    // if (state.controlTarget == Target.SongList)
+                    //     DispatchAction(new ChangeControlTarget(Target.SongSort), state);
                     break;
                 }
             }

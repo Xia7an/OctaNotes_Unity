@@ -7,19 +7,11 @@ namespace OctaNotes.Scripts.SongSelect.ViewModel.Hud
     {
         public HudParam Calc(UIState uiState)
         {
-            var res =  new HudParam();
-            switch (uiState.controlTarget)
+            return new HudParam()
             {
-                case Target.SongList:
-                    res.color = HudColor.Cyan;
-                    res.hudText = "楽曲\nソート";
-                    break;
-                default:
-                    res.color = HudColor.Black;
-                    res.hudText = "";
-                    break;
-            }
-            return res;
+                color = HudColor.Black,
+                hudText = "",
+            };
         }
     }
 }

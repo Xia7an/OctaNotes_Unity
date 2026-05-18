@@ -13,8 +13,9 @@ namespace OctaNotes.Scripts.Play.Model
     public class InGameTimer: IInGameTimer, ITickable
     {
         public ReactiveProperty<float> Time { get; } = new(0);
-        public event Action OnMusicStart; 
-        
+        public event Action OnMusicStart;
+        public event Action<double> OnTimerInitialized;
+
         private float _initialTime;
         private readonly int TARGET_FRAMERATE = 120;
         private bool isStarted = false;
@@ -38,6 +39,7 @@ namespace OctaNotes.Scripts.Play.Model
             {
                 OnMusicStart?.Invoke();
                 isStarted = true;
+                OnTimerInitialized?.Invoke(AudioSettings.dspTime);
             }
         }
     }

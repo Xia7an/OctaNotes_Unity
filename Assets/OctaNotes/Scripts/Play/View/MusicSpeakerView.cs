@@ -1,12 +1,7 @@
-using System;
-using System.IO;
 using OctaNotes.Scripts.Play.Model.Interface;
 using OctaNotes.Scripts.Play.ViewModel.Interface;
-using OctaNotes.Scripts.Settings;
-using OctaNotes.Scripts.SongSelect.Model.Interface;
 using R3;
 using UnityEngine;
-using UnityEngine.Networking;
 using Zenject;
 
 namespace OctaNotes.Scripts.Play.View
@@ -15,31 +10,36 @@ namespace OctaNotes.Scripts.Play.View
     public class MusicSpeakerView : MonoBehaviour
     {
         private IMusicViewModel _musicViewModel;
-        
+        private IInGameTimer _timer;
+
         private AudioClip _musicClip;
         private AudioSource _audioSource;
 
         [Inject]
-        private void Construct(IMusicViewModel musicViewModel)
+        private void Construct(IMusicViewModel musicViewModel, IInGameTimer timer)
         {
             _musicViewModel = musicViewModel;
+            _timer = timer;
         }
 
         private void Start()
         {
             _audioSource = GetComponent<AudioSource>();
-            Observable.FromEvent(
-                    h => _musicViewModel.OnMusicStart += h,
-                    h => _musicViewModel.OnMusicStart -= h)
-                .Subscribe(_ =>
+
+            // タイマー初期化時にDSPクロック基準の再生開始時刻が確定するので、
+            // PlayScheduled で正確なタイミングに再生を予約する
+            Observable.FromEvent<double>(
+                    h => _timer.OnTimerInitialized += h,
+                    h => _timer.OnTimerInitialized -= h)
+                .Subscribe(dspTime =>
                 {
                     _musicClip = _musicViewModel.AudioClip.Value;
-                    Play();
+                    PlayScheduled(dspTime);
                 })
                 .AddTo(this);
         }
 
-        private void Play()
+        private void PlayScheduled(double dspTime)
         {
             if (_musicClip == null)
             {
@@ -48,9 +48,7 @@ namespace OctaNotes.Scripts.Play.View
             }
 
             _audioSource.clip = _musicClip;
-            _audioSource.Play();
+            _audioSource.PlayScheduled(dspTime);
         }
-
-        
     }
 }

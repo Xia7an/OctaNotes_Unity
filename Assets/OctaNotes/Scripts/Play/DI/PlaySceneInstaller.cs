@@ -23,6 +23,7 @@ public class PlaySceneInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ScoreCalcurator>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<ChartEndDetector>().AsSingle();
         Container.BindInterfacesAndSelfTo<SongEndHandler>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<PauseHandler>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<MusicViewModel>().AsSingle().NonLazy();
         
         // レーン毎にSubContainerを用意する

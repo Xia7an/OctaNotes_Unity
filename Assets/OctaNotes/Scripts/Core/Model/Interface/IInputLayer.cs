@@ -7,5 +7,7 @@ namespace OctaNotes.Scripts.Core.Model.Interface
     public interface IInputLayer
     {
         List<ReactiveProperty<ButtonState>> IsButtonPressing { get; }
+        
+        ReactiveProperty<ButtonState> IsPauseButtonPressed { get; }
     }
 }

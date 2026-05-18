@@ -10,13 +10,16 @@ namespace OctaNotes.Scripts.Core.Model
 {
     public class InputLayer: ITickable, IDisposable, IInputLayer
     {
-        private const int LaneCount = 8;
 
+        public List<ReactiveProperty<ButtonState>> IsButtonPressing { get; } = new();
+        public ReactiveProperty<ButtonState> IsPauseButtonPressed { get; } = new();
+        
+        private const int LaneCount = 8;
         private TestInput _input;
         private readonly InputAction[] _laneActions = new InputAction[LaneCount];
         private readonly bool[] _wasPressed = new bool[LaneCount];
-
-        public List<ReactiveProperty<ButtonState>> IsButtonPressing { get; } = new();
+        private bool _wasPausePressed = false;
+        
         public InputLayer()
         {
             for (int i = 0; i < LaneCount; i++)
@@ -39,7 +42,7 @@ namespace OctaNotes.Scripts.Core.Model
         
         public void Tick()
         {
-            // Update to single-frame states based on current press and previous frame state.
+            // 1から8までのボタン入力チェック
             for (int i = 0; i < LaneCount; i++)
             {
                 bool isPressed = _laneActions[i].IsPressed();
@@ -56,6 +59,21 @@ namespace OctaNotes.Scripts.Core.Model
 
                 _wasPressed[i] = isPressed;
             }
+            // Pauseボタンの入力チェック
+            {
+                bool isPressed = _input.Play.Pause.IsPressed();
+                if (isPressed)
+                {
+                    IsPauseButtonPressed.Value = _wasPausePressed ? ButtonState.Pushed : ButtonState.BeginPush;
+                }
+                else
+                {
+                    IsPauseButtonPressed.Value = _wasPausePressed ? ButtonState.EndPush : ButtonState.Released;
+                }
+                _wasPausePressed = isPressed;
+            }
+            
+            
         }
 
         public void Dispose()
